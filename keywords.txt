@@ -1,0 +1,50 @@
+#######################################
+# Syntax Coloring Map
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+MD_Menu	KEYWORD1
+userNavAction_t	KEYWORD1
+userDisplayAction_t	KEYWORD1
+inputAction_t	KEYWORD1
+mnuInput_t	KEYWORD1
+mnuAction_t	KEYWORD1
+mnuItem_t	KEYWORD1
+mnuHeader_t	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+begin	KEYWORD2
+runMenu	KEYWORD2
+isInMenu	KEYWORD2
+isInEdit	KEYWORD2
+reset	KEYWORD2
+setMenuWrap	KEYWORD2
+setUserNavCallback	KEYWORD2
+setUserDispCallback	KEYWORD2
+
+######################################
+# Constants (LITERAL1)
+#######################################
+
+NAV_NULL	LITERAL1
+NAV_INC	LITERAL1
+NAV_DEC	LITERAL1
+NAV_SEL	LITERAL1
+NAV_ESC	LITERAL1
+DISP_CLEAR	LITERAL1
+DISP_L0	LITERAL1
+DISP_L1	LITERAL1
+INP_LIST	LITERAL1
+INP_BOOL	LITERAL1
+INP_INT8	LITERAL1
+INP_INT16	LITERAL1
+INP_INT32	LITERAL1
+INP_RUN	LITERAL1
+MNU_MENU	LITERAL1
+MNU_INPUT	LITERAL1
