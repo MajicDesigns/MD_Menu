@@ -1,6 +1,4 @@
 var searchData=
 [
-  ['mnu_5fdelim_5fl',['MNU_DELIM_L',['../_m_d___menu__lib_8h.html#a2e32ebf768eeffc897eeaf9897f4403c',1,'MD_Menu_lib.h']]],
-  ['mnu_5fdelim_5fr',['MNU_DELIM_R',['../_m_d___menu__lib_8h.html#a0c6a9a216f76df4379589656ad6e46fb',1,'MD_Menu_lib.h']]],
-  ['mnu_5fstack_5fsize',['MNU_STACK_SIZE',['../_m_d___menu_8h.html#a14ffb7f2f4edb7740facdf20b3cd9513',1,'MD_Menu.h']]]
+  ['label',['label',['../struct_m_d___menu_1_1mnu_input__t.html#a49360142578fbfa49a678fc1ac357cd9',1,'MD_Menu::mnuInput_t::label()'],['../struct_m_d___menu_1_1mnu_item__t.html#a2a3abba5f64a7b2e5a90923527104107',1,'MD_Menu::mnuItem_t::label()'],['../struct_m_d___menu_1_1mnu_header__t.html#a21ce1d68ee920ec99178fe85becd90b4',1,'MD_Menu::mnuHeader_t::label()']]]
 ];

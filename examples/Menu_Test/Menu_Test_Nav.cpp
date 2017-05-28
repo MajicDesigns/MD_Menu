@@ -31,16 +31,20 @@ void setupNav(void)
 
 MD_Menu::userNavAction_t navigation(uint16_t &incDelta)
 {
-  if (swInc.read() == MD_KeySwitch::KS_PRESS) return(MD_Menu::NAV_INC);
-  if (swDec.read() == MD_KeySwitch::KS_PRESS) return(MD_Menu::NAV_DEC);
+  MD_Menu::userNavAction_t nav = MD_Menu::NAV_NULL;
+
+  if (swInc.read() == MD_KeySwitch::KS_PRESS) nav = MD_Menu::NAV_INC;
+  else if (swDec.read() == MD_KeySwitch::KS_PRESS) nav = MD_Menu::NAV_DEC;
 
   switch (swCtl.read())
   {
-  case MD_KeySwitch::KS_PRESS: return(MD_Menu::NAV_SEL);
-  case MD_KeySwitch::KS_LONGPRESS: return(MD_Menu::NAV_ESC);
+  case MD_KeySwitch::KS_PRESS: nav = MD_Menu::NAV_SEL; break;;
+  case MD_KeySwitch::KS_LONGPRESS: nav = MD_Menu::NAV_ESC; break;
   }
 
-  return(MD_Menu::NAV_NULL);
+  if (nav != MD_Menu::NAV_NULL) timerStart();
+
+  return(nav);
 }
 #endif
 
@@ -62,7 +66,11 @@ void setupNav(void)
 
 MD_Menu::userNavAction_t navigation(uint16_t &incDelta)
 {
-  switch (lcdKeys.getKey())
+  char c = lcdKeys.getKey();
+
+  if (c != '\0') timerStart();
+
+  switch (c)
   {
   case 'D': return(MD_Menu::NAV_DEC);
   case 'U': return(MD_Menu::NAV_INC);
@@ -111,13 +119,14 @@ MD_Menu::userNavAction_t navigation(uint16_t &incDelta)
   if (re != DIR_NONE)
   {
     if (M.isInEdit()) incDelta = 1 << abs(RE.speed() / 10);
+    timerStart();
     return(re == DIR_CCW ? MD_Menu::NAV_DEC : MD_Menu::NAV_INC);
   }
 
   switch (swCtl.read())
   {
-  case MD_KeySwitch::KS_PRESS: return(MD_Menu::NAV_SEL);
-  case MD_KeySwitch::KS_LONGPRESS: return(MD_Menu::NAV_ESC);
+  case MD_KeySwitch::KS_PRESS:     timerStart(); return(MD_Menu::NAV_SEL);
+  case MD_KeySwitch::KS_LONGPRESS: timerStart(); return(MD_Menu::NAV_ESC);
   }
 
   return(MD_Menu::NAV_NULL);

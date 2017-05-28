@@ -4,11 +4,11 @@ var indexSectionsWithContent =
   1: "m",
   2: "m",
   3: "bimrs~",
-  4: "acfhilmpr",
-  5: "c",
+  4: "abcfhilmpr",
+  5: "cm",
   6: "imu",
   7: "dimn",
-  8: "am",
+  8: "acim",
   9: "cmr"
 };
 

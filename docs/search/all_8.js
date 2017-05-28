@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['menu_20library',['Menu Library',['../index.html',1,'']]],
+  ['md_5fmenu_20library',['MD_Menu Library',['../index.html',1,'']]],
   ['md_5fdebug',['MD_DEBUG',['../_m_d___menu__lib_8h.html#ae50881ee40e717004497223e1a6540ef',1,'MD_Menu_lib.h']]],
   ['md_5fmenu',['MD_Menu',['../class_m_d___menu.html',1,'MD_Menu'],['../class_m_d___menu.html#aa00edc7279378b9eeed932fd2cf7dba3',1,'MD_Menu::MD_Menu()']]],
   ['md_5fmenu_2ecpp',['MD_Menu.cpp',['../_m_d___menu_8cpp.html',1,'']]],
@@ -15,6 +15,7 @@ var searchData=
   ['mnu_5fstack_5fsize',['MNU_STACK_SIZE',['../_m_d___menu_8h.html#a14ffb7f2f4edb7740facdf20b3cd9513',1,'MD_Menu.h']]],
   ['mnuaction_5ft',['mnuAction_t',['../class_m_d___menu.html#a4f24623203fc728b52c4195b1fe3df8b',1,'MD_Menu']]],
   ['mnuheader_5ft',['mnuHeader_t',['../struct_m_d___menu_1_1mnu_header__t.html',1,'MD_Menu']]],
+  ['mnuid_5ft',['mnuId_t',['../class_m_d___menu.html#ac55b69e28f81f0e1a98339c7c0cc4a15',1,'MD_Menu']]],
   ['mnuinput_5ft',['mnuInput_t',['../struct_m_d___menu_1_1mnu_input__t.html',1,'MD_Menu']]],
   ['mnuitem_5ft',['mnuItem_t',['../struct_m_d___menu_1_1mnu_item__t.html',1,'MD_Menu']]]
 ];

@@ -104,17 +104,29 @@ This graph shows which files directly or indirectly include this file:</div>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
 Macros</h2></td></tr>
 <tr class="memitem:ae50881ee40e717004497223e1a6540ef"><td class="memItemLeft" align="right" valign="top"><a id="ae50881ee40e717004497223e1a6540ef"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_m_d___menu__lib_8h.html#ae50881ee40e717004497223e1a6540ef">MD_DEBUG</a>&#160;&#160;&#160;1</td></tr>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_m_d___menu__lib_8h.html#ae50881ee40e717004497223e1a6540ef">MD_DEBUG</a>&#160;&#160;&#160;0</td></tr>
 <tr class="memdesc:ae50881ee40e717004497223e1a6540ef"><td class="mdescLeft">&#160;</td><td class="mdescRight">set to 1 to enable library debugging mode <br /></td></tr>
 <tr class="separator:ae50881ee40e717004497223e1a6540ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad0f5d64c2c9729c0dfc92d5e3571d7de"><td class="memItemLeft" align="right" valign="top"><a id="ad0f5d64c2c9729c0dfc92d5e3571d7de"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_m_d___menu__lib_8h.html#ad0f5d64c2c9729c0dfc92d5e3571d7de">MD_PRINTS</a>(s)&#160;&#160;&#160;{ Serial.print(F(s)); }</td></tr>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_m_d___menu__lib_8h.html#ad0f5d64c2c9729c0dfc92d5e3571d7de">MD_PRINTS</a>(s)</td></tr>
 <tr class="memdesc:ad0f5d64c2c9729c0dfc92d5e3571d7de"><td class="mdescLeft">&#160;</td><td class="mdescRight">Library debugging output macro. <br /></td></tr>
 <tr class="separator:ad0f5d64c2c9729c0dfc92d5e3571d7de"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a983c87e4a68e36a9c84c217ec762e2b9"><td class="memItemLeft" align="right" valign="top"><a id="a983c87e4a68e36a9c84c217ec762e2b9"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_m_d___menu__lib_8h.html#a983c87e4a68e36a9c84c217ec762e2b9">MD_PRINT</a>(s,  v)&#160;&#160;&#160;{ Serial.print(F(s)); Serial.print(v); }</td></tr>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_m_d___menu__lib_8h.html#a983c87e4a68e36a9c84c217ec762e2b9">MD_PRINT</a>(s,  v)</td></tr>
 <tr class="memdesc:a983c87e4a68e36a9c84c217ec762e2b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Library debugging output macro. <br /></td></tr>
 <tr class="separator:a983c87e4a68e36a9c84c217ec762e2b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac4d67cb7944c405e97b02f203e954d25"><td class="memItemLeft" align="right" valign="top"><a id="ac4d67cb7944c405e97b02f203e954d25"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_m_d___menu__lib_8h.html#ac4d67cb7944c405e97b02f203e954d25">INP_PRE_SIZE</a>(mi)&#160;&#160;&#160;(strlen(mi-&gt;label) + strlen(<a class="el" href="_m_d___menu__lib_8h.html#aee974fc100bbb9e0ffb69f1ff3e349f2">FLD_PROMPT</a>) + strlen(<a class="el" href="_m_d___menu__lib_8h.html#a4bc4cd1d83ddb399316b41391305afb5">FLD_DELIM_L</a>))</td></tr>
+<tr class="memdesc:ac4d67cb7944c405e97b02f203e954d25"><td class="mdescLeft">&#160;</td><td class="mdescRight">Size of text pre variable display. <br /></td></tr>
+<tr class="separator:ac4d67cb7944c405e97b02f203e954d25"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a595a6ab5a53443036d11232898ef1068"><td class="memItemLeft" align="right" valign="top"><a id="a595a6ab5a53443036d11232898ef1068"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_m_d___menu__lib_8h.html#a595a6ab5a53443036d11232898ef1068">INP_POST_SIZE</a>(mi)&#160;&#160;&#160;(strlen(<a class="el" href="_m_d___menu__lib_8h.html#a31c37de9875696c4a6b42c2285b864d1">FLD_DELIM_R</a>))</td></tr>
+<tr class="memdesc:a595a6ab5a53443036d11232898ef1068"><td class="mdescLeft">&#160;</td><td class="mdescRight">Size of text after variable display. <br /></td></tr>
+<tr class="separator:a595a6ab5a53443036d11232898ef1068"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a759dfc0f860ad7df930759b704765d06"><td class="memItemLeft" align="right" valign="top"><a id="a759dfc0f860ad7df930759b704765d06"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_m_d___menu__lib_8h.html#a759dfc0f860ad7df930759b704765d06">CB_DISP</a>(l,  m)&#160;&#160;&#160;if (_cbDisp != nullptr) _cbDisp(l, m);</td></tr>
+<tr class="memdesc:a759dfc0f860ad7df930759b704765d06"><td class="mdescLeft">&#160;</td><td class="mdescRight">Display only if dispay callback available. <br /></td></tr>
+<tr class="separator:a759dfc0f860ad7df930759b704765d06"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
@@ -146,6 +158,10 @@ const char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href
 const char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_m_d___menu__lib_8h.html#a990cbececf1c8d3df582b4ac531a16f8">INP_BOOL_F</a> [] = &quot;N&quot;</td></tr>
 <tr class="memdesc:a990cbececf1c8d3df582b4ac531a16f8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Boolean input False display value. Length should be same as INP_BOOL_T. <br /></td></tr>
 <tr class="separator:a990cbececf1c8d3df582b4ac531a16f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab95c3570a5b635b2c61c4157cbc27dff"><td class="memItemLeft" align="right" valign="top"><a id="ab95c3570a5b635b2c61c4157cbc27dff"></a>
+const char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_m_d___menu__lib_8h.html#ab95c3570a5b635b2c61c4157cbc27dff">INP_NUMERIC_OFLOW</a> = '#'</td></tr>
+<tr class="memdesc:ab95c3570a5b635b2c61c4157cbc27dff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Indicator for numeric overflow. <br /></td></tr>
+<tr class="separator:ab95c3570a5b635b2c61c4157cbc27dff"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Contains internal library definitions. </p>
@@ -155,7 +171,7 @@ const char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="_m_d___menu__lib_8h.html">MD_Menu_lib.h</a></li>
-    <li class="footer">Generated on Sun May 28 2017 13:19:12 for MD_Menu Library by
+    <li class="footer">Generated on Mon May 29 2017 06:19:48 for MD_Menu Library by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

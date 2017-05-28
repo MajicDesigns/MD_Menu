@@ -21,7 +21,7 @@ bool display(MD_Menu::userDisplayAction_t action, char *msg)
   switch (action)
   {
   case MD_Menu::DISP_CLEAR:
-    Serial.print("\n> CLS");
+    Serial.print("\n-> CLS");
     break;
 
   case MD_Menu::DISP_L0:

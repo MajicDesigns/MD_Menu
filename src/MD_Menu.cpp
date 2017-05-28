@@ -23,10 +23,10 @@ MD_Menu::MD_Menu(cbUserNav cbNav, cbUserDisplay cbDisp,
   setMenuWrap(false);
 }
 
-void MD_Menu::loadMenu(int16_t id)
+void MD_Menu::loadMenu(mnuId_t id)
 // Load a menu header definition to the current stack position
 {
-  uint8_t idx = 0;
+  mnuId_t idx = 0;
   mnuHeader_t mh;
 
   if (id != -1)   // look for a menu with that id and load it up
@@ -46,7 +46,7 @@ void MD_Menu::loadMenu(int16_t id)
   memcpy_P(&_mnuStack[_currMenu], &_mnuHdr[idx], sizeof(mnuHeader_t));
 }
 
-MD_Menu::mnuItem_t* MD_Menu::loadItem(int16_t id)
+MD_Menu::mnuItem_t* MD_Menu::loadItem(mnuId_t id)
 // Find a copy the input item to the private class accessible buffer
 {
   for (uint8_t i = 0; i < _mnuItmCount; i++)
@@ -59,7 +59,7 @@ MD_Menu::mnuItem_t* MD_Menu::loadItem(int16_t id)
   return(nullptr);
 }
 
-MD_Menu::mnuInput_t* MD_Menu::loadInput(int16_t id)
+MD_Menu::mnuInput_t* MD_Menu::loadInput(mnuId_t id)
 // Find a copy the input item to the private class accessible buffer
 {
   for (uint8_t i = 0; i < _mnuItmCount; i++)
@@ -73,6 +73,7 @@ MD_Menu::mnuInput_t* MD_Menu::loadInput(int16_t id)
 }
 
 uint8_t MD_Menu::listCount(PROGMEM char *p)
+// Return a count of the items in the list
 {
   uint8_t count = 0;
 
@@ -92,29 +93,56 @@ uint8_t MD_Menu::listCount(PROGMEM char *p)
 }
 
 char *MD_Menu::listItem(PROGMEM char *p, uint8_t idx, char *buf, uint8_t bufLen)
+// Find the idx'th item in the list and return in fised width, padded
+// with trailing spaces. 
 {
+  // fill the buffer with '\0' so we know that string will be 
+  // terminted within this buffer
   memset(buf, '\0', bufLen);
 
   if (p != nullptr)
   {
+    char *psz;
+
     for (uint8_t i = 0; i < idx; i++)
       p += strlen_P(p) + 1;
 
-    strncpy_P(buf, p, bufLen-1);
+    strncpy_P(buf, p, bufLen - 1);
+
+    // Pad out any short string with trailing spaces
+    // The trailing buffer is already filled with '\0'
+    psz = buf + strlen(buf);
+    while (strlen(buf) < bufLen - 1)
+      *psz++ = ' ';
   }
 
   return(buf);
 }
 
+void MD_Menu::strPreamble(char *psz, mnuInput_t *mInp)
+// Create the start to a variable CB_DISP
+{
+  strcpy(psz, mInp->label);
+  strcat(psz, FLD_PROMPT);
+  strcat(psz, FLD_DELIM_L);
+}
+
+void MD_Menu::strPostamble(char *psz, mnuInput_t *mInp)
+// Attach the tail of the variable CB_DISP
+{
+  strcat(psz, FLD_DELIM_R);
+}
+
 bool MD_Menu::processList(userNavAction_t nav, mnuInput_t *mInp)
+// Processing for List based input
+// Return true when the edit cycle is completed
 {
   bool endFlag = false;
   bool update = false;
-  uint8_t listSize;
 
   switch (nav)
   {
-  case NAV_NULL:    // this is to initialise the display
+  case NAV_NULL:    // this is to initialise the CB_DISP
   {
     if (listCount(mInp->pList) == 0)
     {
@@ -140,30 +168,35 @@ bool MD_Menu::processList(userNavAction_t nav, mnuInput_t *mInp)
   break;
 
   case NAV_DEC:
-    listSize = listCount(mInp->pList);
-    if (_iValue > 0)
     {
-      _iValue--;
-      update = true;
-    }
-    else if (_iValue == 0 && _wrapMenu)
-    {
-      _iValue = listSize-1;
-      update = true;
+      uint8_t listSize = listCount(mInp->pList);
+      if (_iValue > 0)
+      {
+        _iValue--;
+        update = true;
+      }
+      else if (_iValue == 0 && _wrapMenu)
+      {
+        _iValue = listSize - 1;
+        update = true;
+      }
     }
     break;
 
   case NAV_INC:
-    listSize = listCount(mInp->pList);
-    if (_iValue < listSize - 1)
     {
-      _iValue++;
-      update = true;
-    }
-    else if (_iValue == listSize - 1 && _wrapMenu)
-    {
-      _iValue = 0;
-      update = true;
+      uint8_t listSize = listCount(mInp->pList);
+
+      if (_iValue < listSize - 1)
+      {
+        _iValue++;
+        update = true;
+      }
+      else if (_iValue == listSize - 1 && _wrapMenu)
+      {
+        _iValue = 0;
+        update = true;
+      }
     }
     break;
 
@@ -176,29 +209,29 @@ bool MD_Menu::processList(userNavAction_t nav, mnuInput_t *mInp)
 
   if (update)
   {
-    // Kuldge a format string specifier as a variable string as the Arduino
-    // functions don't allow the "%*ld" type format but require and actual
-    // number instead of the * specifier.
-    char szFmt[15];
     char szItem[mInp->fieldWidth + 1];
-    char sz[strlen(mInp->label) + strlen(FLD_PROMPT) + strlen(FLD_DELIM_L) + sizeof(szItem) + strlen(FLD_DELIM_R) + 1];
+    char sz[INP_PRE_SIZE(mInp) + sizeof(szItem) + INP_POST_SIZE(mInp) + 1];
 
-    snprintf(szFmt, sizeof(szFmt), "%s%d%s", "%s%s%s%", mInp->fieldWidth, "s%s");
-    snprintf(sz, sizeof(sz), szFmt, mInp->label, FLD_PROMPT, FLD_DELIM_L, listItem(mInp->pList, _iValue, szItem, sizeof(szItem)), FLD_DELIM_R);
-    _cbDisp(DISP_L1, sz);
+    strPreamble(sz, mInp);
+    strcat(sz, listItem(mInp->pList, _iValue, szItem, sizeof(szItem)));
+    strPostamble(sz, mInp);
+
+    CB_DISP(DISP_L1, sz);
   }
 
   return(endFlag);
 }
 
 bool MD_Menu::processBool(userNavAction_t nav, mnuInput_t *mInp)
+// Processing for Boolean (true/false) value input
+// Return true when the edit cycle is completed
 {
   bool endFlag = false;
   bool update = false;
 
   switch (nav)
   {
-  case NAV_NULL:    // this is to initialise the display
+  case NAV_NULL:    // this is to initialise the CB_DISP
     {
       _pValue = mInp->cbVR(mInp->id, mInp->idx, true);
 
@@ -230,23 +263,66 @@ bool MD_Menu::processBool(userNavAction_t nav, mnuInput_t *mInp)
 
   if (update)
   {
-    char sz[strlen(mInp->label) + strlen(FLD_PROMPT) + strlen(FLD_DELIM_L) + strlen(INP_BOOL_T) + strlen(FLD_DELIM_R) + 1];
+    char sz[INP_PRE_SIZE(mInp) + strlen(INP_BOOL_T) + INP_POST_SIZE(mInp) + 1];
 
-    snprintf(sz, sizeof(sz), "%s%s%s%s%s", mInp->label, FLD_PROMPT, FLD_DELIM_L, _bValue ? INP_BOOL_T : INP_BOOL_F, FLD_DELIM_R);
-    _cbDisp(DISP_L1, sz);
+    strPreamble(sz, mInp);
+    strcat(sz, _bValue ? INP_BOOL_T : INP_BOOL_F);
+    strPostamble(sz, mInp);
+
+    CB_DISP(DISP_L1, sz);
   }
 
   return(endFlag);
 }
 
+char *ltostr(char *buf, uint8_t bufLen, int32_t v, uint8_t base)
+// Convert a long to a string right justified with leading spaces
+// in the base specified (up to 16).
+{
+  char *ptr = buf + bufLen - 1; // the last element of the buffer
+  bool sign = (v < 0);
+  uint32_t t = 0, res = 0;
+  uint32_t value = (sign ? -v : v);
+
+  if (buf == nullptr) return(nullptr);
+
+  *ptr = '\0'; // terminate the string as we will be moving backwards
+
+  // now successively deal with the remainder digit 
+  // until we have value == 0
+  do
+  {
+    t = value / base;
+    res = value - (base * t);
+    if (res < 10)
+      *--ptr = '0' + res;
+    else if ((res >= 10) && (res < 16))
+      *--ptr = 'A' - 10 + res;
+    value = t;
+  } while (value != 0 && ptr != buf);
+
+  if (ptr != buf)      // if there is still space
+  {
+    if (sign) *--ptr = '-';  // put in the sign ...
+    while (ptr != buf)       // ... and pad with leading spaces
+      *--ptr = ' ';
+  }
+  else if (value != 0 || sign) // insufficient space - show this
+      *ptr = INP_NUMERIC_OFLOW;
+
+  return(buf);
+}
+
 bool MD_Menu::processInt(userNavAction_t nav, mnuInput_t *mInp, uint16_t incDelta)
+// Processing for Integer (all sizes) value input
+// Return true when the edit cycle is completed
 {
   bool endFlag = false;
   bool update = false;
 
   switch (nav)
   {
-  case NAV_NULL:    // this is to initialise the display
+  case NAV_NULL:    // this is to initialise the CB_DISP
     {
       _pValue = mInp->cbVR(mInp->id, mInp->idx, true);
 
@@ -298,32 +374,32 @@ bool MD_Menu::processInt(userNavAction_t nav, mnuInput_t *mInp, uint16_t incDelt
 
   if (update)
   {
-    // Kuldge a format string specifier as a variable string as the Arduino
-    // functions don't allow the "%*ld" type format but require and actual
-    // number instead of the * specifier.
-    char szFmt[15];
-    char sz[strlen(mInp->label) + strlen(FLD_PROMPT) + strlen(FLD_DELIM_L) + mInp->fieldWidth + strlen(FLD_DELIM_R) + 1];
+    char sz[INP_PRE_SIZE(mInp) + mInp->fieldWidth + INP_POST_SIZE(mInp) + 1];
 
-    snprintf(szFmt, sizeof(szFmt), "%s%d%s", "%s%s%s%", mInp->fieldWidth, "ld%s");
-    snprintf(sz, sizeof(sz), szFmt, mInp->label, FLD_PROMPT, FLD_DELIM_L, _iValue, FLD_DELIM_R);
-    _cbDisp(DISP_L1, sz);
+    strPreamble(sz, mInp);
+    ltostr(sz + strlen(sz), mInp->fieldWidth + 1, _iValue, mInp->base);
+    strPostamble(sz, mInp);
+
+    CB_DISP(DISP_L1, sz);
   }
 
   return(endFlag);
 }
 
 bool MD_Menu::processRun(userNavAction_t nav, mnuInput_t *mInp)
-// Processing a Run user code input field.
+// Processing for Run user code input field.
 // When the field is selected, run the user variable code. For all other
-// input do nothing
-// Return true when the element has run user code.
+// input do nothing. Return true when the element has run user code.
 {
-  if (nav == NAV_NULL)    // initialise the display
+  if (nav == NAV_NULL)    // initialise the CB_DISP
   {
-    char sz[strlen(mInp->label) + strlen(FLD_DELIM_L) + strlen(FLD_DELIM_R) + 1];
+    char sz[INP_PRE_SIZE(mInp) + INP_POST_SIZE(mInp) + 1];
 
-    snprintf(sz, sizeof(sz), "%s%s%s", FLD_DELIM_L, mInp->label, FLD_DELIM_R);
-    _cbDisp(DISP_L1, sz);
+    strcpy(sz, FLD_DELIM_L);
+    strcat(sz, mInp->label);
+    strcat(sz, FLD_DELIM_R);
+
+    CB_DISP(DISP_L1, sz);
   }
   else if (nav == NAV_SEL)
   {
@@ -343,9 +419,9 @@ void MD_Menu::handleInput(bool bNew)
 
   if (bNew)
   {
-    _cbDisp(DISP_CLEAR, nullptr);
+    CB_DISP(DISP_CLEAR, nullptr);
     mi = loadItem(_mnuStack[_currMenu].idItmCurr);
-    _cbDisp(DISP_L0, mi->label);
+    CB_DISP(DISP_L0, mi->label);
     me = loadInput(mi->actionId);
 
     switch (me->action)
@@ -362,7 +438,7 @@ void MD_Menu::handleInput(bool bNew)
   }
   else
   {
-    userNavAction_t nav = _cbNav(incDelta);
+    userNavAction_t nav = (_cbNav != nullptr ? _cbNav(incDelta) : NAV_NULL);
 
     if (nav == NAV_ESC)
       ended = true;
@@ -396,8 +472,8 @@ void MD_Menu::handleMenu(bool bNew)
 
   if (bNew)
   {
-    _cbDisp(DISP_CLEAR, nullptr);
-    _cbDisp(DISP_L0, _mnuStack[_currMenu].label);
+    CB_DISP(DISP_CLEAR, nullptr);
+    CB_DISP(DISP_L0, _mnuStack[_currMenu].label);
     if (_mnuStack[_currMenu].idItmCurr == 0)
       _mnuStack[_currMenu].idItmCurr = _mnuStack[_currMenu].idItmStart;
     update = true;
@@ -405,8 +481,9 @@ void MD_Menu::handleMenu(bool bNew)
   else
   {
     uint16_t incDelta = 1;
+    userNavAction_t nav = (_cbNav != nullptr ? _cbNav(incDelta) : NAV_NULL);
 
-    switch (_cbNav(incDelta))
+    switch (nav)
     {
     case NAV_DEC:
       if (_mnuStack[_currMenu].idItmCurr != _mnuStack[_currMenu].idItmStart)
@@ -471,7 +548,7 @@ void MD_Menu::handleMenu(bool bNew)
     }
   }
 
-  if (update) // update L1 on the display
+  if (update) // update L1 on the CB_DISP
   {
     mnuItem_t *mi = loadItem(_mnuStack[_currMenu].idItmCurr);
 
@@ -479,8 +556,11 @@ void MD_Menu::handleMenu(bool bNew)
     {
       char sz[strlen(mi->label) + strlen(MNU_DELIM_L) + strlen(MNU_DELIM_R) + 1]; // temporary string
 
-      snprintf(sz, sizeof(sz), "%s%s%s", MNU_DELIM_L, mi->label, MNU_DELIM_R);
-      _cbDisp(DISP_L1, sz);
+      strcpy(sz, MNU_DELIM_L);
+      strcat(sz, mi->label);
+      strcat(sz, MNU_DELIM_R);
+
+      CB_DISP(DISP_L1, sz);
     }
   }
 }
@@ -495,7 +575,7 @@ bool MD_Menu::runMenu(bool bStart)
 
   if (bStart)   // start the menu again
   {
-    MD_PRINTS("\n-> Starting menu");
+    MD_PRINTS("\nrunMenu: Starting menu");
     _currMenu = 0;
     loadMenu();
     handleMenu(true);
@@ -509,8 +589,8 @@ bool MD_Menu::runMenu(bool bStart)
 
     if (!_inMenu)
     {
-      _cbDisp(DISP_CLEAR, nullptr);
-      MD_PRINTS("\n-> Ending Menu");
+      CB_DISP(DISP_CLEAR, nullptr);
+      MD_PRINTS("\nrunMenu: Ending Menu");
     }
   }
 

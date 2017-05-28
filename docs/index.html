@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>MD_Menu Library: Menu Library</title>
+<title>MD_Menu Library: MD_Menu Library</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -83,11 +83,20 @@ $(document).ready(function(){initNavTree('index.html','');});
 
 <div class="header">
   <div class="headertitle">
-<div class="title">Menu Library </div>  </div>
+<div class="title"><a class="el" href="class_m_d___menu.html">MD_Menu</a> Library </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>This library implements 1 or 2 line menus for user defined displays.</p>
+<div class="textblock"><p>This library implements menus for display devices with up to 2 display lines.</p>
+<p>Features of this menu library include:</p>
 <ul>
+<li>Simplified menu definitions to allow minimised RAM footprint. Extensive use of PROGMEM for static structures.</li>
+<li>Input and display devices controller through user code and callbacks from the library.</li>
+<li>Input methods available for<ul>
+<li>Boolean (Y/N) values</li>
+<li>List selection</li>
+<li>8/16/32 bit signed integers</li>
+</ul>
+</li>
 <li><a class="el" href="page_revision_history.html">Revision History</a></li>
 <li><a class="el" href="page_copyright.html">Copyright</a> </li>
 </ul>
@@ -96,7 +105,7 @@ $(document).ready(function(){initNavTree('index.html','');});
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Sun May 28 2017 13:19:12 for MD_Menu Library by
+    <li class="footer">Generated on Mon May 29 2017 06:19:48 for MD_Menu Library by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

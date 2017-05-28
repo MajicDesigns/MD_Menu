@@ -4,12 +4,6 @@
 //
 #include "Menu_Test.h"
 
-// Function prototypes
-void setupDisp(void);
-void setupNav(void);
-bool display(MD_Menu::userDisplayAction_t, char*);
-MD_Menu::userNavAction_t navigation(uint16_t &incDelta);
-
 // Global menu data and definitions
 uint8_t listValue = 2;
 bool bValue = true;
@@ -17,37 +11,44 @@ int8_t  int8Value = 99;
 int16_t int16Value = 999;
 int32_t int32Value = 9999;
 
+// Menu Headers --------
+const PROGMEM MD_Menu::mnuHeader_t mnuHdr[] =
+{
+  { 100, "MD_Menu",    100, 103, 0 },
+  { 101, "Input Data", 200, 206, 0 },
+  { 102, "More Menus", 100, 103, 0 },
+};
+
+// Menu Items ----------
+const PROGMEM MD_Menu::mnuItem_t mnuItm[] =
+{
+  // Staring (Root) menu and More Menu
+  { 100, "Input Test", MD_Menu::MNU_MENU, 101 },
+  { 101, "Submenu 1",  MD_Menu::MNU_MENU, 102 },
+  { 102, "Submenu 2",  MD_Menu::MNU_MENU, 102 },
+  { 103, "Submenu 3",  MD_Menu::MNU_MENU, 102 },
+  // Input Data submenu
+  { 200, "List Select",MD_Menu::MNU_INPUT, 100 },
+  { 201, "Boolean",    MD_Menu::MNU_INPUT, 101 },
+  { 202, "Integer 8",  MD_Menu::MNU_INPUT, 102 },
+  { 203, "Integer 16", MD_Menu::MNU_INPUT, 103 },
+  { 204, "Integer 32", MD_Menu::MNU_INPUT, 104 },
+  { 205, "Hex 16",     MD_Menu::MNU_INPUT, 105 },
+  { 206, "Reset Menu", MD_Menu::MNU_INPUT, 106 },
+};
+
+// Input Items ---------
 const PROGMEM char inList[] = "Apple\0Pear\0Orange\0Banana\0Pineapple\0Peach\0";
 
 const PROGMEM MD_Menu::mnuInput_t mnuInp[] =
 {
-  { 100, 0, "List", MD_Menu::INP_LIST, mnuLValueRqst, 6, 0, 0, inList },
-  { 101, 0, "Bool", MD_Menu::INP_BOOL, mnuBValueRqst, 1, 0, 0, nullptr },
-  { 102, 0, "Int8", MD_Menu::INP_INT8, mnuIValueRqst, 4, -127, 128, nullptr },
-  { 103, 0, "Int16", MD_Menu::INP_INT16, mnuIValueRqst, 6, -32767, 32768, nullptr },
-  { 104, 0, "Int32", MD_Menu::INP_INT32, mnuIValueRqst, 10, -66635, 65536, nullptr },
-  { 105, 0, "Confirm", MD_Menu::INP_RUN, myCode, 0, 0, 0, nullptr },
-};
-
-const PROGMEM MD_Menu::mnuItem_t mnuItm[] =
-{
-  { 100, "Submenu 0", MD_Menu::MNU_MENU, 101 },
-  { 101, "Submenu 1", MD_Menu::MNU_MENU, 102 },
-  { 102, "Submenu 2", MD_Menu::MNU_MENU, 101 },
-  { 103, "Submenu 3", MD_Menu::MNU_MENU, 102 },
-  { 104, "Input List", MD_Menu::MNU_INPUT, 100 },
-  { 105, "Input Bool", MD_Menu::MNU_INPUT, 101 },
-  { 106, "Input I8", MD_Menu::MNU_INPUT, 102 },
-  { 107, "Input I16", MD_Menu::MNU_INPUT, 103 },
-  { 108, "Input I32", MD_Menu::MNU_INPUT, 104 },
-  { 109, "Reset Menu", MD_Menu::MNU_INPUT, 105 },
-};
-
-const PROGMEM MD_Menu::mnuHeader_t mnuHdr[] =
-{
-  { 100, "Root",   100, 103, 0 },
-  { 101, "Input", 104, 109, 0 },
-  { 102, "More Menu", 100, 103, 0 },
+  { 100, 0, "List",    MD_Menu::INP_LIST,  mnuLValueRqst,  6,      0,      0,  0, inList },
+  { 101, 0, "Bool",    MD_Menu::INP_BOOL,  mnuBValueRqst,  1,      0,      0,  0, nullptr },
+  { 102, 0, "Int8",    MD_Menu::INP_INT8,  mnuIValueRqst,  4,   -128,    127, 10, nullptr },
+  { 103, 0, "Int16",   MD_Menu::INP_INT16, mnuIValueRqst,  4, -32768,  32767, 10, nullptr },
+  { 104, 0, "Int32",   MD_Menu::INP_INT32, mnuIValueRqst,  6, -66636,  65535, 10, nullptr },
+  { 105, 0, "Hex16",   MD_Menu::INP_INT16, mnuIValueRqst,  4, 0x0000, 0xffff, 16, nullptr },
+  { 106, 0, "Confirm", MD_Menu::INP_RUN,   myCode,         0,      0,      0, 10, nullptr },
 };
 
 // bring it all together in the global menu object
@@ -56,8 +57,8 @@ MD_Menu M(navigation, display,        // user navigation and display
           mnuItm, ARRAY_SIZE(mnuItm), // menu item data
           mnuInp, ARRAY_SIZE(mnuInp));// menu input data
 
-// Callback code for menu set/get
-void *mnuLValueRqst(uint8_t id, uint8_t idx, bool bGet)
+// Callback code for menu set/get input values
+void *mnuLValueRqst(uint8_t id, MD_Menu::mnuId_t idx, bool bGet)
 {
   if (id == 100)
   {
@@ -71,7 +72,7 @@ void *mnuLValueRqst(uint8_t id, uint8_t idx, bool bGet)
   }
 }
 
-void *mnuBValueRqst(uint8_t id, uint8_t idx, bool bGet)
+void *mnuBValueRqst(uint8_t id, MD_Menu::mnuId_t idx, bool bGet)
 {
   if (id == 101)
   {
@@ -85,7 +86,7 @@ void *mnuBValueRqst(uint8_t id, uint8_t idx, bool bGet)
   }
 }
 
-void *mnuIValueRqst(uint8_t id, uint8_t idx, bool bGet)
+void *mnuIValueRqst(uint8_t id, MD_Menu::mnuId_t idx, bool bGet)
 {
   switch (id)
   {
@@ -100,6 +101,7 @@ void *mnuIValueRqst(uint8_t id, uint8_t idx, bool bGet)
     break;
 
   case 103:
+  case 105:
     if (bGet)
       return((void *)&int16Value);
     else
@@ -125,7 +127,7 @@ void *mnuIValueRqst(uint8_t id, uint8_t idx, bool bGet)
 
 void *myCode(uint8_t id, uint8_t idx, bool bGet)
 {
-  Serial.print(F("\nMyCode called id="));
+  Serial.print(F("\nmyCode called id="));
   Serial.print(id);
   Serial.print(F(" idx="));
   Serial.print(idx);
@@ -133,6 +135,23 @@ void *myCode(uint8_t id, uint8_t idx, bool bGet)
   Serial.print(bGet ? F("GET") : F("SET - reset menu"));
 
   if (!bGet) M.reset();
+}
+
+// Menu timer data and functions
+uint32_t timeStart;
+
+void timerStart(void)
+{
+  timeStart = millis();
+}
+
+void timerCheck(void)
+{
+  if (millis() - timeStart >= MENU_TIMEOUT)
+  {
+    Serial.print("\n-> Menu timeout");
+    M.reset();
+  }
 }
 
 // Standard setup() and loop()
@@ -150,14 +169,24 @@ void setup(void)
 
 void loop(void)
 {
+  static bool prevMenuRun = true;
   uint16_t incDelta = 1;
 
-  // if we are not running, check if there is a reason to start the menu
+  // Detect is we need to initiate running normal user code
+  if (prevMenuRun && !M.isInMenu())
+    Serial.print("\n\nRUNNING USER CODE\n");
+  prevMenuRun = M.isInMenu();
+
+  // If we are not running, check if there is a reason to start the menu
+  // otherwise just check for a menu timeout
   if (!M.isInMenu())
   {
     if (navigation(incDelta) == MD_Menu::NAV_SEL)
       M.runMenu(true);
   }
-  
-  M.runMenu();  // just run the menu
+  else
+    timerCheck();
+
+  // just run the menu if it needs to run
+  M.runMenu();
 }

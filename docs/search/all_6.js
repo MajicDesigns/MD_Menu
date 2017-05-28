@@ -1,9 +1,9 @@
 var searchData=
 [
-  ['id',['id',['../struct_m_d___menu_1_1mnu_input__t.html#a097028bb3781ea16f6d12b6e2237d309',1,'MD_Menu::mnuInput_t::id()'],['../struct_m_d___menu_1_1mnu_item__t.html#aab5d0c1caa64ca1c2cc28a9bc79755b3',1,'MD_Menu::mnuItem_t::id()'],['../struct_m_d___menu_1_1mnu_header__t.html#a578c3a5df5044b8bb5adff83dc57e24f',1,'MD_Menu::mnuHeader_t::id()']]],
-  ['iditmcurr',['idItmCurr',['../struct_m_d___menu_1_1mnu_header__t.html#a149e10f3cf3af711bf1128e2f5cb1a20',1,'MD_Menu::mnuHeader_t']]],
-  ['iditmend',['idItmEnd',['../struct_m_d___menu_1_1mnu_header__t.html#a39c0c39f0b6d3b6f60a3720915b63023',1,'MD_Menu::mnuHeader_t']]],
-  ['iditmstart',['idItmStart',['../struct_m_d___menu_1_1mnu_header__t.html#a21d4613e9cb6cf3330e747c3d1e183cb',1,'MD_Menu::mnuHeader_t']]],
+  ['id',['id',['../struct_m_d___menu_1_1mnu_input__t.html#a78781d2c0f75b66eb2d960043601df0d',1,'MD_Menu::mnuInput_t::id()'],['../struct_m_d___menu_1_1mnu_item__t.html#aba8ea4e255c2f1087a446e5f7fb8189d',1,'MD_Menu::mnuItem_t::id()'],['../struct_m_d___menu_1_1mnu_header__t.html#a1322091d399dcf505bf7297705e4148b',1,'MD_Menu::mnuHeader_t::id()']]],
+  ['iditmcurr',['idItmCurr',['../struct_m_d___menu_1_1mnu_header__t.html#ade79baa91fc9dfc1983eb73f1596e880',1,'MD_Menu::mnuHeader_t']]],
+  ['iditmend',['idItmEnd',['../struct_m_d___menu_1_1mnu_header__t.html#aa60efab8b216a30dd5dfa7c58fd9b838',1,'MD_Menu::mnuHeader_t']]],
+  ['iditmstart',['idItmStart',['../struct_m_d___menu_1_1mnu_header__t.html#aea40225d6bfba7a80ba261bad62bfc87',1,'MD_Menu::mnuHeader_t']]],
   ['idx',['idx',['../struct_m_d___menu_1_1mnu_input__t.html#afc936474f999c49655c41a3c80a7e7e1',1,'MD_Menu::mnuInput_t']]],
   ['inp_5fbool',['INP_BOOL',['../class_m_d___menu.html#a93d409024bd78bcc2264249e3644b8f7a90a32bd009a144fc929ace278676caba',1,'MD_Menu']]],
   ['inp_5fbool_5ff',['INP_BOOL_F',['../_m_d___menu__lib_8h.html#a990cbececf1c8d3df582b4ac531a16f8',1,'MD_Menu_lib.h']]],
@@ -12,6 +12,9 @@ var searchData=
   ['inp_5fint32',['INP_INT32',['../class_m_d___menu.html#a93d409024bd78bcc2264249e3644b8f7abc69018b3ad4ee9a5f59392db7e9cb78',1,'MD_Menu']]],
   ['inp_5fint8',['INP_INT8',['../class_m_d___menu.html#a93d409024bd78bcc2264249e3644b8f7a936209e854d993b8b18b0bdf19bcda1d',1,'MD_Menu']]],
   ['inp_5flist',['INP_LIST',['../class_m_d___menu.html#a93d409024bd78bcc2264249e3644b8f7a3f88409f2f23bb50eb92b7737f4cc855',1,'MD_Menu']]],
+  ['inp_5fnumeric_5foflow',['INP_NUMERIC_OFLOW',['../_m_d___menu__lib_8h.html#ab95c3570a5b635b2c61c4157cbc27dff',1,'MD_Menu_lib.h']]],
+  ['inp_5fpost_5fsize',['INP_POST_SIZE',['../_m_d___menu__lib_8h.html#a595a6ab5a53443036d11232898ef1068',1,'MD_Menu_lib.h']]],
+  ['inp_5fpre_5fsize',['INP_PRE_SIZE',['../_m_d___menu__lib_8h.html#ac4d67cb7944c405e97b02f203e954d25',1,'MD_Menu_lib.h']]],
   ['inp_5frun',['INP_RUN',['../class_m_d___menu.html#a93d409024bd78bcc2264249e3644b8f7aa4662943a599650bb2a0bfb1d60616a8',1,'MD_Menu']]],
   ['input_5flabel_5fsize',['INPUT_LABEL_SIZE',['../_m_d___menu_8h.html#a47d859241aa04ac44d2185c46bcdb765',1,'MD_Menu.h']]],
   ['inputaction_5ft',['inputAction_t',['../class_m_d___menu.html#a93d409024bd78bcc2264249e3644b8f7',1,'MD_Menu']]],

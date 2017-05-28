@@ -134,12 +134,14 @@ Public Types</h2></td></tr>
 <a class="el" href="class_m_d___menu.html#a4f24623203fc728b52c4195b1fe3df8ba929d892157dcdd050e24708ab926d359">MNU_INPUT</a>
  }</td></tr>
 <tr class="separator:a4f24623203fc728b52c4195b1fe3df8b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac55b69e28f81f0e1a98339c7c0cc4a15"><td class="memItemLeft" align="right" valign="top">typedef int8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_d___menu.html#ac55b69e28f81f0e1a98339c7c0cc4a15">mnuId_t</a></td></tr>
+<tr class="separator:ac55b69e28f81f0e1a98339c7c0cc4a15"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab94b8993f16d451b87d60242a4c12cb7"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="class_m_d___menu.html#a9d629fd365c2122e78de61663cc16ea1">userNavAction_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_d___menu.html#ab94b8993f16d451b87d60242a4c12cb7">cbUserNav</a>) (uint16_t &amp;incDelta)</td></tr>
 <tr class="separator:ab94b8993f16d451b87d60242a4c12cb7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab02e84a4c40fddbbc6d740b0d62df99c"><td class="memItemLeft" align="right" valign="top">typedef bool(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_d___menu.html#ab02e84a4c40fddbbc6d740b0d62df99c">cbUserDisplay</a>) (<a class="el" href="class_m_d___menu.html#af9b6cc8903ef7a0aabdd812f3a9d354a">userDisplayAction_t</a> action, char *msg)</td></tr>
 <tr class="separator:ab02e84a4c40fddbbc6d740b0d62df99c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a032c0bd02b959fe3a543c024ef52882c"><td class="memItemLeft" align="right" valign="top">typedef void *(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_d___menu.html#a032c0bd02b959fe3a543c024ef52882c">cbValueRequest</a>) (uint8_t id, uint8_t idx, bool bGet)</td></tr>
-<tr class="separator:a032c0bd02b959fe3a543c024ef52882c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad4abf26e74f96d8bc162ff1750d69d45"><td class="memItemLeft" align="right" valign="top">typedef void *(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_d___menu.html#ad4abf26e74f96d8bc162ff1750d69d45">cbValueRequest</a>) (<a class="el" href="class_m_d___menu.html#ac55b69e28f81f0e1a98339c7c0cc4a15">mnuId_t</a> id, uint8_t idx, bool bGet)</td></tr>
+<tr class="separator:ad4abf26e74f96d8bc162ff1750d69d45"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -202,19 +204,35 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a032c0bd02b959fe3a543c024ef52882c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a032c0bd02b959fe3a543c024ef52882c">&#9670;&nbsp;</a></span>cbValueRequest</h2>
+<a id="ad4abf26e74f96d8bc162ff1750d69d45"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad4abf26e74f96d8bc162ff1750d69d45">&#9670;&nbsp;</a></span>cbValueRequest</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">typedef void*(* MD_Menu::cbValueRequest) (uint8_t id, uint8_t idx, bool bGet)</td>
+          <td class="memname">typedef void*(* MD_Menu::cbValueRequest) (<a class="el" href="class_m_d___menu.html#ac55b69e28f81f0e1a98339c7c0cc4a15">mnuId_t</a> id, uint8_t idx, bool bGet)</td>
         </tr>
       </table>
 </div><div class="memdoc">
 <p>Data input/output function prototype</p>
 <p>This user function must handle the get/set of the inpout value currently being handled by the menu. When bGet is true, the function must return the pointer to the data identified by the ID and index </p>
+
+</div>
+</div>
+<a id="ac55b69e28f81f0e1a98339c7c0cc4a15"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac55b69e28f81f0e1a98339c7c0cc4a15">&#9670;&nbsp;</a></span>mnuId_t</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef int8_t <a class="el" href="class_m_d___menu.html#ac55b69e28f81f0e1a98339c7c0cc4a15">MD_Menu::mnuId_t</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Common Action Id type</p>
+<p>Record id numbers link the different parts of the menu together. typedef this to make it easier to change to a different type in future if required. Note that id -1 is used to indicate error or no id, so value must be signed. </p>
 
 </div>
 </div>
@@ -621,7 +639,7 @@ Public Member Functions</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="class_m_d___menu.html">MD_Menu</a></li>
-    <li class="footer">Generated on Sun May 28 2017 13:19:12 for MD_Menu Library by
+    <li class="footer">Generated on Mon May 29 2017 06:19:48 for MD_Menu Library by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

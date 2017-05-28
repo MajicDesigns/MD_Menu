@@ -7,7 +7,10 @@ Features of this menu library include:
 
 - Simplified menu definitions to allow minimised RAM footprint. Extensive use of PROGMEM for static structures.
 - Input and display devices controller through user code and callbacks from the library.
-- Input methods available for boolean (Y/N) values, list selection, integer numbers
+- Input methods available for 
+  + Boolean (Y/N) values
+  + List selection
+  + 8/16/32 bit signed integers
 
 - \subpage pageRevisionHistory
 - \subpage pageCopyright
@@ -63,6 +66,16 @@ public:
   /** \name Enumerated values and Typedefs.
   * @{
   */
+  /** 
+  * Common Action Id type
+  * 
+  * Record id numbers link the different parts of the menu together.
+  * typedef this to make it easier to change to a different type in
+  * future if required. Note that id -1 is used to indicate error or no
+  * id, so value must be signed.
+  */
+  typedef int8_t mnuId_t;
+
   /**
   * Return values for the user input handler
   *
@@ -139,7 +152,7 @@ public:
   * When bGet is true, the function must return the pointer to the
   * data identified by the ID and index
   */
-  typedef void*(*cbValueRequest)(uint8_t id, uint8_t idx, bool bGet);
+  typedef void*(*cbValueRequest)(mnuId_t id, uint8_t idx, bool bGet);
 
   /**
   * Input field defintion
@@ -150,13 +163,14 @@ public:
   */
   typedef struct mnuInput_t
   {
-    uint8_t id;            ///< Identifier for this item
+    mnuId_t id;            ///< Identifier for this item
     uint8_t idx;           ///< index for this value - id and idx make this value unique
     char    label[INPUT_LABEL_SIZE + 1]; ///< Label for this menu item
     inputAction_t action;  ///< Type of action required for this value
     cbValueRequest cbVR;   ///< Callback function to get/set the value
     uint8_t fieldWidth;    ///< Width of the displayed field betwene delimiters
     int32_t range[2];      ///< min/max values an integer
+    uint8_t base;          ///< number base for display (2 through 16)
     const char *pList;     ///< pointer to list string
   };
 
@@ -181,10 +195,10 @@ public:
   */
   typedef struct mnuItem_t
   {
-    uint8_t id;            ///< Identifier for this item
+    mnuId_t id;            ///< Identifier for this item
     char    label[ITEM_LABEL_SIZE + 1]; ///< Label for this menu item
     mnuAction_t action;    ///< Selecting this item does this action
-    uint8_t actionId;      ///< Next menu or input field Id
+    mnuId_t actionId;      ///< Next menu or input field Id
   };
 
   /**
@@ -196,11 +210,11 @@ public:
   */
   typedef struct mnuHeader_t
   {
-    uint8_t id;          ///< Identifier for this item
+    mnuId_t id;          ///< Identifier for this item
     char    label[HEADER_LABEL_SIZE + 1]; ///< Label for this menu item
-    uint8_t idItmStart;  ///< Start item number for menu
-    uint8_t idItmEnd;    ///< End item number for the menu
-    uint8_t idItmCurr;   ///< Current item being processed
+    mnuId_t idItmStart;  ///< Start item number for menu
+    mnuId_t idItmEnd;    ///< End item number for the menu
+    mnuId_t idItmCurr;   ///< Current item being processed
   };
 
   /** @} */
@@ -357,12 +371,14 @@ private:
   mnuItem_t _mnuBufItem;               ///< menu item buffer for load function
 
   // Private functions
-  void loadMenu(int16_t id = -1);      ///< find the menu header with the specified ID
-  mnuItem_t *loadItem(int16_t id);     ///< find the menu item with the specified ID
-  mnuInput_t *loadInput(int16_t id);   ///< find the input item with the specified ID
+  void loadMenu(mnuId_t id = -1);      ///< find the menu header with the specified ID
+  mnuItem_t *loadItem(mnuId_t id);     ///< find the menu item with the specified ID
+  mnuInput_t *loadInput(mnuId_t id);   ///< find the input item with the specified ID
   uint8_t listCount(PROGMEM char *p);  ///< count the items in a list selection string 
   char *listItem(PROGMEM char *p, uint8_t idx, char *buf, uint8_t bufLen);  ///< extract the idx'th item from the list selection string
-
+  void MD_Menu::strPreamble(char *psz, mnuInput_t *mInp);  ///< format a preamble to the a variable display
+  void MD_Menu::strPostamble(char *psz, mnuInput_t *mInp); ///< attach a postamble to a variable display
+  
   void handleMenu(bool bNew = false);  ///< handling display menu seitems and navigation
   void handleInput(bool bNew = false); ///< handling user input to edit values
 
