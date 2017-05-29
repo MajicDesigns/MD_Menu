@@ -1,6 +1,7 @@
 var NAVTREE =
 [
   [ "MD_Menu Library", "index.html", [
+    [ "Menu System Concepts", "page_menu.html", null ],
     [ "Revision History", "page_revision_history.html", null ],
     [ "Copyright", "page_copyright.html", null ],
     [ "Classes", "annotated.html", [

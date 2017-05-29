@@ -1,19 +1,137 @@
 #pragma once
 /**
 \mainpage MD_Menu Library
-This library implements menus for display devices with up to 2 display lines. 
+Yet Another Menu Manager for Small Displays
+------------------------------
 
-Features of this menu library include:
+This is a menu management library. The library allows user code to define
+- Static menu definitions to minimised RAM footprint. 
+- Callbacks for navigation and display control
+- Input methods available for
++ Boolean (Y/N) values
++ Pick List selection
++ 8/16/32 bit signed integers
 
-- Simplified menu definitions to allow minimised RAM footprint. Extensive use of PROGMEM for static structures.
-- Input and display devices controller through user code and callbacks from the library.
-- Input methods available for 
-  + Boolean (Y/N) values
-  + List selection
-  + 8/16/32 bit signed integers
+Menu managers in embedded systems are generally not the main function of the embedded
+application software, so they need to minimise the use of RAM and have a small memory
+footprint overall, leaving more space for what really matters.
 
+This library implements character display menu management services for the Arduino.
+The library was created as a front end to set parameters in embedded hardware control 
+applications, laeving the back end under application control. It is suitable for text 
+based displays (eg, LCD modules) and with 1 or 2 lines available for display.
+
+- \subpage pageMenu
 - \subpage pageRevisionHistory
 - \subpage pageCopyright
+
+Using the Library
+-----------------
+The MD_Menu library allows definition and navigation of a menu system by moving 
+between the menu nodes. At a leaf node, MD_Menu can either manage editing values 
+or call user code.
+
+Menu structures are defined in PROGMEM memory. They are linked into tree structures 
+relationships using the IDs of other menu nodes nodes or leaf nodes. Leaf nodes 
+are always associated with a user variable.
+
+Extensive use is made of callbacks to user code to manage user input, display
+output and getting/setting values for variables.
+
+## User Input for Menu Navigation
+
+Menu navigation is carried out under the control of user code invoked as
+a callback routine. The code must comply with the *cbUserNav* function 
+prototype. This callback routine implementation is dependent on the type 
+of input hardware, but the return codes for the required actions must 
+be one of the standardised *userNavAction_t* enumerated type.
+
+Navigation is carried out with 4 keys:
+- **INCREMENT** (NAV_INC). Move down a menu, move to the next value 
+in a pick list or increment a numeric value being edited.
+- **DECREMENT** (NAV_DEC). Move up a menu, move to the previous value 
+in a pick list or decrement a numeric value being edited.
+- **SELECT** (NAV_SEL). Select the current menu or pick list item, or 
+confirm an edited numeric value.
+- **ESCAPE** (NAV_ESC). Escape the current menu (back up one level) or
+cancel changes to an edited value.
+
+A variety of input hardware setups are demonstrated in the Test 
+example code provided.
+
+## Menu Display
+
+Menu display is enabled by user code as a callback routine from the 
+library. The callback must comply with the *cbUserDisplay* function 
+prototype.
+
+The callback is provided with a request of type *userDisplayAction_t* and 
+a message to display.
+
+Display hardware must be able to display one or two lines for the menu 
+display. All menu screens are structured with the first line as title 
+and the second as the current menu selection or currently edited value, 
+as appropriate. If the display can only support one line, the first line 
+is discarded and only the second line displayed.
+
+A variety of display hardware setups are demonstrated in the Test 
+example code provided.
+
+## Memory Footprint
+
+The limited amount of RAM available in micro controllers is a challenge for
+menu systems, as they often contain large amounts of 'static' data as text 
+labels and other status information.
+
+The MD_Menu library uses statically allocated data located in PROGMEM for 
+the menu system and only copies the current menu record into RAM. All user 
+values reside in user code and are not duplicated in the library.
+
+## Menu Management
+
+![Data Structure Map] (Data_Structures.jpg "Data Structure Map")
+
+As shown in the figure above, the library uses three types of objects, each
+identified with a unique id within the object type. A menu header (of 
+type *mnuHeader_t*) defines a menu. The header contains a label for the title and
+the range of menu items (of type *mnuItem_t*) that should be displayed for 
+the menu. Menu item ids between the start and end id locations include 
+all the ids in locations in between, even if they are out of number sequence.
+
+A menu item may lead to another menu (if it is a node in the menu tree) or an
+input item (of type *mnuInput_t*) if it is a leaf of the menu system. The depth
+of the menu tree is restricted by the defined MENU_STACK_SIZE constant. When
+this limit is exceeded, the library will just ignore requests that cause
+additinal menu depth but continues to run.
+
+Menu input items define the type of value that is to be edited by the user and
+parameters associated with managing the input for that value. Before the value
+is edited a callback following the *cbValueRequest* prototype is called to 'get'
+the pointer to the variable with the current value. The input item id and
+index value are provided to identify which value is being requested. A copy of
+the user variable is used for editing and a second *cbValueRequest* (conceptually 
+a 'set') is invoked after the value is updated, enabling the user code to take 
+action on the change. If the variable edit is cancelled, the second 
+*cbValueRequest* 'set' call does not occur.
+
+Variables may be of the following types:
+- **Pick List** specifies a PROGMEM character string with list items separated
+by the '|' character (defined as INPUT_SEPARATOR), for example "Apple|Orange|Pear".
+The list is specified as the pList parameter and the get/set value callback expects
+a pointer to a uint8_t value that is the index of the current selection (zero based).
+- **Boolean** for Input of boolean (Y/N) values. As the user makes changes, the
+value changes between displays of 'Y' and 'N' (defined as INP_BOOL_T and INP_BOOL_F).
+The get/set callback expects a pointer to bool type.
+- **Integer** values can be specified as 8, 16 or 32 bits in size, with the get/set
+callback expecting pointers to int8_t, int16_t and int32_t (note all signed values).
+The input specification also allows a lower and upper bound to be set, as well as the
+number's base (2 through 16) to be specified. Numeric values that overflow the
+specified field with are prefixed by the '#' character (defined as INP_NUMERIC_OVERFLOW)
+to indicate that this has occurred.
+- **Run Code** specifies input fields that are designed to execute a user function
+when selected. As there is no value to 'get' the get/set callback is only called when the
+input is confirmed. User code can then be executed as part of the 'set' invocation.
+
 
 \page pageCopyright Copyright
 Copyright
@@ -37,7 +155,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 \page pageRevisionHistory Revision History
 Revision History
 ----------------
-xxx 2017 version 1.0
+Jun 2017 version 1.0.0
 - First implementation
 */
 #include <Arduino.h>
@@ -114,7 +232,7 @@ public:
   */
   enum userDisplayAction_t
   {
-    DISP_CLEAR, ///< Clear the display
+    DISP_CLEAR, ///< Clear the display. Message parameter is not defined
     DISP_L0,    ///< Display the data provided in line 0 (first line). For single line displays, this should be ignored.
     DISP_L1,    ///< Display the data provided in line 1 (second line). This must always be implemented.
   };

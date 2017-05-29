@@ -2,8 +2,8 @@
 //
 // See the main header file MD_Menu.h for more information
 
-#include <MD_Menu_lib.h>
 #include <MD_Menu.h>
+#include <MD_Menu_lib.h>
 
 /**
  * \file
@@ -47,7 +47,7 @@ void MD_Menu::loadMenu(mnuId_t id)
 }
 
 MD_Menu::mnuItem_t* MD_Menu::loadItem(mnuId_t id)
-// Find a copy the input item to the private class accessible buffer
+// Find a copy the input item to the class private buffer
 {
   for (uint8_t i = 0; i < _mnuItmCount; i++)
   {
@@ -60,7 +60,7 @@ MD_Menu::mnuItem_t* MD_Menu::loadItem(mnuId_t id)
 }
 
 MD_Menu::mnuInput_t* MD_Menu::loadInput(mnuId_t id)
-// Find a copy the input item to the private class accessible buffer
+// Find a copy the input item to the class private buffer
 {
   for (uint8_t i = 0; i < _mnuItmCount; i++)
   {
@@ -76,42 +76,61 @@ uint8_t MD_Menu::listCount(PROGMEM char *p)
 // Return a count of the items in the list
 {
   uint8_t count = 0;
+  char c;
 
   if (p != nullptr)
   {
-    uint8_t len;
-
-    do
+    if (pgm_read_byte(p) != '\0')   // not empty list
     {
-      len = strlen_P(p);
-      p += len + 1;
-      if (len != 0) count++;
-    } while (len != 0);
+      do
+      {
+        c = pgm_read_byte(p++);
+        if (c == LIST_SEPARATOR) count++;
+      } while (c != '\0');
+
+      // if the list is not empty, then the last element is 
+      // terminated by '\0' and we have not counted it, so 
+      // add it now
+      count++;
+    }
   }
 
   return(count);
 }
 
 char *MD_Menu::listItem(PROGMEM char *p, uint8_t idx, char *buf, uint8_t bufLen)
-// Find the idx'th item in the list and return in fised width, padded
+// Find the idx'th item in the list and return in fixed width, padded
 // with trailing spaces. 
 {
-  // fill the buffer with '\0' so we know that string will be 
-  // terminted within this buffer
+  // fill the buffer with '\0' so we know that string will
+  // always be terminted within this buffer
   memset(buf, '\0', bufLen);
 
   if (p != nullptr)
   {
     char *psz;
+    char c;
 
-    for (uint8_t i = 0; i < idx; i++)
-      p += strlen_P(p) + 1;
+    // skip items before the one we want
+    while (idx > 0)
+    {
+      do
+        c = pgm_read_byte(p++);
+      while (c != '\0' && c != LIST_SEPARATOR);
+      idx--;
+    }
 
-    strncpy_P(buf, p, bufLen - 1);
+    // copy the next item over
+    psz = buf;
+    for (uint8_t i = 0; i < bufLen - 1; psz++, i++)
+    {
+      *psz = pgm_read_byte(p++);
+      if (*psz == LIST_SEPARATOR) *psz = '\0';
+      if (*psz == '\0') break;
+    }
 
     // Pad out any short string with trailing spaces
     // The trailing buffer is already filled with '\0'
-    psz = buf + strlen(buf);
     while (strlen(buf) < bufLen - 1)
       *psz++ = ' ';
   }
@@ -144,7 +163,9 @@ bool MD_Menu::processList(userNavAction_t nav, mnuInput_t *mInp)
   {
   case NAV_NULL:    // this is to initialise the CB_DISP
   {
-    if (listCount(mInp->pList) == 0)
+    uint8_t size = listCount(mInp->pList);
+
+    if (size == 0)
     {
       MD_PRINTS("\nEmpty list selection!");
       endFlag = true;
@@ -161,6 +182,8 @@ bool MD_Menu::processList(userNavAction_t nav, mnuInput_t *mInp)
       else
       {
         _iValue = *((uint8_t*)_pValue);
+        if (_iValue >= size - 1)   // index set incorrectly
+          _iValue = 0;
         update = true;
       }
     }

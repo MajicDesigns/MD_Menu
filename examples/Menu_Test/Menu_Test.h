@@ -1,4 +1,5 @@
 #pragma once
+
 #include <MD_Menu.h>
 
 // Select the User Input/Output hardware components that will be used
@@ -13,6 +14,8 @@
 #define BAUD_RATE    57600 // Serial Monitor speed setting 
 #define MENU_TIMEOUT 10000 // in milliseconds
 
+#define LED_PIN 13  // for myLEDCode function
+
 // Function prototypes for Navigation/Display
 void setupDisp(void);
 void setupNav(void);
@@ -20,10 +23,12 @@ bool display(MD_Menu::userDisplayAction_t, char*);
 MD_Menu::userNavAction_t navigation(uint16_t &incDelta);
 
 // Function prototypes for variable get/set functions
-void *mnuLValueRqst(uint8_t id, MD_Menu::mnuId_t idx, bool bGet);
-void *mnuBValueRqst(uint8_t id, MD_Menu::mnuId_t idx, bool bGet);
-void *mnuIValueRqst(uint8_t id, MD_Menu::mnuId_t idx, bool bGet);
-void *myCode(uint8_t id, uint8_t idx, bool bGet);
+void *mnuLValueRqst(MD_Menu::mnuId_t id, uint8_t idx, bool bGet);
+void *mnuBValueRqst(MD_Menu::mnuId_t id, uint8_t idx, bool bGet);
+void *mnuIValueRqst(MD_Menu::mnuId_t id, uint8_t idx, bool bGet);
+void *mnuSerialValueRqst(MD_Menu::mnuId_t id, uint8_t idx, bool bGet);
+void *myCode(MD_Menu::mnuId_t id, uint8_t idx, bool bGet);
+void *myLEDCode(MD_Menu::mnuId_t id, uint8_t idx, bool bGet);
 
 // Menu timeout functions prototypes
 void timerStart(void);

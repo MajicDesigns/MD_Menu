@@ -12,6 +12,7 @@ var _m_d___menu__lib_8h =
     [ "INP_BOOL_F", "_m_d___menu__lib_8h.html#a990cbececf1c8d3df582b4ac531a16f8", null ],
     [ "INP_BOOL_T", "_m_d___menu__lib_8h.html#a5b966187a31766bd05d26a1a95a9a90c", null ],
     [ "INP_NUMERIC_OFLOW", "_m_d___menu__lib_8h.html#ab95c3570a5b635b2c61c4157cbc27dff", null ],
+    [ "LIST_SEPARATOR", "_m_d___menu__lib_8h.html#a7aa2eb26cd136a59f9898500e673db40", null ],
     [ "MNU_DELIM_L", "_m_d___menu__lib_8h.html#a2e32ebf768eeffc897eeaf9897f4403c", null ],
     [ "MNU_DELIM_R", "_m_d___menu__lib_8h.html#a0c6a9a216f76df4379589656ad6e46fb", null ]
 ];

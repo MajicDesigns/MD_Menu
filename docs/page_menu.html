@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>MD_Menu Library: Class List</title>
+<title>MD_Menu Library: Menu System Concepts</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -64,7 +64,7 @@ $(function() {
   </div>
 </div>
 <script type="text/javascript">
-$(document).ready(function(){initNavTree('annotated.html','');});
+$(document).ready(function(){initNavTree('page_menu.html','');});
 </script>
 <div id="doc-content">
 <!-- window showing the filter options -->
@@ -83,22 +83,35 @@ $(document).ready(function(){initNavTree('annotated.html','');});
 
 <div class="header">
   <div class="headertitle">
-<div class="title">Class List</div>  </div>
+<div class="title">Menu System Concepts </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock">Here are the classes, structs, unions and interfaces with brief descriptions:</div><div class="directory">
-<div class="levels">[detail level <span onclick="javascript:toggleLevel(1);">1</span><span onclick="javascript:toggleLevel(2);">2</span>]</div><table class="directory">
-<tr id="row_0_" class="even"><td class="entry"><span style="width:0px;display:inline-block;">&#160;</span><span id="arr_0_" class="arrow" onclick="toggleFolder('0_')">&#9660;</span><span class="icona"><span class="icon">C</span></span><a class="el" href="class_m_d___menu.html" target="_self">MD_Menu</a></td><td class="desc"></td></tr>
-<tr id="row_0_0_"><td class="entry"><span style="width:32px;display:inline-block;">&#160;</span><span class="icona"><span class="icon">C</span></span><a class="el" href="struct_m_d___menu_1_1mnu_header__t.html" target="_self">mnuHeader_t</a></td><td class="desc"></td></tr>
-<tr id="row_0_1_" class="even"><td class="entry"><span style="width:32px;display:inline-block;">&#160;</span><span class="icona"><span class="icon">C</span></span><a class="el" href="struct_m_d___menu_1_1mnu_input__t.html" target="_self">mnuInput_t</a></td><td class="desc"></td></tr>
-<tr id="row_0_2_"><td class="entry"><span style="width:32px;display:inline-block;">&#160;</span><span class="icona"><span class="icon">C</span></span><a class="el" href="struct_m_d___menu_1_1mnu_item__t.html" target="_self">mnuItem_t</a></td><td class="desc"></td></tr>
-</table>
-</div><!-- directory -->
-</div><!-- contents -->
+<div class="textblock"><h1>Menu Systems </h1>
+<p>A menu is a list of options from which the user makes a selection. Each option is a brief description for a selection (menu label) that can lead to a sub-menu or a specific action being performed.</p>
+<p>The tree data structure is one of the most obvious structures used to represent menus. In trees information naturally forms a hierarchy - menu entries are naturally ordered <em>above</em> or <em>below</em> other entries. The tree data structure is a very efficient way to represent this type of information. Although a tree has built-in hierarchical structure, it can be stored as arrays of data.</p>
+<h2>Tree Structure Primer </h2>
+<p>This structure is named a <em>tree structure</em> because the classic representation resembles a tree, even though the chart is generally upside down compared to an actual tree, with the <em>root</em> at the top and the <em>leaves</em> at the bottom. The tree elements are called <em>nodes</em>. The lines connecting nodes are called <em>branches</em>. Nodes with no sub-nodes are called leaf nodes, end nodes, terminal nodes or leaves.</p>
+<div class="image">
+<img src="Tree_Structure.png" alt="Tree_Structure.png"/>
+<div class="caption">
+A Tree Structure</div></div>
+<p> A tree is a special kind of graph that follows a particular set of rules and definitions:</p><ul>
+<li><b>Connected</b> - A graph can be a tree if it is connected. Each node is connected with a link to at least one other node.</li>
+<li><b>Acyclic</b> - A graph can be a tree if is acyclic (ie, it has no cycles or loops in it). That means there's only one route from any node to any other node. This also means that a node may have many children but only one parent.</li>
+<li><b>Root</b> - The term root commonly refers to a top-most node (ie, the one with no parent). In the figure above, node F is the root of the tree. The root is the starting for traversing any tree structure.</li>
+<li><b>Descendant</b> - A descendant is a node that is farther away from the root than some other node. The term descendant is always referenced from another node. In the example, nodes I and H are descendants of node G.</li>
+<li><b>Parent</b> - Parent is considered the node that is closer to the root node by one link or vertex, in the same branch. In the figure, node B is the parent of nodes A and D. The ultimate parent in a tree is the root node.</li>
+<li><b>Sibling</b> - Sibling (brother or sister) nodes share the same parent. In the example, nodes A and D are siblings.</li>
+<li><b>Ancestor</b> - An ancestor is any node between a given node and the root, including the root. In the figure, the ancestors of node H are nodes I, G, and F.</li>
+<li><b>Leaf</b> or <b>Terminal Node</b> - A node is terminal if it has no children. In the example, node C is a leaf.</li>
+<li><b>Height</b> or <b>Depth</b> - The height of a tree is defined as the number of vertices traversed to get to the most distant node. In the figure, the height of the tree is equal to three. </li>
+</ul>
+</div></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
+    <li class="navelem"><a class="el" href="index.html">MD_Menu Library</a></li>
     <li class="footer">Generated on Mon May 29 2017 15:09:24 for MD_Menu Library by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>

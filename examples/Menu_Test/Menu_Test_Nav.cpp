@@ -1,6 +1,6 @@
 #include "Menu_Test.h"
 
-// For the specific User navigation hardware, define
+// Routines for specific user navigation hardware, defining
 // - Appropriate header files
 // - Hardware definitions
 // - Global library objects

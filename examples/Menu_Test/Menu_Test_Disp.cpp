@@ -1,6 +1,6 @@
 #include "Menu_Test.h"
 
-// For the specific Display hardware, define
+// Routines for specific display hardware, defining
 // - Appropriate header files
 // - Hardware definitions
 // - Global library objects
