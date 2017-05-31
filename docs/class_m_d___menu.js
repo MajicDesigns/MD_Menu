@@ -38,6 +38,7 @@ var class_m_d___menu =
     [ "isInMenu", "class_m_d___menu.html#afee0793b1f82a3ee6b0f4b1ed7219e24", null ],
     [ "reset", "class_m_d___menu.html#ac72722eb1f4baea9f33d487b9f94851a", null ],
     [ "runMenu", "class_m_d___menu.html#a65ed4ba715a5eabb064d7233a9290d17", null ],
+    [ "setAutoStart", "class_m_d___menu.html#a3dd4c110f8fe96280e4e9506dd99c127", null ],
     [ "setMenuWrap", "class_m_d___menu.html#af85742535fada101a59389d9c6cca3bf", null ],
     [ "setUserDisplayCallback", "class_m_d___menu.html#a229b99570af87f23db3f7e92737d7780", null ],
     [ "setUserNavCallback", "class_m_d___menu.html#af084153a169cb08f6066eff7b72243f6", null ]

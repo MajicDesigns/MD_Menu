@@ -115,6 +115,10 @@ Macros</h2></td></tr>
 #define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_m_d___menu__lib_8h.html#a983c87e4a68e36a9c84c217ec762e2b9">MD_PRINT</a>(s,  v)</td></tr>
 <tr class="memdesc:a983c87e4a68e36a9c84c217ec762e2b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Library debugging output macro. <br /></td></tr>
 <tr class="separator:a983c87e4a68e36a9c84c217ec762e2b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af66ec14dbcb7c4aa3155d74d9313b28c"><td class="memItemLeft" align="right" valign="top"><a id="af66ec14dbcb7c4aa3155d74d9313b28c"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_m_d___menu__lib_8h.html#af66ec14dbcb7c4aa3155d74d9313b28c">MD_PRINTX</a>(s,  v)</td></tr>
+<tr class="memdesc:af66ec14dbcb7c4aa3155d74d9313b28c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Library debugging output macro. <br /></td></tr>
+<tr class="separator:af66ec14dbcb7c4aa3155d74d9313b28c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac4d67cb7944c405e97b02f203e954d25"><td class="memItemLeft" align="right" valign="top"><a id="ac4d67cb7944c405e97b02f203e954d25"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_m_d___menu__lib_8h.html#ac4d67cb7944c405e97b02f203e954d25">INP_PRE_SIZE</a>(mi)&#160;&#160;&#160;(strlen(mi-&gt;label) + strlen(<a class="el" href="_m_d___menu__lib_8h.html#aee974fc100bbb9e0ffb69f1ff3e349f2">FLD_PROMPT</a>) + strlen(<a class="el" href="_m_d___menu__lib_8h.html#a4bc4cd1d83ddb399316b41391305afb5">FLD_DELIM_L</a>))</td></tr>
 <tr class="memdesc:ac4d67cb7944c405e97b02f203e954d25"><td class="mdescLeft">&#160;</td><td class="mdescRight">Size of text pre variable display. <br /></td></tr>
@@ -123,16 +127,40 @@ Macros</h2></td></tr>
 #define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_m_d___menu__lib_8h.html#a595a6ab5a53443036d11232898ef1068">INP_POST_SIZE</a>(mi)&#160;&#160;&#160;(strlen(<a class="el" href="_m_d___menu__lib_8h.html#a31c37de9875696c4a6b42c2285b864d1">FLD_DELIM_R</a>))</td></tr>
 <tr class="memdesc:a595a6ab5a53443036d11232898ef1068"><td class="mdescLeft">&#160;</td><td class="mdescRight">Size of text after variable display. <br /></td></tr>
 <tr class="separator:a595a6ab5a53443036d11232898ef1068"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a759dfc0f860ad7df930759b704765d06"><td class="memItemLeft" align="right" valign="top"><a id="a759dfc0f860ad7df930759b704765d06"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_m_d___menu__lib_8h.html#a759dfc0f860ad7df930759b704765d06">CB_DISP</a>(l,  m)&#160;&#160;&#160;if (_cbDisp != nullptr) _cbDisp(l, m);</td></tr>
-<tr class="memdesc:a759dfc0f860ad7df930759b704765d06"><td class="mdescLeft">&#160;</td><td class="mdescRight">Display only if dispay callback available. <br /></td></tr>
-<tr class="separator:a759dfc0f860ad7df930759b704765d06"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a83b5b7cc41c6290c3c2ae4824ac66cb7"><td class="memItemLeft" align="right" valign="top"><a id="a83b5b7cc41c6290c3c2ae4824ac66cb7"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_m_d___menu__lib_8h.html#a83b5b7cc41c6290c3c2ae4824ac66cb7">SET_FLAG</a>(f)&#160;&#160;&#160;{ _options |= (1&lt;&lt;f);  <a class="el" href="_m_d___menu__lib_8h.html#af66ec14dbcb7c4aa3155d74d9313b28c">MD_PRINTX</a>(&quot;\nSet Flag &quot;,_options); }</td></tr>
+<tr class="memdesc:a83b5b7cc41c6290c3c2ae4824ac66cb7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set a flag. <br /></td></tr>
+<tr class="separator:a83b5b7cc41c6290c3c2ae4824ac66cb7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa1251a01641912dd61bf00bd01d58e46"><td class="memItemLeft" align="right" valign="top"><a id="aa1251a01641912dd61bf00bd01d58e46"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_m_d___menu__lib_8h.html#aa1251a01641912dd61bf00bd01d58e46">CLEAR_FLAG</a>(f)&#160;&#160;&#160;{ _options &amp;= ~(1&lt;&lt;f); <a class="el" href="_m_d___menu__lib_8h.html#af66ec14dbcb7c4aa3155d74d9313b28c">MD_PRINTX</a>(&quot;\nClr Flag &quot;, _options); }</td></tr>
+<tr class="memdesc:aa1251a01641912dd61bf00bd01d58e46"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reset a flag. <br /></td></tr>
+<tr class="separator:aa1251a01641912dd61bf00bd01d58e46"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa11f4e7b58e25e934fcde64083726b81"><td class="memItemLeft" align="right" valign="top"><a id="aa11f4e7b58e25e934fcde64083726b81"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_m_d___menu__lib_8h.html#aa11f4e7b58e25e934fcde64083726b81">TEST_FLAG</a>(f)&#160;&#160;&#160;((_options&gt;&gt;f) &amp; 1)</td></tr>
+<tr class="memdesc:aa11f4e7b58e25e934fcde64083726b81"><td class="mdescLeft">&#160;</td><td class="mdescRight">Test a flag. <br /></td></tr>
+<tr class="separator:aa11f4e7b58e25e934fcde64083726b81"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af4559b6924a56d373e8d40d065e4647c"><td class="memItemLeft" align="right" valign="top"><a id="af4559b6924a56d373e8d40d065e4647c"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_m_d___menu__lib_8h.html#af4559b6924a56d373e8d40d065e4647c">F_INMENU</a>&#160;&#160;&#160;0</td></tr>
+<tr class="memdesc:af4559b6924a56d373e8d40d065e4647c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flag currently running a menu. <br /></td></tr>
+<tr class="separator:af4559b6924a56d373e8d40d065e4647c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeac696ccef5dd6a16f2297bb4ebd17e2"><td class="memItemLeft" align="right" valign="top"><a id="aeac696ccef5dd6a16f2297bb4ebd17e2"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_m_d___menu__lib_8h.html#aeac696ccef5dd6a16f2297bb4ebd17e2">F_INEDIT</a>&#160;&#160;&#160;1</td></tr>
+<tr class="memdesc:aeac696ccef5dd6a16f2297bb4ebd17e2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flag currently editing a value. <br /></td></tr>
+<tr class="separator:aeac696ccef5dd6a16f2297bb4ebd17e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a07892b685b5520406acdd1e081e1dd6f"><td class="memItemLeft" align="right" valign="top"><a id="a07892b685b5520406acdd1e081e1dd6f"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_m_d___menu__lib_8h.html#a07892b685b5520406acdd1e081e1dd6f">F_MENUWRAP</a>&#160;&#160;&#160;2</td></tr>
+<tr class="memdesc:a07892b685b5520406acdd1e081e1dd6f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flag to wrap around ends of menu and list selections. <br /></td></tr>
+<tr class="separator:a07892b685b5520406acdd1e081e1dd6f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab6dd0d655b7415ec0e54efb2c1fe3486"><td class="memItemLeft" align="right" valign="top"><a id="ab6dd0d655b7415ec0e54efb2c1fe3486"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_m_d___menu__lib_8h.html#ab6dd0d655b7415ec0e54efb2c1fe3486">F_AUTOSTART</a>&#160;&#160;&#160;3</td></tr>
+<tr class="memdesc:ab6dd0d655b7415ec0e54efb2c1fe3486"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flag auto start the menu system opn SEL. <br /></td></tr>
+<tr class="separator:ab6dd0d655b7415ec0e54efb2c1fe3486"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
 <tr class="memitem:aee974fc100bbb9e0ffb69f1ff3e349f2"><td class="memItemLeft" align="right" valign="top"><a id="aee974fc100bbb9e0ffb69f1ff3e349f2"></a>
 const char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_m_d___menu__lib_8h.html#aee974fc100bbb9e0ffb69f1ff3e349f2">FLD_PROMPT</a> [] = &quot;:&quot;</td></tr>
-<tr class="memdesc:aee974fc100bbb9e0ffb69f1ff3e349f2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prompt separateor between input field label and left delimiter. <br /></td></tr>
+<tr class="memdesc:aee974fc100bbb9e0ffb69f1ff3e349f2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prompt separator between input field label and left delimiter. <br /></td></tr>
 <tr class="separator:aee974fc100bbb9e0ffb69f1ff3e349f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4bc4cd1d83ddb399316b41391305afb5"><td class="memItemLeft" align="right" valign="top"><a id="a4bc4cd1d83ddb399316b41391305afb5"></a>
 const char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_m_d___menu__lib_8h.html#a4bc4cd1d83ddb399316b41391305afb5">FLD_DELIM_L</a> [] = &quot;[&quot;</td></tr>
@@ -175,7 +203,7 @@ const char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="_m_d___menu__lib_8h.html">MD_Menu_lib.h</a></li>
-    <li class="footer">Generated on Mon May 29 2017 15:09:24 for MD_Menu Library by
+    <li class="footer">Generated on Thu Jun 1 2017 08:25:01 for MD_Menu Library by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

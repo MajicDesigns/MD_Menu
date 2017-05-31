@@ -155,7 +155,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 \page pageRevisionHistory Revision History
 Revision History
 ----------------
-Jun 2017 version 1.0.0
+Jun 2017 version 1.0.1
+- Added Auto Start option
+- Internal flags now a bit field
+
+May 2017 version 1.0.0
 - First implementation
 */
 #include <Arduino.h>
@@ -387,8 +391,10 @@ public:
    *
    * This should be called each time through the loop() function.
    * The optional parameter should be set to true when the menu display needs
-   * to start (or restart) and false (or omitted) for normal running.
-   * The function will coordinate the user callbacks to obtain input and
+   * to start (or restart) and false (or omitted) for normal running. This 
+   * allows the user code to trigger the menu starting unless the setAutoStart()
+   * option is set to start the menu automatically.
+   * When running, the menu code coordinates user callbacks to obtain input and
    * display the menu, as needed.
    *
    * \param bStart Set to true is the menu needs to be started; defaults to false if not specified
@@ -403,7 +409,7 @@ public:
   *
   * \return true if running menu, false otherwise
   */
-  bool isInMenu(void) { return(_inMenu); };
+  bool isInMenu(void);
 
   /**
   * Check if library is editing a field.
@@ -412,7 +418,7 @@ public:
   *
   * \return true if editing field, false otherwise
   */
-  bool isInEdit(void) { return(_inEdit); };
+  bool isInEdit(void);
 
   /** @} */
   //--------------------------------------------------------------
@@ -420,44 +426,55 @@ public:
   * @{
   */
   /**
-  * Reste the menu.
+  * Reset the menu.
   *
   * Change the current menu state to be not running and reset all menu
   * conditions to start state.
   */
-  void reset(void) { _inMenu = _inEdit = false; _currMenu = 0; };
+  void reset(void);
 
   /**
   * Set the menu wrap option.
   *
   * Set the menu wrap option on or off. When set on, reaching the end 
-  * of the menu will arap around to the start of the menu. Simialrly, 
+  * of the menu will wrap around to the start of the menu. Simialrly, 
   * reaching the end will restart from the beginning.
   * Default is set to no wrap.
   *
   * \param bSet true to set the option, false to un-set the option (default)
   */
-  void setMenuWrap(bool bSet) { _wrapMenu = bSet; };
+  void setMenuWrap(bool bSet);
+
+  /**
+  * Set the menu auto start option.
+  *
+  * Set the menu to start automatically in response to the SEL navigation selection.
+  * When set on, pressing SEL when the menu is not running will start the menu display.
+  * If the option is not set, the starting trigger needs to be monitored by the user 
+  * code and the menu started by caling runMenu().
+  * Default is not to auto start.
+  *
+  * \param bSet true to set the option, false to un-set the option (default)
+  */
+  void setAutoStart(bool bSet);
 
   /**
   * Set the user navigation callback function.
   *
   * Replace the current callback function with the new function.
-  * Set to NULL to disable the functionality (not recommended)
   *
   * \param cbNav the callback function pointer.
   */
-  void setUserNavCallback(cbUserNav cbNav) { if (cbNav != nullptr) _cbNav = cbNav; };
+  void setUserNavCallback(cbUserNav cbNav);
 
   /**
   * Set the user display callback function.
   *
   * Replace the current callback function with the new function.
-  * Set to NULL to disable the functionality (not recommended)
   *
   * \param cbDisp the callback function pointer.
   */
-  void setUserDisplayCallback(cbUserDisplay cbDisp) { if (cbDisp != nullptr) _cbDisp = cbDisp; };
+  void setUserDisplayCallback(cbUserDisplay cbDisp);
 
   /** @} */
 private:
@@ -472,28 +489,26 @@ private:
   mnuInput_t *_mnuInp;    ///< Input item table
   uint8_t _mnuInpCount;   ///< Number of items in the input table
 
-  // Status valuesand global flags
-  bool _inMenu;           ///< Flag is true if the library is currently running a menu
-  bool _inEdit;           ///< Flag is true if library is currently editing a value
-  bool _wrapMenu;         ///< Flag is true to wrap around ends of menu and list selections
+  // Status values and global flags
+  uint8_t _options;       ///< bit field for options and flags
 
   // Input editing buffers and tracking
-  void *_pValue;          ///< Pointer to the user value being edited
-  bool  _bValue;          ///< Copy of boolean value being edited
-  int32_t _iValue;        ///< Copy of the integer/list index value being edited
+  void    *_pValue;  ///< Pointer to the user value being edited
+  bool    _bValue;   ///< Copy of boolean value being edited
+  int32_t _iValue;   ///< Copy of the integer/list index value being edited
 
   // static buffers for find functions, keep accessible copies of data in PROGMEM
-  uint8_t _currMenu;                   ///< Index of current menu displayed in the stack
-  mnuHeader_t _mnuStack[MNU_STACK_SIZE];  ///< Stacked trail of menus being executed
-  mnuInput_t _mnuBufInput;             ///< menu input buffer for load function
-  mnuItem_t _mnuBufItem;               ///< menu item buffer for load function
+  uint8_t     _currMenu;                ///< Index of current menu displayed in the stack
+  mnuHeader_t _mnuStack[MNU_STACK_SIZE];///< Stacked trail of menus being executed
+  mnuInput_t  _mnuBufInput;             ///< menu input buffer for load function
+  mnuItem_t   _mnuBufItem;              ///< menu item buffer for load function
 
   // Private functions
-  void loadMenu(mnuId_t id = -1);      ///< find the menu header with the specified ID
-  mnuItem_t *loadItem(mnuId_t id);     ///< find the menu item with the specified ID
-  mnuInput_t *loadInput(mnuId_t id);   ///< find the input item with the specified ID
-  uint8_t listCount(PROGMEM char *p);  ///< count the items in a list selection string 
-  char *listItem(PROGMEM char *p, uint8_t idx, char *buf, uint8_t bufLen);  ///< extract the idx'th item from the list selection string
+  void       loadMenu(mnuId_t id = -1);   ///< find the menu header with the specified ID
+  mnuItem_t  *loadItem(mnuId_t id);       ///< find the menu item with the specified ID
+  mnuInput_t *loadInput(mnuId_t id);      ///< find the input item with the specified ID
+  uint8_t    listCount(PROGMEM char *p);  ///< count the items in a list selection string 
+  char       *listItem(PROGMEM char *p, uint8_t idx, char *buf, uint8_t bufLen);  ///< extract the idx'th item from the list selection string
   void MD_Menu::strPreamble(char *psz, mnuInput_t *mInp);  ///< format a preamble to the a variable display
   void MD_Menu::strPostamble(char *psz, mnuInput_t *mInp); ///< attach a postamble to a variable display
   

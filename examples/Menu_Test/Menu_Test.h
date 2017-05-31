@@ -2,6 +2,8 @@
 
 #include <MD_Menu.h>
 
+#define AUTO_START 1 // auto start the menu = 1, manual start = 0
+
 // Select the User Input/Output hardware components that will be used
 #define DISPLAY_SERIAL  1  // Serial Monitor display (useful for testing)
 #define DISPLAY_LCD     0  // Two line LCD using LiquidCrystal library
@@ -12,7 +14,7 @@
 #define INPUT_RENCODER  1  // Use rotary encoder with built in push switch
 
 #define BAUD_RATE    57600 // Serial Monitor speed setting 
-#define MENU_TIMEOUT 10000 // in milliseconds
+#define MENU_TIMEOUT 5000  // in milliseconds
 
 #define LED_PIN 13  // for myLEDCode function
 

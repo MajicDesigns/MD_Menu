@@ -67,12 +67,14 @@ tree is equal to three.
 #if MD_DEBUG
 #define MD_PRINTS(s)   { Serial.print(F(s)); }                  ///< Library debugging output macro
 #define MD_PRINT(s, v) { Serial.print(F(s)); Serial.print(v); } ///< Library debugging output macro
+#define MD_PRINTX(s, v) { Serial.print(F(s)); Serial.print(F("0x")); Serial.print(v); } ///< Library debugging output macro
 #else
 #define MD_PRINTS(s)      ///< Library debugging output macro
 #define MD_PRINT(s, v)    ///< Library debugging output macro
+#define MD_PRINTX(s, v)   ///< Library debugging output macro
 #endif
 
-const char FLD_PROMPT[] = ":";   ///< Prompt separateor between input field label and left delimiter
+const char FLD_PROMPT[] = ":";   ///< Prompt separator between input field label and left delimiter
 const char FLD_DELIM_L[] = "[";  ///< Left delimiter for variable field input
 const char FLD_DELIM_R[] = "]";  ///< Right delimiter for variable field input
 const char MNU_DELIM_L[] = "<";  ///< Left delimiter for menu option label
@@ -87,4 +89,14 @@ const char LIST_SEPARATOR = '|';     ///< Separator character for list items
 #define INP_PRE_SIZE(mi)  (strlen(mi->label) + strlen(FLD_PROMPT) + strlen(FLD_DELIM_L))  ///< Size of text pre variable display
 #define INP_POST_SIZE(mi) (strlen(FLD_DELIM_R))  ///< Size of text after variable display
 
-#define CB_DISP(l,m) if (_cbDisp != nullptr) _cbDisp(l, m);   ///< Display only if dispay callback available
+
+// Global options and flags management
+#define SET_FLAG(f)   { _options |= (1<<f);  MD_PRINTX("\nSet Flag ",_options); }  ///< Set a flag
+#define CLEAR_FLAG(f) { _options &= ~(1<<f); MD_PRINTX("\nClr Flag ", _options); } ///< Reset a flag
+#define TEST_FLAG(f)  ((_options>>f) & 1)  ///< Test a flag 
+
+#define F_INMENU 0    ///< Flag currently running a menu
+#define F_INEDIT 1    ///< Flag currently editing a value
+#define F_MENUWRAP 2  ///< Flag to wrap around ends of menu and list selections
+#define F_AUTOSTART 3 ///< Flag auto start the menu system opn SEL
+

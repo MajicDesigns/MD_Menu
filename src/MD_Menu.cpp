@@ -13,15 +13,40 @@ MD_Menu::MD_Menu(cbUserNav cbNav, cbUserDisplay cbDisp,
                 mnuHeader_t *mnuHdr, uint8_t mnuHdrCount,
                 mnuItem_t *mnuItm, uint8_t mnuItmCount,
                 mnuInput_t *mnuInp, uint8_t mnuInpCount) :
-                _inMenu(false), _currMenu(0), _inEdit(false),
+                _options(0),
                 _mnuHdr(mnuHdr), _mnuHdrCount(mnuHdrCount),
                 _mnuItm(mnuItm), _mnuItmCount(mnuItmCount),
                 _mnuInp(mnuInp), _mnuInpCount(mnuInpCount)
 {
   setUserNavCallback(cbNav);
   setUserDisplayCallback(cbDisp);
-  setMenuWrap(false);
 }
+
+void MD_Menu::reset(void)
+{ 
+  CLEAR_FLAG(F_INMENU); 
+  CLEAR_FLAG(F_INEDIT); 
+  _currMenu = 0; 
+};
+
+void MD_Menu::setUserNavCallback(cbUserNav cbNav) 
+{ 
+  if (cbNav != nullptr) 
+    _cbNav = cbNav; 
+};
+
+void MD_Menu::setUserDisplayCallback(cbUserDisplay cbDisp) 
+{ 
+  if (cbDisp != nullptr) 
+    _cbDisp = cbDisp; 
+};
+
+// Status and options
+bool MD_Menu::isInMenu(void) { return(TEST_FLAG(F_INMENU)); };
+bool MD_Menu::isInEdit(void) { return(TEST_FLAG(F_INEDIT)); };
+void MD_Menu::setMenuWrap(bool bSet)  { if (bSet) { SET_FLAG(F_MENUWRAP); } else { CLEAR_FLAG(F_MENUWRAP); } };
+void MD_Menu::setAutoStart(bool bSet) { if (bSet) { SET_FLAG(F_AUTOSTART); } else { CLEAR_FLAG(F_AUTOSTART); } };
+
 
 void MD_Menu::loadMenu(mnuId_t id)
 // Load a menu header definition to the current stack position
@@ -198,7 +223,7 @@ bool MD_Menu::processList(userNavAction_t nav, mnuInput_t *mInp)
         _iValue--;
         update = true;
       }
-      else if (_iValue == 0 && _wrapMenu)
+      else if (_iValue == 0 && TEST_FLAG(F_MENUWRAP))
       {
         _iValue = listSize - 1;
         update = true;
@@ -215,7 +240,7 @@ bool MD_Menu::processList(userNavAction_t nav, mnuInput_t *mInp)
         _iValue++;
         update = true;
       }
-      else if (_iValue == listSize - 1 && _wrapMenu)
+      else if (_iValue == listSize - 1 && TEST_FLAG(F_MENUWRAP))
       {
         _iValue = 0;
         update = true;
@@ -239,7 +264,7 @@ bool MD_Menu::processList(userNavAction_t nav, mnuInput_t *mInp)
     strcat(sz, listItem(mInp->pList, _iValue, szItem, sizeof(szItem)));
     strPostamble(sz, mInp);
 
-    CB_DISP(DISP_L1, sz);
+    _cbDisp(DISP_L1, sz);
   }
 
   return(endFlag);
@@ -292,7 +317,7 @@ bool MD_Menu::processBool(userNavAction_t nav, mnuInput_t *mInp)
     strcat(sz, _bValue ? INP_BOOL_T : INP_BOOL_F);
     strPostamble(sz, mInp);
 
-    CB_DISP(DISP_L1, sz);
+    _cbDisp(DISP_L1, sz);
   }
 
   return(endFlag);
@@ -403,7 +428,7 @@ bool MD_Menu::processInt(userNavAction_t nav, mnuInput_t *mInp, uint16_t incDelt
     ltostr(sz + strlen(sz), mInp->fieldWidth + 1, _iValue, mInp->base);
     strPostamble(sz, mInp);
 
-    CB_DISP(DISP_L1, sz);
+    _cbDisp(DISP_L1, sz);
   }
 
   return(endFlag);
@@ -422,7 +447,7 @@ bool MD_Menu::processRun(userNavAction_t nav, mnuInput_t *mInp)
     strcat(sz, mInp->label);
     strcat(sz, FLD_DELIM_R);
 
-    CB_DISP(DISP_L1, sz);
+    _cbDisp(DISP_L1, sz);
   }
   else if (nav == NAV_SEL)
   {
@@ -442,10 +467,11 @@ void MD_Menu::handleInput(bool bNew)
 
   if (bNew)
   {
-    CB_DISP(DISP_CLEAR, nullptr);
+    _cbDisp(DISP_CLEAR, nullptr);
     mi = loadItem(_mnuStack[_currMenu].idItmCurr);
-    CB_DISP(DISP_L0, mi->label);
+    _cbDisp(DISP_L0, mi->label);
     me = loadInput(mi->actionId);
+    SET_FLAG(F_INEDIT);
 
     switch (me->action)
     {
@@ -456,12 +482,10 @@ void MD_Menu::handleInput(bool bNew)
     case INP_INT32: ended = processInt(NAV_NULL, me, incDelta); break;
     case INP_RUN: ended = processRun(NAV_NULL, me); break;
     }
-
-    _inEdit = true;
   }
   else
   {
-    userNavAction_t nav = (_cbNav != nullptr ? _cbNav(incDelta) : NAV_NULL);
+    userNavAction_t nav = _cbNav(incDelta);
 
     if (nav == NAV_ESC)
       ended = true;
@@ -484,7 +508,7 @@ void MD_Menu::handleInput(bool bNew)
 
   if (ended)
   {
-    _inEdit = false;
+    CLEAR_FLAG(F_INEDIT);
     handleMenu(true);
   }
 }
@@ -495,18 +519,18 @@ void MD_Menu::handleMenu(bool bNew)
 
   if (bNew)
   {
-    CB_DISP(DISP_CLEAR, nullptr);
-    CB_DISP(DISP_L0, _mnuStack[_currMenu].label);
+    _cbDisp(DISP_CLEAR, nullptr);
+    _cbDisp(DISP_L0, _mnuStack[_currMenu].label);
     if (_mnuStack[_currMenu].idItmCurr == 0)
       _mnuStack[_currMenu].idItmCurr = _mnuStack[_currMenu].idItmStart;
+    SET_FLAG(F_INMENU);
     update = true;
   }
   else
   {
     uint16_t incDelta = 1;
-    userNavAction_t nav = (_cbNav != nullptr ? _cbNav(incDelta) : NAV_NULL);
 
-    switch (nav)
+    switch (_cbNav(incDelta))
     {
     case NAV_DEC:
       if (_mnuStack[_currMenu].idItmCurr != _mnuStack[_currMenu].idItmStart)
@@ -514,7 +538,7 @@ void MD_Menu::handleMenu(bool bNew)
         _mnuStack[_currMenu].idItmCurr--;
         update = true;
       }
-      else if (_wrapMenu)
+      else if (TEST_FLAG(F_MENUWRAP))
       {
         _mnuStack[_currMenu].idItmCurr = _mnuStack[_currMenu].idItmEnd;
         update = true;
@@ -527,7 +551,7 @@ void MD_Menu::handleMenu(bool bNew)
         _mnuStack[_currMenu].idItmCurr++;
         update = true;
       }
-      else if (_wrapMenu)
+      else if (TEST_FLAG(F_MENUWRAP))
       {
         _mnuStack[_currMenu].idItmCurr = _mnuStack[_currMenu].idItmStart;
         update = true;
@@ -561,7 +585,9 @@ void MD_Menu::handleMenu(bool bNew)
 
     case NAV_ESC:
       if (_currMenu == 0)
-        _inMenu = false;
+      {
+        CLEAR_FLAG(F_INMENU);
+      }
       else
       {
         _currMenu--;
@@ -583,7 +609,7 @@ void MD_Menu::handleMenu(bool bNew)
       strcat(sz, mi->label);
       strcat(sz, MNU_DELIM_R);
 
-      CB_DISP(DISP_L1, sz);
+      _cbDisp(DISP_L1, sz);
     }
   }
 }
@@ -591,12 +617,16 @@ void MD_Menu::handleMenu(bool bNew)
 bool MD_Menu::runMenu(bool bStart)
 {
   // check if we need to process anything
-  if (!_inMenu && !bStart)
-    return(false);
+  if (!TEST_FLAG(F_INMENU) && !bStart)
+  {
+    uint16_t dummy;
 
-  _inMenu = true; // we now are running a menu!
+    bStart = (TEST_FLAG(F_AUTOSTART) && _cbNav(dummy) == NAV_SEL);
+    if (bStart) MD_PRINTS("\nrunMenu: Auto Start detected");
+    if (!bStart) return(false);   // nothing to do
+  }
 
-  if (bStart)   // start the menu again
+  if (bStart)   // start the menu
   {
     MD_PRINTS("\nrunMenu: Starting menu");
     _currMenu = 0;
@@ -605,17 +635,17 @@ bool MD_Menu::runMenu(bool bStart)
   }
   else    // keep running current menu
   {
-    if (_inEdit)
+    if (TEST_FLAG(F_INEDIT))
       handleInput();
     else
       handleMenu();
 
-    if (!_inMenu)
+    if (!TEST_FLAG(F_INMENU))
     {
-      CB_DISP(DISP_CLEAR, nullptr);
+      _cbDisp(DISP_CLEAR, nullptr);
       MD_PRINTS("\nrunMenu: Ending Menu");
     }
   }
 
-  return(_inMenu);
+  return(TEST_FLAG(F_INMENU));
 }

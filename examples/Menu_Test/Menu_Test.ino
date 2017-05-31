@@ -50,7 +50,7 @@ const PROGMEM MD_Menu::mnuHeader_t mnuHdr[] =
 // Menu Items ----------
 const PROGMEM MD_Menu::mnuItem_t mnuItm[] =
 {
-  // Staring (Root) menu
+  // Starting (Root) menu
   { 10, "Input Test", MD_Menu::MNU_MENU, 11 },
   { 11, "Serial",     MD_Menu::MNU_MENU, 12 },
   { 12, "LED",        MD_Menu::MNU_MENU, 13 },
@@ -92,7 +92,7 @@ const PROGMEM MD_Menu::mnuInput_t mnuInp[] =
   { 16, 0, "Confirm", MD_Menu::INP_RUN,   myCode,         0,      0,      0, 10, nullptr },
 
   { 30, 0, "Port",     MD_Menu::INP_LIST, mnuSerialValueRqst, 4, 0, 0, 0, listCOM },
-  { 31, 0, "Bits/sec", MD_Menu::INP_LIST, mnuSerialValueRqst, 6, 0, 0, 0, listBaud },
+  { 31, 0, "Bits/s",   MD_Menu::INP_LIST, mnuSerialValueRqst, 6, 0, 0, 0, listBaud },
   { 32, 0, "Parity",   MD_Menu::INP_LIST, mnuSerialValueRqst, 1, 0, 0, 0, listParity },
   { 33, 0, "No. Bits", MD_Menu::INP_LIST, mnuSerialValueRqst, 1, 0, 0, 0, listStop },
 
@@ -280,12 +280,15 @@ void setup(void)
 
   M.begin();
   M.setMenuWrap(true);
+#if AUTO_START
+  M.setAutoStart(true);
+#endif
+  delay(1000);
 }
 
 void loop(void)
 {
   static bool prevMenuRun = true;
-  uint16_t incDelta = 1;
 
   // Detect is we need to initiate running normal user code
   if (prevMenuRun && !M.isInMenu())
@@ -294,13 +297,17 @@ void loop(void)
 
   // If we are not running, check if there is a reason to start the menu
   // otherwise just check for a menu timeout
-  if (!M.isInMenu())
+  if (M.isInMenu())
+    timerCheck();
+#if !AUTO_START
+  else
   {
-    if (navigation(incDelta) == MD_Menu::NAV_SEL)
+    uint16_t dummy;
+
+    if (navigation(dummy) == MD_Menu::NAV_SEL)
       M.runMenu(true);
   }
-  else
-    timerCheck();
+#endif
 
   // just run the menu if it needs to run
   M.runMenu();

@@ -164,6 +164,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:ac72722eb1f4baea9f33d487b9f94851a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af85742535fada101a59389d9c6cca3bf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_d___menu.html#af85742535fada101a59389d9c6cca3bf">setMenuWrap</a> (bool bSet)</td></tr>
 <tr class="separator:af85742535fada101a59389d9c6cca3bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3dd4c110f8fe96280e4e9506dd99c127"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_d___menu.html#a3dd4c110f8fe96280e4e9506dd99c127">setAutoStart</a> (bool bSet)</td></tr>
+<tr class="separator:a3dd4c110f8fe96280e4e9506dd99c127"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af084153a169cb08f6066eff7b72243f6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_d___menu.html#af084153a169cb08f6066eff7b72243f6">setUserNavCallback</a> (<a class="el" href="class_m_d___menu.html#ab94b8993f16d451b87d60242a4c12cb7">cbUserNav</a> cbNav)</td></tr>
 <tr class="separator:af084153a169cb08f6066eff7b72243f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a229b99570af87f23db3f7e92737d7780"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_d___menu.html#a229b99570af87f23db3f7e92737d7780">setUserDisplayCallback</a> (<a class="el" href="class_m_d___menu.html#ab02e84a4c40fddbbc6d740b0d62df99c">cbUserDisplay</a> cbDisp)</td></tr>
@@ -519,7 +521,7 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Reste the menu.</p>
+<p>Reset the menu.</p>
 <p>Change the current menu state to be not running and reset all menu conditions to start state. </p>
 
 </div>
@@ -540,7 +542,7 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Run the menu.</p>
-<p>This should be called each time through the loop() function. The optional parameter should be set to true when the menu display needs to start (or restart) and false (or omitted) for normal running. The function will coordinate the user callbacks to obtain input and display the menu, as needed.</p>
+<p>This should be called each time through the loop() function. The optional parameter should be set to true when the menu display needs to start (or restart) and false (or omitted) for normal running. This allows the user code to trigger the menu starting unless the <a class="el" href="class_m_d___menu.html#a3dd4c110f8fe96280e4e9506dd99c127">setAutoStart()</a> option is set to start the menu automatically. When running, the menu code coordinates user callbacks to obtain input and display the menu, as needed.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">bStart</td><td>Set to true is the menu needs to be started; defaults to false if not specified </td></tr>
@@ -548,6 +550,32 @@ Public Member Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true if the menu is still running, false otherwise </dd></dl>
+
+</div>
+</div>
+<a id="a3dd4c110f8fe96280e4e9506dd99c127"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3dd4c110f8fe96280e4e9506dd99c127">&#9670;&nbsp;</a></span>setAutoStart()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void MD_Menu::setAutoStart </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>bSet</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Set the menu auto start option.</p>
+<p>Set the menu to start automatically in response to the SEL navigation selection. When set on, pressing SEL when the menu is not running will start the menu display. If the option is not set, the starting trigger needs to be monitored by the user code and the menu started by caling <a class="el" href="class_m_d___menu.html#a65ed4ba715a5eabb064d7233a9290d17">runMenu()</a>. Default is not to auto start.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">bSet</td><td>true to set the option, false to un-set the option (default) </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -567,7 +595,7 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Set the menu wrap option.</p>
-<p>Set the menu wrap option on or off. When set on, reaching the end of the menu will arap around to the start of the menu. Simialrly, reaching the end will restart from the beginning. Default is set to no wrap.</p>
+<p>Set the menu wrap option on or off. When set on, reaching the end of the menu will wrap around to the start of the menu. Simialrly, reaching the end will restart from the beginning. Default is set to no wrap.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">bSet</td><td>true to set the option, false to un-set the option (default) </td></tr>
@@ -593,7 +621,7 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Set the user display callback function.</p>
-<p>Replace the current callback function with the new function. Set to NULL to disable the functionality (not recommended)</p>
+<p>Replace the current callback function with the new function.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">cbDisp</td><td>the callback function pointer. </td></tr>
@@ -619,7 +647,7 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Set the user navigation callback function.</p>
-<p>Replace the current callback function with the new function. Set to NULL to disable the functionality (not recommended)</p>
+<p>Replace the current callback function with the new function.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">cbNav</td><td>the callback function pointer. </td></tr>
@@ -639,7 +667,7 @@ Public Member Functions</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="class_m_d___menu.html">MD_Menu</a></li>
-    <li class="footer">Generated on Mon May 29 2017 15:09:24 for MD_Menu Library by
+    <li class="footer">Generated on Thu Jun 1 2017 08:25:01 for MD_Menu Library by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>
