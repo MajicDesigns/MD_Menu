@@ -87,16 +87,18 @@ $(document).ready(function(){initNavTree('index.html','');});
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><h2>Yet Another Menu Manager for Small Displays </h2>
-<p>This is a menu management library. The library allows user code to define</p><ul>
+<p>This is a menu management library created as a front end to set parameters in embedded hardware control applications, laeving the back end under application control. It is suitable for text based displays (eg, LCD modules) and with 1 or 2 lines available for display.</p>
+<p>The library allows user code to define</p><ul>
 <li>Static menu definitions to minimised RAM footprint.</li>
 <li>Callbacks for navigation and display control</li>
+<li>Menu inactivity timeout</li>
+<li>Auto start on key press or manual start by user code</li>
 <li>Input methods available for</li>
 <li>Boolean (Y/N) values</li>
 <li>Pick List selection</li>
 <li>8/16/32 bit signed integers</li>
 </ul>
-<p>Menu managers in embedded systems are generally not the main function of the embedded application software, so they need to minimise the use of RAM and have a small memory footprint overall, leaving more space for what really matters.</p>
-<p>This library implements character display menu management services for the Arduino. The library was created as a front end to set parameters in embedded hardware control applications, laeving the back end under application control. It is suitable for text based displays (eg, LCD modules) and with 1 or 2 lines available for display.</p>
+<p>Menu managers in embedded systems are generally not the main function of the embedded application software, so this library minimises the use of RAM and has a small memory footprint overall, leaving more space for what really matters.</p>
 <ul>
 <li><a class="el" href="page_menu.html">Menu System Concepts</a></li>
 <li><a class="el" href="page_revision_history.html">Revision History</a></li>
@@ -142,7 +144,7 @@ Data Structure Map</div></div>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Thu Jun 1 2017 08:25:01 for MD_Menu Library by
+    <li class="footer">Generated on Fri Jun 2 2017 09:00:34 for MD_Menu Library by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

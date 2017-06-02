@@ -250,23 +250,6 @@ void *myLEDCode(MD_Menu::mnuId_t id, uint8_t idx, bool bGet)
   digitalWrite(LED_PIN, idx == 0 ? LOW : HIGH);
 }
 
-// Menu timer data and functions
-uint32_t timeStart;
-
-void timerStart(void)
-{
-  timeStart = millis();
-}
-
-void timerCheck(void)
-{
-  if (millis() - timeStart >= MENU_TIMEOUT)
-  {
-    Serial.print("\n-> Menu timeout");
-    M.reset();
-  }
-}
-
 // Standard setup() and loop()
 void setup(void)
 {
@@ -280,35 +263,29 @@ void setup(void)
 
   M.begin();
   M.setMenuWrap(true);
-#if AUTO_START
-  M.setAutoStart(true);
-#endif
-  delay(1000);
+  M.setAutoStart(AUTO_START);
+  M.setTimeout(MENU_TIMEOUT);
 }
 
 void loop(void)
 {
   static bool prevMenuRun = true;
 
-  // Detect is we need to initiate running normal user code
+  // Detect if we need to initiate running normal user code
   if (prevMenuRun && !M.isInMenu())
-    Serial.print("\n\nRUNNING USER'S OTHER CODE\n");
+    Serial.print("\n\nRUNNING USER'S NORMAL OPERATION\n");
   prevMenuRun = M.isInMenu();
 
-  // If we are not running, check if there is a reason to start the menu
-  // otherwise just check for a menu timeout
-  if (M.isInMenu())
-    timerCheck();
-#if !AUTO_START
-  else
+  // If we are not running andnot autostart
+  // check if there is a reason to start the menu
+  if (!M.isInMenu() && !AUTO_START)
   {
     uint16_t dummy;
 
     if (navigation(dummy) == MD_Menu::NAV_SEL)
       M.runMenu(true);
   }
-#endif
 
-  // just run the menu if it needs to run
-  M.runMenu();
+  M.runMenu();   // just run the menu code
+
 }

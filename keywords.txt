@@ -24,9 +24,11 @@ runMenu	KEYWORD2
 isInMenu	KEYWORD2
 isInEdit	KEYWORD2
 reset	KEYWORD2
-setMenuWrap	KEYWORD2
 setUserNavCallback	KEYWORD2
 setUserDispCallback	KEYWORD2
+setMenuWrap	KEYWORD2
+setAutoStart	KEYWORD2
+setTimeout	KEYWORD2
 
 ######################################
 # Constants (LITERAL1)

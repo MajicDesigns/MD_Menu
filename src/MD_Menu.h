@@ -4,22 +4,25 @@
 Yet Another Menu Manager for Small Displays
 ------------------------------
 
-This is a menu management library. The library allows user code to define
+This is a menu management library created as a front end to set 
+parameters in embedded hardware control applications, laeving the 
+back end under application control. It is suitable for text based 
+displays (eg, LCD modules) and with 1 or 2 lines available for display.
+
+The library allows user code to define
 - Static menu definitions to minimised RAM footprint. 
 - Callbacks for navigation and display control
+- Menu inactivity timeout
+- Auto start on key press or manual start by user code
 - Input methods available for
 + Boolean (Y/N) values
 + Pick List selection
 + 8/16/32 bit signed integers
 
-Menu managers in embedded systems are generally not the main function of the embedded
-application software, so they need to minimise the use of RAM and have a small memory
-footprint overall, leaving more space for what really matters.
-
-This library implements character display menu management services for the Arduino.
-The library was created as a front end to set parameters in embedded hardware control 
-applications, laeving the back end under application control. It is suitable for text 
-based displays (eg, LCD modules) and with 1 or 2 lines available for display.
+Menu managers in embedded systems are generally not the main function 
+of the embedded application software, so this library minimises the 
+use of RAM and has a small memory footprint overall, leaving more space 
+for what really matters.
 
 - \subpage pageMenu
 - \subpage pageRevisionHistory
@@ -156,8 +159,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 Revision History
 ----------------
 Jun 2017 version 1.0.1
-- Added Auto Start option
+- Added setAutoStart() method and code
 - Internal flags now a bit field
+- Added setTimeout() method and code
 
 May 2017 version 1.0.0
 - First implementation
@@ -459,6 +463,18 @@ public:
   void setAutoStart(bool bSet);
 
   /**
+  * Set the menu inactivity timeout.
+  *
+  * Set the menu inactivity timeout to the specified value im milliseconds.
+  * The menu will automatically reset is there is no key pressed in the specified
+  * time. It is up to the user code to detect the menu is no longer running and 
+  * transition to normal mode. A value of 0 disables the timeout (default).
+  *
+  * \param t the timeout time in milliseconds, 0 to disable (default)
+  */
+  void setTimeout(uint32_t t);
+  
+  /**
   * Set the user navigation callback function.
   *
   * Replace the current callback function with the new function.
@@ -489,6 +505,10 @@ private:
   mnuInput_t *_mnuInp;    ///< Input item table
   uint8_t _mnuInpCount;   ///< Number of items in the input table
 
+  // Timeout related
+  uint32_t _timeLastKey;  ///< Time a menu key was last pressed
+  uint32_t _timeout;      ///< Menu inactivity timeout in milliseconds
+
   // Status values and global flags
   uint8_t _options;       ///< bit field for options and flags
 
@@ -509,9 +529,12 @@ private:
   mnuInput_t *loadInput(mnuId_t id);      ///< find the input item with the specified ID
   uint8_t    listCount(PROGMEM char *p);  ///< count the items in a list selection string 
   char       *listItem(PROGMEM char *p, uint8_t idx, char *buf, uint8_t bufLen);  ///< extract the idx'th item from the list selection string
-  void MD_Menu::strPreamble(char *psz, mnuInput_t *mInp);  ///< format a preamble to the a variable display
-  void MD_Menu::strPostamble(char *psz, mnuInput_t *mInp); ///< attach a postamble to a variable display
+  void       strPreamble(char *psz, mnuInput_t *mInp);  ///< format a preamble to the a variable display
+  void       strPostamble(char *psz, mnuInput_t *mInp); ///< attach a postamble to a variable display
   
+  void timerStart(void);    ///< Start (reset) the timout timer
+  void timerCheck(void);    ///< Check if timout has expired and reset menu if it has
+
   void handleMenu(bool bNew = false);  ///< handling display menu seitems and navigation
   void handleInput(bool bNew = false); ///< handling user input to edit values
 

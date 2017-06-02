@@ -13,7 +13,7 @@ MD_Menu::MD_Menu(cbUserNav cbNav, cbUserDisplay cbDisp,
                 mnuHeader_t *mnuHdr, uint8_t mnuHdrCount,
                 mnuItem_t *mnuItm, uint8_t mnuItmCount,
                 mnuInput_t *mnuInp, uint8_t mnuInpCount) :
-                _options(0),
+                _options(0), _timeout(0),
                 _mnuHdr(mnuHdr), _mnuHdrCount(mnuHdrCount),
                 _mnuItm(mnuItm), _mnuItmCount(mnuItmCount),
                 _mnuInp(mnuInp), _mnuInpCount(mnuInpCount)
@@ -46,7 +46,23 @@ bool MD_Menu::isInMenu(void) { return(TEST_FLAG(F_INMENU)); };
 bool MD_Menu::isInEdit(void) { return(TEST_FLAG(F_INEDIT)); };
 void MD_Menu::setMenuWrap(bool bSet)  { if (bSet) { SET_FLAG(F_MENUWRAP); } else { CLEAR_FLAG(F_MENUWRAP); } };
 void MD_Menu::setAutoStart(bool bSet) { if (bSet) { SET_FLAG(F_AUTOSTART); } else { CLEAR_FLAG(F_AUTOSTART); } };
+void MD_Menu::setTimeout(uint32_t t) { _timeout = t; };
 
+void MD_Menu::timerStart(void)
+{
+  _timeLastKey = millis();
+}
+
+void MD_Menu::timerCheck(void)
+{
+  if (_timeout == 0) return;    // not set
+
+  if (millis() - _timeLastKey >= _timeout)
+  {
+    MD_PRINTS("\ntimerCheck: Menu timeout");
+    reset();
+  }
+}
 
 void MD_Menu::loadMenu(mnuId_t id)
 // Load a menu header definition to the current stack position
@@ -472,6 +488,7 @@ void MD_Menu::handleInput(bool bNew)
     _cbDisp(DISP_L0, mi->label);
     me = loadInput(mi->actionId);
     SET_FLAG(F_INEDIT);
+    timerStart();
 
     switch (me->action)
     {
@@ -491,6 +508,7 @@ void MD_Menu::handleInput(bool bNew)
       ended = true;
     else if (nav != NAV_NULL)
     {
+      timerStart();
       mi = loadItem(_mnuStack[_currMenu].idItmCurr);
       me = loadInput(mi->actionId);
 
@@ -524,13 +542,17 @@ void MD_Menu::handleMenu(bool bNew)
     if (_mnuStack[_currMenu].idItmCurr == 0)
       _mnuStack[_currMenu].idItmCurr = _mnuStack[_currMenu].idItmStart;
     SET_FLAG(F_INMENU);
+    timerStart();
     update = true;
   }
   else
   {
     uint16_t incDelta = 1;
+    userNavAction_t nav = _cbNav(incDelta);
 
-    switch (_cbNav(incDelta))
+    if (nav != NAV_NULL) timerStart();
+
+    switch (nav)
     {
     case NAV_DEC:
       if (_mnuStack[_currMenu].idItmCurr != _mnuStack[_currMenu].idItmStart)
@@ -639,6 +661,8 @@ bool MD_Menu::runMenu(bool bStart)
       handleInput();
     else
       handleMenu();
+
+    timerCheck();  // check for timeout before we end here
 
     if (!TEST_FLAG(F_INMENU))
     {

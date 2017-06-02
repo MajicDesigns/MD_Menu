@@ -2,7 +2,7 @@
 
 #include <MD_Menu.h>
 
-#define AUTO_START 1 // auto start the menu = 1, manual start = 0
+const bool AUTO_START = true; // auto start the menu, manual detect and start if false
 
 // Select the User Input/Output hardware components that will be used
 #define DISPLAY_SERIAL  1  // Serial Monitor display (useful for testing)
@@ -13,10 +13,10 @@
 #define INPUT_LCDSWITCH 0  // Use analog based switches on LCD shield
 #define INPUT_RENCODER  1  // Use rotary encoder with built in push switch
 
-#define BAUD_RATE    57600 // Serial Monitor speed setting 
-#define MENU_TIMEOUT 5000  // in milliseconds
+const uint32_t BAUD_RATE = 57600;   // Serial Monitor speed setting 
+const uint16_t MENU_TIMEOUT = 5000; // in milliseconds
 
-#define LED_PIN 13  // for myLEDCode function
+const uint8_t LED_PIN = 13;  // for myLEDCode function
 
 // Function prototypes for Navigation/Display
 void setupDisp(void);
@@ -32,6 +32,3 @@ void *mnuSerialValueRqst(MD_Menu::mnuId_t id, uint8_t idx, bool bGet);
 void *myCode(MD_Menu::mnuId_t id, uint8_t idx, bool bGet);
 void *myLEDCode(MD_Menu::mnuId_t id, uint8_t idx, bool bGet);
 
-// Menu timeout functions prototypes
-void timerStart(void);
-void timerCheck(void);
