@@ -339,7 +339,7 @@ bool MD_Menu::processBool(userNavAction_t nav, mnuInput_t *mInp)
   return(endFlag);
 }
 
-char *ltostr(char *buf, uint8_t bufLen, int32_t v, uint8_t base)
+char *ltostr(char *buf, uint8_t bufLen, int32_t v, uint8_t base, bool leadZero = false)
 // Convert a long to a string right justified with leading spaces
 // in the base specified (up to 16).
 {
@@ -368,8 +368,8 @@ char *ltostr(char *buf, uint8_t bufLen, int32_t v, uint8_t base)
   if (ptr != buf)      // if there is still space
   {
     if (sign) *--ptr = '-';  // put in the sign ...
-    while (ptr != buf)       // ... and pad with leading spaces
-      *--ptr = ' ';
+    while (ptr != buf)       // ... and pad with leading character
+      *--ptr = (leadZero ? '0' : ' ');
   }
   else if (value != 0 || sign) // insufficient space - show this
       *ptr = INP_NUMERIC_OFLOW;
@@ -450,6 +450,81 @@ bool MD_Menu::processInt(userNavAction_t nav, mnuInput_t *mInp, uint16_t incDelt
   return(endFlag);
 }
 
+bool MD_Menu::processFloat(userNavAction_t nav, mnuInput_t *mInp, uint16_t incDelta)
+// Processing for Floating number representation value input
+// The number is actually a uint32, where the last FLOAT_DECIMALS digits are taken
+// to be fractional part of the floating numer. For all purposes, this number is a long
+// integer except when displayed. The base field is used as the increment for the decimal
+// part in single fractional units of the decimal part.
+// Return true when the edit cycle is completed
+{
+  bool endFlag = false;
+  bool update = false;
+
+  switch (nav)
+  {
+  case NAV_NULL:    // this is to initialise the CB_DISP
+  {
+    _pValue = mInp->cbVR(mInp->id, true);
+
+    if (_pValue == nullptr)
+    {
+      MD_PRINTS("\nFloat cbVR(GET) == NULL!");
+      endFlag = true;
+    }
+    else
+    {
+      _iValue = *((int32_t*)_pValue);
+      update = true;
+    }
+  }
+  break;
+
+  case NAV_INC:
+    if (_iValue + (incDelta * mInp->base) < mInp->range[1])
+      _iValue += (incDelta * mInp->base);
+    else
+      _iValue = mInp->range[1];
+    update = true;
+    break;
+
+  case NAV_DEC:
+    if (_iValue - (incDelta * mInp->base) > mInp->range[0])
+      _iValue -= (incDelta * mInp->base);
+    else
+      _iValue = mInp->range[0];
+    update = true;
+    break;
+
+  case NAV_SEL:
+    *((int32_t*)_pValue) = _iValue;
+    mInp->cbVR(mInp->id, false);
+    endFlag = true;
+    break;
+  }
+
+  if (update)
+  {
+    uint16_t divisor = 1;
+    char sz[INP_PRE_SIZE(mInp) + mInp->fieldWidth + INP_POST_SIZE(mInp) + 1];
+
+    for (uint8_t i = 0; i < FLOAT_DECIMALS; i++)
+      divisor *= 10;
+
+    strPreamble(sz, mInp);
+    ltostr(sz + strlen(sz), mInp->fieldWidth - (FLOAT_DECIMALS + 1) + 1, _iValue / divisor, 10);
+    sz[strlen(sz) + 1] = '\0';
+    sz[strlen(sz)] = DECIMAL_POINT;
+    ltostr(sz + strlen(sz), (FLOAT_DECIMALS + 1), abs(_iValue % divisor), 10, true);
+
+    strPostamble(sz, mInp);
+
+    _cbDisp(DISP_L1, sz);
+  }
+
+  return(endFlag);
+}
+
 bool MD_Menu::processRun(userNavAction_t nav, mnuInput_t *mInp)
 // Processing for Run user code input field.
 // When the field is selected, run the user variable code. For all other
@@ -497,6 +572,7 @@ void MD_Menu::handleInput(bool bNew)
     case INP_INT8:
     case INP_INT16:
     case INP_INT32: ended = processInt(NAV_NULL, me, incDelta); break;
+    case INP_FLOAT: ended = processFloat(NAV_NULL, me, incDelta); break;
     case INP_RUN: ended = processRun(NAV_NULL, me); break;
     }
   }
@@ -519,6 +595,7 @@ void MD_Menu::handleInput(bool bNew)
       case INP_INT8:
       case INP_INT16:
       case INP_INT32: ended = processInt(nav, me, incDelta); break;
+      case INP_FLOAT: ended = processFloat(nav, me, incDelta); break;
       case INP_RUN: ended = processRun(nav, me); break;
       }
     }

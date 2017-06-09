@@ -37,12 +37,13 @@ bool bValue = true;
 int8_t  int8Value = 99;
 int16_t int16Value = 999;
 int32_t int32Value = 9999;
+float floatValue = 999.99;
 
 // Menu Headers --------
 const PROGMEM MD_Menu::mnuHeader_t mnuHdr[] =
 {
   { 10, "MD_Menu",      10, 13, 0 },
-  { 11, "Input Data",   20, 26, 0 },
+  { 11, "Input Data",   20, 27, 0 },
   { 12, "Serial Setup", 30, 33, 0 },
   { 13, "LED Menu",     40, 41, 0 },
 };
@@ -62,7 +63,8 @@ const PROGMEM MD_Menu::mnuItem_t mnuItm[] =
   { 23, "Integer 16", MD_Menu::MNU_INPUT, 13 },
   { 24, "Integer 32", MD_Menu::MNU_INPUT, 14 },
   { 25, "Hex 16",     MD_Menu::MNU_INPUT, 15 },
-  { 26, "Reset Menu", MD_Menu::MNU_INPUT, 16 },
+  { 26, "Float",      MD_Menu::MNU_INPUT, 16 },
+  { 27, "Reset Menu", MD_Menu::MNU_INPUT, 17 },
   // Serial Setup
   { 30, "COM Port",  MD_Menu::MNU_INPUT, 30 },
   { 31, "Speed",     MD_Menu::MNU_INPUT, 31 },
@@ -89,7 +91,8 @@ const PROGMEM MD_Menu::mnuInput_t mnuInp[] =
   { 13, "Int16",   MD_Menu::INP_INT16, mnuIValueRqst,  4, -32768,  32767, 10, nullptr },  // test field too small
   { 14, "Int32",   MD_Menu::INP_INT32, mnuIValueRqst,  6, -66636,  65535, 10, nullptr },
   { 15, "Hex16",   MD_Menu::INP_INT16, mnuIValueRqst,  4, 0x0000, 0xffff, 16, nullptr },  // test hex display
-  { 16, "Confirm", MD_Menu::INP_RUN,   myCode,         0,      0,      0, 10, nullptr },
+  { 16, "Float",   MD_Menu::INP_FLOAT, mnuFValueRqst,  7, -10000,  99950, 10, nullptr },  // test float number
+  { 17, "Confirm", MD_Menu::INP_RUN, myCode, 0, 0, 0, 10, nullptr },
 
   { 30, "Port",     MD_Menu::INP_LIST, mnuSerialValueRqst, 4, 0, 0, 0, listCOM },
   { 31, "Bits/s",   MD_Menu::INP_LIST, mnuSerialValueRqst, 6, 0, 0, 0, listBaud },
@@ -226,6 +229,27 @@ void *mnuSerialValueRqst(MD_Menu::mnuId_t id, bool bGet)
     break;
   }
   return(nullptr);
+}
+
+void *mnuFValueRqst(MD_Menu::mnuId_t id, bool bGet)
+// Value request callback for floating value
+{
+  static int32_t f;
+
+  if (id == 16)
+  {
+    if (bGet)
+    {
+      f = (uint32_t)(floatValue * 100.0);
+      return((void *)&f);
+    }
+    else
+    {
+      floatValue = (f / 100.0);
+      Serial.print(F("\nFloat changed to "));
+      Serial.print(floatValue);
+    }
+  }
 }
 
 void *myCode(MD_Menu::mnuId_t id, bool bGet)

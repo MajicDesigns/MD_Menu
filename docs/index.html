@@ -93,10 +93,13 @@ $(document).ready(function(){initNavTree('index.html','');});
 <li>Callbacks for navigation and display control</li>
 <li>Menu inactivity timeout</li>
 <li>Auto start on key press or manual start by user code</li>
-<li>Input methods available for</li>
+<li>Input methods available for<ul>
 <li>Boolean (Y/N) values</li>
 <li>Pick List selection</li>
 <li>8/16/32 bit signed integers</li>
+<li>Decimal floating point representation</li>
+</ul>
+</li>
 </ul>
 <p>Menu managers in embedded systems are generally not the main function of the embedded application software, so this library minimises the use of RAM and has a small memory footprint overall, leaving more space for what really matters.</p>
 <ul>
@@ -137,6 +140,7 @@ Data Structure Map</div></div>
 <li><b>Pick List</b> specifies a PROGMEM character string with list items separated by the '|' character (defined as INPUT_SEPARATOR), for example "Apple|Orange|Pear". The list is specified as the pList parameter and the get/set value callback expects a pointer to a uint8_t value that is the index of the current selection (zero based).</li>
 <li><b>Boolean</b> for Input of boolean (Y/N) values. As the user makes changes, the value changes between displays of 'Y' and 'N' (defined as INP_BOOL_T and INP_BOOL_F). The get/set callback expects a pointer to bool type.</li>
 <li><b>Integer</b> values can be specified as 8, 16 or 32 bits in size, with the get/set callback expecting pointers to int8_t, int16_t and int32_t (note all signed values). The input specification also allows a lower and upper bound to be set, as well as the number's base (2 through 16) to be specified. Numeric values that overflow the specified field with are prefixed by the '#' character (defined as INP_NUMERIC_OVERFLOW) to indicate that this has occurred.</li>
+<li><b>Floating point</b> where the library uses a 32 bit long integer and assumes the last 2 digits (defined by FLOAT_DECIMALS) to be the fraction after the decimal point (character defined as DECIMAL_POINT). Specification allows lower and upper bound to be set. The base specification field is used to represent the minimum increment or decrement of the fractional component of value input (ie, with 2 decimals, 1 is .01, 5 is .05, 50 is 0.50, etc).</li>
 <li><b>Run Code</b> specifies input fields that are designed to execute a user function when selected. As there is no value to 'get' the get/set callback is only called when the input is confirmed. User code can then be executed as part of the 'set' invocation. </li>
 </ul>
 </div></div><!-- contents -->
@@ -144,7 +148,7 @@ Data Structure Map</div></div>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Fri Jun 9 2017 10:13:10 for MD_Menu Library by
+    <li class="footer">Generated on Sat Jun 10 2017 06:06:14 for MD_Menu Library by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

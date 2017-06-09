@@ -85,6 +85,8 @@ const char INP_BOOL_F[] = "N";   ///< Boolean input False display value. Length 
 
 const char INP_NUMERIC_OFLOW = '#';  ///< Indicator for numeric overflow
 const char LIST_SEPARATOR = '|';     ///< Separator character for list items
+const char DECIMAL_POINT = '.';      ///< Decimal point character for floating point input
+const char FLOAT_DECIMALS = 2;       ///< Number of float decimals implied in uint32_t value
 
 #define INP_PRE_SIZE(mi)  (strlen(mi->label) + strlen(FLD_PROMPT) + strlen(FLD_DELIM_L))  ///< Size of text pre variable display
 #define INP_POST_SIZE(mi) (strlen(FLD_DELIM_R))  ///< Size of text after variable display

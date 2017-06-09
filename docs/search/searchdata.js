@@ -4,7 +4,7 @@ var indexSectionsWithContent =
   1: "m",
   2: "m",
   3: "bimrs~",
-  4: "abcfhilmpr",
+  4: "abcdfhilmpr",
   5: "cm",
   6: "imu",
   7: "dimn",

@@ -13,6 +13,7 @@ var class_m_d___menu =
       [ "INP_INT8", "class_m_d___menu.html#a93d409024bd78bcc2264249e3644b8f7a936209e854d993b8b18b0bdf19bcda1d", null ],
       [ "INP_INT16", "class_m_d___menu.html#a93d409024bd78bcc2264249e3644b8f7a89302728c6c0a16f8ba99fd516a6ac86", null ],
       [ "INP_INT32", "class_m_d___menu.html#a93d409024bd78bcc2264249e3644b8f7abc69018b3ad4ee9a5f59392db7e9cb78", null ],
+      [ "INP_FLOAT", "class_m_d___menu.html#a93d409024bd78bcc2264249e3644b8f7aff790c7396000af3be8a40a1651f8aa7", null ],
       [ "INP_RUN", "class_m_d___menu.html#a93d409024bd78bcc2264249e3644b8f7aa4662943a599650bb2a0bfb1d60616a8", null ]
     ] ],
     [ "mnuAction_t", "class_m_d___menu.html#a4f24623203fc728b52c4195b1fe3df8b", [

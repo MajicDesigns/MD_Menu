@@ -14,6 +14,7 @@ The library allows user code to define
 + Boolean (Y/N) values
 + Pick List selection
 + 8/16/32 bit signed integers
++ Decimal floating point
 
 Menu managers in embedded systems are generally not the main function 
 of the embedded application software, so this library minimises the 

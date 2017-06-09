@@ -28,6 +28,7 @@ MD_Menu::userNavAction_t navigation(uint16_t &incDelta);
 void *mnuLValueRqst(MD_Menu::mnuId_t id, bool bGet);
 void *mnuBValueRqst(MD_Menu::mnuId_t id, bool bGet);
 void *mnuIValueRqst(MD_Menu::mnuId_t id, bool bGet);
+void *mnuFValueRqst(MD_Menu::mnuId_t id, bool bGet);
 void *mnuSerialValueRqst(MD_Menu::mnuId_t id, bool bGet);
 void *myCode(MD_Menu::mnuId_t id, bool bGet);
 void *myLEDCode(MD_Menu::mnuId_t id, bool bGet);

@@ -15,9 +15,10 @@ The library allows user code to define
 - Menu inactivity timeout
 - Auto start on key press or manual start by user code
 - Input methods available for
-+ Boolean (Y/N) values
-+ Pick List selection
-+ 8/16/32 bit signed integers
+  + Boolean (Y/N) values
+  + Pick List selection
+  + 8/16/32 bit signed integers
+  + Decimal floating point representation
 
 Menu managers in embedded systems are generally not the main function 
 of the embedded application software, so this library minimises the 
@@ -131,6 +132,12 @@ The input specification also allows a lower and upper bound to be set, as well a
 number's base (2 through 16) to be specified. Numeric values that overflow the
 specified field with are prefixed by the '#' character (defined as INP_NUMERIC_OVERFLOW)
 to indicate that this has occurred.
+- **Floating point** where the library uses a 32 bit long integer and assumes 
+the last 2 digits (defined by FLOAT_DECIMALS) to be the fraction after the decimal 
+point (character defined as DECIMAL_POINT). Specification allows lower and upper bound 
+to be set. The base specification field is used to represent the minimum increment or 
+decrement of the fractional component of value input (ie, with 2 decimals, 1 is .01, 5 
+is .05, 50 is 0.50, etc).
 - **Run Code** specifies input fields that are designed to execute a user function
 when selected. As there is no value to 'get' the get/set callback is only called when the
 input is confirmed. User code can then be executed as part of the 'set' invocation.
@@ -160,6 +167,7 @@ Revision History
 ----------------
 Jun 2017 version 1.1.0
 - Removed index field from menu item definition. Not useful in practice.
+- Added real number (float) input
 
 Jun 2017 version 1.0.1
 - Added setAutoStart() method and code
@@ -270,6 +278,7 @@ public:
     INP_INT8,   ///< The item is for input of an 8 bit unsigned integer
     INP_INT16,  ///< The item is for input of an 16 bit unsigned integer
     INP_INT32,  ///< The item is for input of an 32 bit unsigned integer
+    INP_FLOAT,  ///< The item is for input of a real number representation with 2 decimal digits 
     INP_RUN,    ///< The item will run a user function
   };
 
@@ -296,9 +305,9 @@ public:
     char    label[INPUT_LABEL_SIZE + 1]; ///< Label for this menu item
     inputAction_t action;  ///< Type of action required for this value
     cbValueRequest cbVR;   ///< Callback function to get/set the value
-    uint8_t fieldWidth;    ///< Width of the displayed field betwene delimiters
+    uint8_t fieldWidth;    ///< Width of the displayed field between delimiters
     int32_t range[2];      ///< min/max values an integer
-    uint8_t base;          ///< number base for display (2 through 16)
+    uint8_t base;          ///< number base for display (2 through 16) or floating increment in 1/100 units
     const char *pList;     ///< pointer to list string
   };
 
@@ -333,8 +342,8 @@ public:
   * Menu header definition
   *
   * Defines the header data for a menu. The items are defined separately.
-  * This data structure encodes the range of menu items that form part
-  * of the menu.
+  * This data structure encodes the contiguous range of menu item numbers 
+  * that form part of the menu.
   */
   typedef struct mnuHeader_t
   {
@@ -545,6 +554,7 @@ private:
   bool processList(userNavAction_t nav, mnuInput_t *mInp);
   bool processBool(userNavAction_t nav, mnuInput_t *mInp);
   bool processInt(userNavAction_t nav, mnuInput_t *mInp, uint16_t incDelta);
+  bool processFloat(userNavAction_t nav, mnuInput_t *mInp, uint16_t incDelta);
   bool processRun(userNavAction_t nav, mnuInput_t *mInp);
 };
 
