@@ -25,10 +25,10 @@ bool display(MD_Menu::userDisplayAction_t, char*);
 MD_Menu::userNavAction_t navigation(uint16_t &incDelta);
 
 // Function prototypes for variable get/set functions
-void *mnuLValueRqst(MD_Menu::mnuId_t id, uint8_t idx, bool bGet);
-void *mnuBValueRqst(MD_Menu::mnuId_t id, uint8_t idx, bool bGet);
-void *mnuIValueRqst(MD_Menu::mnuId_t id, uint8_t idx, bool bGet);
-void *mnuSerialValueRqst(MD_Menu::mnuId_t id, uint8_t idx, bool bGet);
-void *myCode(MD_Menu::mnuId_t id, uint8_t idx, bool bGet);
-void *myLEDCode(MD_Menu::mnuId_t id, uint8_t idx, bool bGet);
+void *mnuLValueRqst(MD_Menu::mnuId_t id, bool bGet);
+void *mnuBValueRqst(MD_Menu::mnuId_t id, bool bGet);
+void *mnuIValueRqst(MD_Menu::mnuId_t id, bool bGet);
+void *mnuSerialValueRqst(MD_Menu::mnuId_t id, bool bGet);
+void *myCode(MD_Menu::mnuId_t id, bool bGet);
+void *myLEDCode(MD_Menu::mnuId_t id, bool bGet);
 

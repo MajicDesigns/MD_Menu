@@ -213,7 +213,7 @@ bool MD_Menu::processList(userNavAction_t nav, mnuInput_t *mInp)
     }
     else
     {
-      _pValue = mInp->cbVR(mInp->id, mInp->idx, true);
+      _pValue = mInp->cbVR(mInp->id, true);
 
       if (_pValue == nullptr)
       {
@@ -266,7 +266,7 @@ bool MD_Menu::processList(userNavAction_t nav, mnuInput_t *mInp)
 
   case NAV_SEL:
     *((uint8_t*)_pValue) = _iValue;
-    mInp->cbVR(mInp->id, mInp->idx, false);
+    mInp->cbVR(mInp->id, false);
     endFlag = true;
     break;
   }
@@ -297,7 +297,7 @@ bool MD_Menu::processBool(userNavAction_t nav, mnuInput_t *mInp)
   {
   case NAV_NULL:    // this is to initialise the CB_DISP
     {
-      _pValue = mInp->cbVR(mInp->id, mInp->idx, true);
+      _pValue = mInp->cbVR(mInp->id, true);
 
       if (_pValue == nullptr)
       {
@@ -320,7 +320,7 @@ bool MD_Menu::processBool(userNavAction_t nav, mnuInput_t *mInp)
 
   case NAV_SEL:
     *((bool *)_pValue) = _bValue;
-    mInp->cbVR(mInp->id, mInp->idx, false);
+    mInp->cbVR(mInp->id, false);
     endFlag = true;
     break;
   }
@@ -388,7 +388,7 @@ bool MD_Menu::processInt(userNavAction_t nav, mnuInput_t *mInp, uint16_t incDelt
   {
   case NAV_NULL:    // this is to initialise the CB_DISP
     {
-      _pValue = mInp->cbVR(mInp->id, mInp->idx, true);
+      _pValue = mInp->cbVR(mInp->id, true);
 
       if (_pValue == nullptr)
       {
@@ -431,7 +431,7 @@ bool MD_Menu::processInt(userNavAction_t nav, mnuInput_t *mInp, uint16_t incDelt
     case INP_INT16: *((int16_t*)_pValue) = _iValue; break;
     case INP_INT32: *((int32_t*)_pValue) = _iValue; break;
     }
-    mInp->cbVR(mInp->id, mInp->idx, false);
+    mInp->cbVR(mInp->id, false);
     endFlag = true;
     break;
   }
@@ -467,7 +467,7 @@ bool MD_Menu::processRun(userNavAction_t nav, mnuInput_t *mInp)
   }
   else if (nav == NAV_SEL)
   {
-    mInp->cbVR(mInp->id, mInp->idx, false);
+    mInp->cbVR(mInp->id, false);
     return(true);
   }
 
@@ -555,7 +555,7 @@ void MD_Menu::handleMenu(bool bNew)
     switch (nav)
     {
     case NAV_DEC:
-      if (_mnuStack[_currMenu].idItmCurr != _mnuStack[_currMenu].idItmStart)
+      if (_mnuStack[_currMenu].idItmCurr > _mnuStack[_currMenu].idItmStart)
       {
         _mnuStack[_currMenu].idItmCurr--;
         update = true;
@@ -568,7 +568,7 @@ void MD_Menu::handleMenu(bool bNew)
       break;
 
     case NAV_INC:
-      if (_mnuStack[_currMenu].idItmCurr != _mnuStack[_currMenu].idItmEnd)
+      if (_mnuStack[_currMenu].idItmCurr < _mnuStack[_currMenu].idItmEnd)
       {
         _mnuStack[_currMenu].idItmCurr++;
         update = true;

@@ -83,21 +83,21 @@ const PROGMEM char listStop[] = "0|1";
 
 const PROGMEM MD_Menu::mnuInput_t mnuInp[] =
 {
-  { 10, 0, "List",    MD_Menu::INP_LIST,  mnuLValueRqst,  6,      0,      0,  0, listFruit }, // shorter and longer list labels
-  { 11, 0, "Bool",    MD_Menu::INP_BOOL,  mnuBValueRqst,  1,      0,      0,  0, nullptr },
-  { 12, 0, "Int8",    MD_Menu::INP_INT8,  mnuIValueRqst,  4,   -128,    127, 10, nullptr },
-  { 13, 0, "Int16",   MD_Menu::INP_INT16, mnuIValueRqst,  4, -32768,  32767, 10, nullptr },  // test field too small
-  { 14, 0, "Int32",   MD_Menu::INP_INT32, mnuIValueRqst,  6, -66636,  65535, 10, nullptr },
-  { 15, 0, "Hex16",   MD_Menu::INP_INT16, mnuIValueRqst,  4, 0x0000, 0xffff, 16, nullptr },  // test hex display
-  { 16, 0, "Confirm", MD_Menu::INP_RUN,   myCode,         0,      0,      0, 10, nullptr },
+  { 10, "List",    MD_Menu::INP_LIST,  mnuLValueRqst,  6,      0,      0,  0, listFruit }, // shorter and longer list labels
+  { 11, "Bool",    MD_Menu::INP_BOOL,  mnuBValueRqst,  1,      0,      0,  0, nullptr },
+  { 12, "Int8",    MD_Menu::INP_INT8,  mnuIValueRqst,  4,   -128,    127, 10, nullptr },
+  { 13, "Int16",   MD_Menu::INP_INT16, mnuIValueRqst,  4, -32768,  32767, 10, nullptr },  // test field too small
+  { 14, "Int32",   MD_Menu::INP_INT32, mnuIValueRqst,  6, -66636,  65535, 10, nullptr },
+  { 15, "Hex16",   MD_Menu::INP_INT16, mnuIValueRqst,  4, 0x0000, 0xffff, 16, nullptr },  // test hex display
+  { 16, "Confirm", MD_Menu::INP_RUN,   myCode,         0,      0,      0, 10, nullptr },
 
-  { 30, 0, "Port",     MD_Menu::INP_LIST, mnuSerialValueRqst, 4, 0, 0, 0, listCOM },
-  { 31, 0, "Bits/s",   MD_Menu::INP_LIST, mnuSerialValueRqst, 6, 0, 0, 0, listBaud },
-  { 32, 0, "Parity",   MD_Menu::INP_LIST, mnuSerialValueRqst, 1, 0, 0, 0, listParity },
-  { 33, 0, "No. Bits", MD_Menu::INP_LIST, mnuSerialValueRqst, 1, 0, 0, 0, listStop },
+  { 30, "Port",     MD_Menu::INP_LIST, mnuSerialValueRqst, 4, 0, 0, 0, listCOM },
+  { 31, "Bits/s",   MD_Menu::INP_LIST, mnuSerialValueRqst, 6, 0, 0, 0, listBaud },
+  { 32, "Parity",   MD_Menu::INP_LIST, mnuSerialValueRqst, 1, 0, 0, 0, listParity },
+  { 33, "No. Bits", MD_Menu::INP_LIST, mnuSerialValueRqst, 1, 0, 0, 0, listStop },
 
-  { 40, 0, "Confirm", MD_Menu::INP_RUN, myLEDCode, 0, 0, 0, 0, nullptr },  // test using index in run code
-  { 41, 1, "Confirm", MD_Menu::INP_RUN, myLEDCode, 0, 0, 0, 0, nullptr },
+  { 40, "Confirm", MD_Menu::INP_RUN, myLEDCode, 0, 0, 0, 0, nullptr },  // test using index in run code
+  { 41, "Confirm", MD_Menu::INP_RUN, myLEDCode, 0, 0, 0, 0, nullptr },
 
 };
 
@@ -108,7 +108,7 @@ MD_Menu M(navigation, display,        // user navigation and display
           mnuInp, ARRAY_SIZE(mnuInp));// menu input data
 
 // Callback code for menu set/get input values
-void *mnuLValueRqst(MD_Menu::mnuId_t id, uint8_t idx, bool bGet)
+void *mnuLValueRqst(MD_Menu::mnuId_t id, bool bGet)
 // Value request callback for list selection variable
 {
   if (id == 10)
@@ -123,7 +123,7 @@ void *mnuLValueRqst(MD_Menu::mnuId_t id, uint8_t idx, bool bGet)
   }
 }
 
-void *mnuBValueRqst(MD_Menu::mnuId_t id, uint8_t idx, bool bGet)
+void *mnuBValueRqst(MD_Menu::mnuId_t id, bool bGet)
 // Value request callback for boolean variable
 {
   if (id == 11)
@@ -138,7 +138,7 @@ void *mnuBValueRqst(MD_Menu::mnuId_t id, uint8_t idx, bool bGet)
   }
 }
 
-void *mnuIValueRqst(MD_Menu::mnuId_t id, uint8_t idx, bool bGet)
+void *mnuIValueRqst(MD_Menu::mnuId_t id, bool bGet)
 // Value request callback for integers variables
 {
   switch (id)
@@ -178,7 +178,7 @@ void *mnuIValueRqst(MD_Menu::mnuId_t id, uint8_t idx, bool bGet)
   return(nullptr);
 }
 
-void *mnuSerialValueRqst(MD_Menu::mnuId_t id, uint8_t idx, bool bGet)
+void *mnuSerialValueRqst(MD_Menu::mnuId_t id, bool bGet)
 // Value request callback for Serial parameters
 {
   static uint8_t port = 0, speed = 0, parity = 0, stop = 0;
@@ -228,26 +228,24 @@ void *mnuSerialValueRqst(MD_Menu::mnuId_t id, uint8_t idx, bool bGet)
   return(nullptr);
 }
 
-void *myCode(MD_Menu::mnuId_t id, uint8_t idx, bool bGet)
+void *myCode(MD_Menu::mnuId_t id, bool bGet)
 // Value request callback for run code input
 {
   Serial.print(F("\nmyCode called id="));
   Serial.print(id);
-  Serial.print(F(" idx="));
-  Serial.print(idx);
   Serial.print(F(" to "));
   Serial.print(bGet ? F("GET") : F("SET - reset menu"));
 
   if (!bGet) M.reset();
 }
 
-void *myLEDCode(MD_Menu::mnuId_t id, uint8_t idx, bool bGet)
+void *myLEDCode(MD_Menu::mnuId_t id, bool bGet)
 // Value request callback for run code input
 // Only use the index here
 {
   Serial.print(F("\nSwitchig LED "));
-  Serial.print(idx == 0 ? F("off") : F("on"));
-  digitalWrite(LED_PIN, idx == 0 ? LOW : HIGH);
+  Serial.print(id == 40 ? F("off") : F("on"));
+  digitalWrite(LED_PIN, id == 40 ? LOW : HIGH);
 }
 
 // Standard setup() and loop()
@@ -276,7 +274,7 @@ void loop(void)
     Serial.print("\n\nRUNNING USER'S NORMAL OPERATION\n");
   prevMenuRun = M.isInMenu();
 
-  // If we are not running andnot autostart
+  // If we are not running and not autostart
   // check if there is a reason to start the menu
   if (!M.isInMenu() && !AUTO_START)
   {

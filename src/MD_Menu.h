@@ -99,7 +99,7 @@ identified with a unique id within the object type. A menu header (of
 type *mnuHeader_t*) defines a menu. The header contains a label for the title and
 the range of menu items (of type *mnuItem_t*) that should be displayed for 
 the menu. Menu item ids between the start and end id locations include 
-all the ids in locations in between, even if they are out of number sequence.
+all the ids in locations in between, and should be in number sequence.
 
 A menu item may lead to another menu (if it is a node in the menu tree) or an
 input item (of type *mnuInput_t*) if it is a leaf of the menu system. The depth
@@ -110,12 +110,12 @@ additinal menu depth but continues to run.
 Menu input items define the type of value that is to be edited by the user and
 parameters associated with managing the input for that value. Before the value
 is edited a callback following the *cbValueRequest* prototype is called to 'get'
-the pointer to the variable with the current value. The input item id and
-index value are provided to identify which value is being requested. A copy of
-the user variable is used for editing and a second *cbValueRequest* (conceptually 
-a 'set') is invoked after the value is updated, enabling the user code to take 
-action on the change. If the variable edit is cancelled, the second 
-*cbValueRequest* 'set' call does not occur.
+the pointer to the variable with the current value. The input item id is provided 
+to identify which value is being requested. A copy of the user variable is used 
+for editing and a second *cbValueRequest* (conceptually a 'set') is invoked 
+after the value is updated, enabling the user code to take action on the change. 
+If the variable edit is cancelled, the second *cbValueRequest* 'set' call does 
+not occur.
 
 Variables may be of the following types:
 - **Pick List** specifies a PROGMEM character string with list items separated
@@ -158,6 +158,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 \page pageRevisionHistory Revision History
 Revision History
 ----------------
+Jun 2017 version 1.1.0
+- Removed index field from menu item definition. Not useful in practice.
+
 Jun 2017 version 1.0.1
 - Added setAutoStart() method and code
 - Internal flags now a bit field
@@ -278,7 +281,7 @@ public:
   * When bGet is true, the function must return the pointer to the
   * data identified by the ID and index
   */
-  typedef void*(*cbValueRequest)(mnuId_t id, uint8_t idx, bool bGet);
+  typedef void*(*cbValueRequest)(mnuId_t id, bool bGet);
 
   /**
   * Input field defintion
@@ -290,7 +293,6 @@ public:
   typedef struct mnuInput_t
   {
     mnuId_t id;            ///< Identifier for this item
-    uint8_t idx;           ///< index for this value - id and idx make this value unique
     char    label[INPUT_LABEL_SIZE + 1]; ///< Label for this menu item
     inputAction_t action;  ///< Type of action required for this value
     cbValueRequest cbVR;   ///< Callback function to get/set the value
