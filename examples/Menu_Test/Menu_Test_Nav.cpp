@@ -42,6 +42,8 @@ MD_Menu::userNavAction_t navigation(uint16_t &incDelta)
   case MD_KeySwitch::KS_LONGPRESS: nav = MD_Menu::NAV_ESC; break;
   }
 
+  incDelta = 1;
+  
   return(nav);
 }
 #endif
@@ -66,6 +68,7 @@ MD_Menu::userNavAction_t navigation(uint16_t &incDelta)
 {
   char c = lcdKeys.getKey();
 
+  incDelta = 1;
   switch (c)
   {
   case 'D': return(MD_Menu::NAV_DEC);
@@ -114,7 +117,7 @@ MD_Menu::userNavAction_t navigation(uint16_t &incDelta)
 
   if (re != DIR_NONE)
   {
-    if (M.isInEdit()) incDelta = 1 << abs(RE.speed() / 10);
+    incDelta = (M.isInEdit() ? (1 << abs(RE.speed() / 10) : 1);
     return(re == DIR_CCW ? MD_Menu::NAV_DEC : MD_Menu::NAV_INC);
   }
 
