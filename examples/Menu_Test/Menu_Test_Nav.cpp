@@ -117,7 +117,7 @@ MD_Menu::userNavAction_t navigation(uint16_t &incDelta)
 
   if (re != DIR_NONE)
   {
-    incDelta = (M.isInEdit() ? (1 << abs(RE.speed() / 10) : 1);
+    incDelta = (M.isInEdit() ? (1 << abs(RE.speed() / 10)) : 1);
     return(re == DIR_CCW ? MD_Menu::NAV_DEC : MD_Menu::NAV_INC);
   }
 
