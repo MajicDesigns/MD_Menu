@@ -165,6 +165,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 \page pageRevisionHistory Revision History
 Revision History
 ----------------
+Jun 2017 version 1.2.0
+- Returning nullptr from value request callback now stops value being edited.
+
 Jun 2017 version 1.1.0
 - Removed index field from menu item definition. Not useful in practice.
 - Added real number (float) input
@@ -285,10 +288,11 @@ public:
   /**
   * Data input/output function prototype
   *
-  * This user function must handle the get/set of the inpout value
+  * This user function must handle the get/set of the input value
   * currently being handled by the menu.
   * When bGet is true, the function must return the pointer to the
-  * data identified by the ID and index
+  * data identified by the ID. Return nullptr to stop the menu from
+  * editing the value.
   */
   typedef void*(*cbValueRequest)(mnuId_t id, bool bGet);
 
@@ -538,8 +542,8 @@ private:
   void       loadMenu(mnuId_t id = -1);   ///< find the menu header with the specified ID
   mnuItem_t  *loadItem(mnuId_t id);       ///< find the menu item with the specified ID
   mnuInput_t *loadInput(mnuId_t id);      ///< find the input item with the specified ID
-  uint8_t    listCount(PROGMEM char *p);  ///< count the items in a list selection string 
-  char       *listItem(PROGMEM char *p, uint8_t idx, char *buf, uint8_t bufLen);  ///< extract the idx'th item from the list selection string
+  uint8_t    listCount(const PROGMEM char *p);  ///< count the items in a list selection string 
+  char       *listItem(const PROGMEM char *p, uint8_t idx, char *buf, uint8_t bufLen);  ///< extract the idx'th item from the list selection string
   void       strPreamble(char *psz, mnuInput_t *mInp);  ///< format a preamble to the a variable display
   void       strPostamble(char *psz, mnuInput_t *mInp); ///< attach a postamble to a variable display
   

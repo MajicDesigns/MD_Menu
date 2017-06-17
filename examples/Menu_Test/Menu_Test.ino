@@ -42,10 +42,11 @@ float floatValue = 999.99;
 // Menu Headers --------
 const PROGMEM MD_Menu::mnuHeader_t mnuHdr[] =
 {
-  { 10, "MD_Menu",      10, 13, 0 },
+  { 10, "MD_Menu",      10, 14, 0 },
   { 11, "Input Data",   20, 27, 0 },
   { 12, "Serial Setup", 30, 33, 0 },
   { 13, "LED Menu",     40, 41, 0 },
+  { 14, "FF Menu",     50, 51, 0 },
 };
 
 // Menu Items ----------
@@ -56,6 +57,7 @@ const PROGMEM MD_Menu::mnuItem_t mnuItm[] =
   { 11, "Serial",     MD_Menu::MNU_MENU, 12 },
   { 12, "LED",        MD_Menu::MNU_MENU, 13 },
   { 13, "More Menu",  MD_Menu::MNU_MENU, 10 },
+  { 14, "Flip-Flop",  MD_Menu::MNU_MENU, 14 },
   // Input Data submenu
   { 20, "Fruit List", MD_Menu::MNU_INPUT, 10 },
   { 21, "Boolean",    MD_Menu::MNU_INPUT, 11 },
@@ -73,7 +75,9 @@ const PROGMEM MD_Menu::mnuItem_t mnuItm[] =
   // LED  
   { 40, "Turn Off", MD_Menu::MNU_INPUT, 40 },
   { 41, "Turn On",  MD_Menu::MNU_INPUT, 41 },
-
+  // Flip-flop - boolean controls variable edit
+  { 50, "Flip", MD_Menu::MNU_INPUT, 50 },
+  { 51, "Flop", MD_Menu::MNU_INPUT, 51 },
 };
 
 // Input Items ---------
@@ -102,6 +106,8 @@ const PROGMEM MD_Menu::mnuInput_t mnuInp[] =
   { 40, "Confirm", MD_Menu::INP_RUN, myLEDCode, 0, 0, 0, 0, nullptr },  // test using index in run code
   { 41, "Confirm", MD_Menu::INP_RUN, myLEDCode, 0, 0, 0, 0, nullptr },
 
+  { 50, "Flip", MD_Menu::INP_INT8, mnuFFValueRqst, 4, -128, 127, 10, nullptr },
+  { 51, "Flop", MD_Menu::INP_INT8, mnuFFValueRqst, 4, -128, 127, 16, nullptr },
 };
 
 // bring it all together in the global menu object
@@ -249,6 +255,54 @@ void *mnuFValueRqst(MD_Menu::mnuId_t id, bool bGet)
       Serial.print(F("\nFloat changed to "));
       Serial.print(floatValue);
     }
+  }
+}
+
+void *mnuFFValueRqst(MD_Menu::mnuId_t id, bool bGet)
+// Value edit allowed request depends on another value
+{
+  static bool gateKeeper = false;
+  static bool b;
+
+  switch (id)
+  {
+  case 50:
+    if (bGet)
+    {
+      if (gateKeeper)
+      {
+        Serial.print(F("\nFlipFlop value blocked"));
+        return(nullptr);
+      }
+      else
+        return((void *)&int8Value);
+    }
+    else
+    {
+      Serial.print(F("\nFlipFlop value changed to "));
+      Serial.print(int8Value);
+      gateKeeper = !gateKeeper;
+    }
+    break;
+
+  case 51:
+    if (bGet)
+    {
+      if (!gateKeeper)    // reverse the logic of above
+      {
+        Serial.print(F("\nFlipFlop value blocked"));
+        return(nullptr);
+      }
+      else
+        return((void *)&int8Value);
+    }
+    else
+    {
+      Serial.print(F("\nFlipFlop value changed to "));
+      Serial.print(int8Value);
+      gateKeeper = !gateKeeper;
+    }
+    break;
   }
 }
 

@@ -29,6 +29,7 @@ void *mnuLValueRqst(MD_Menu::mnuId_t id, bool bGet);
 void *mnuBValueRqst(MD_Menu::mnuId_t id, bool bGet);
 void *mnuIValueRqst(MD_Menu::mnuId_t id, bool bGet);
 void *mnuFValueRqst(MD_Menu::mnuId_t id, bool bGet);
+void *mnuFFValueRqst(MD_Menu::mnuId_t id, bool bGet);
 void *mnuSerialValueRqst(MD_Menu::mnuId_t id, bool bGet);
 void *myCode(MD_Menu::mnuId_t id, bool bGet);
 void *myLEDCode(MD_Menu::mnuId_t id, bool bGet);

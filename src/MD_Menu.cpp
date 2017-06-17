@@ -113,7 +113,7 @@ MD_Menu::mnuInput_t* MD_Menu::loadInput(mnuId_t id)
   return(nullptr);
 }
 
-uint8_t MD_Menu::listCount(PROGMEM char *p)
+uint8_t MD_Menu::listCount(const PROGMEM char *p)
 // Return a count of the items in the list
 {
   uint8_t count = 0;
@@ -139,7 +139,7 @@ uint8_t MD_Menu::listCount(PROGMEM char *p)
   return(count);
 }
 
-char *MD_Menu::listItem(PROGMEM char *p, uint8_t idx, char *buf, uint8_t bufLen)
+char *MD_Menu::listItem(const PROGMEM char *p, uint8_t idx, char *buf, uint8_t bufLen)
 // Find the idx'th item in the list and return in fixed width, padded
 // with trailing spaces. 
 {
@@ -562,18 +562,23 @@ void MD_Menu::handleInput(bool bNew)
     mi = loadItem(_mnuStack[_currMenu].idItmCurr);
     _cbDisp(DISP_L0, mi->label);
     me = loadInput(mi->actionId);
-    SET_FLAG(F_INEDIT);
-    timerStart();
-
-    switch (me->action)
+    if ((me == nullptr) || (me->cbVR == nullptr))
+      ended = true;
+    else
     {
-    case INP_LIST: ended = processList(NAV_NULL, me); break;
-    case INP_BOOL: ended = processBool(NAV_NULL, me); break;
-    case INP_INT8:
-    case INP_INT16:
-    case INP_INT32: ended = processInt(NAV_NULL, me, incDelta); break;
-    case INP_FLOAT: ended = processFloat(NAV_NULL, me, incDelta); break;
-    case INP_RUN: ended = processRun(NAV_NULL, me); break;
+      SET_FLAG(F_INEDIT);
+      timerStart();
+
+      switch (me->action)
+      {
+      case INP_LIST: ended = processList(NAV_NULL, me); break;
+      case INP_BOOL: ended = processBool(NAV_NULL, me); break;
+      case INP_INT8:
+      case INP_INT16:
+      case INP_INT32: ended = processInt(NAV_NULL, me, incDelta); break;
+      case INP_FLOAT: ended = processFloat(NAV_NULL, me, incDelta); break;
+      case INP_RUN: ended = processRun(NAV_NULL, me); break;
+      }
     }
   }
   else
