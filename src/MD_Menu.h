@@ -165,6 +165,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 \page pageRevisionHistory Revision History
 Revision History
 ----------------
+Nov 2017 version 1.2.1
+- Replaced MD_KeySwitch in examples with new MD_UISwitch library
+
 Jun 2017 version 1.2.0
 - Returning nullptr from value request callback now stops value being edited.
 

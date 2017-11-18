@@ -22,8 +22,7 @@
 //
 // External Dependencies
 // ---------------------
-// - MD_KeySwitch library for digital switches at https://github.com/MajicDesigns/MD_KeySwitch
-// - MD_AButton library for LCD shield switches at https://github.com/MajicDesigns/MD_AButton
+// - MD_UISwitch library for digital and analog switches at https://github.com/MajicDesigns/MD_UISwitch
 // - MD_REncoder library for rotary encoder input at https://github.com/MajicDesigns/MD_REncoder
 // - MD_Parola library for LED matrix display at https://github.com/MajicDesigns/MD_Parola
 // - MD_MAX72XX library to support Parola library at https://github.com/MajicDesigns/MD_MAX72XX
@@ -363,5 +362,4 @@ void loop(void)
   }
 
   M.runMenu();   // just run the menu code
-
 }
