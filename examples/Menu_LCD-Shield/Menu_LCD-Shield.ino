@@ -1,36 +1,75 @@
 // Example program for the MD_Menu library
 //
-// Test functionality of the library and demonstrate how a menu is structured.
-// The code runs the menu and display results on the Serial Monitor.
+// Run the menu on a LCD 2 line dispay to demonstrate how a menu is structured.
+// The code runs the menu and display results of menu selections on the Serial Monitor.
 // 
-// Different combinations of output display and navigation interfaces can be 
-// selected from the Menu_Test.h header file. The example callback routines
-// cover what would be the most common user input and display hardware:
-//
-// User Navigation - Menu_Test_Nav.cpp
-// ---------------
-// There are examples for user navigation for:
-// - 3 switches for INC, DEC and ESC/SEL selections
-// - Rotary encoder for INC/DEC and switch for ESC/SEL
-// - Analog 'resistor ladder' switches common on LCD shields for INC, DEC, ESC and SEL
-//
-// User Display - Menu_Test_Disp.cpp
-// ------------
-// - Serial Monitor output (useful for debugging)
-// - LCD module display (LiquidCrystal Library)
-// - Parola library and LED matrix modules
+// The user input interface is the tact switches set up as analog and 'resistor
+// ladder' common on LCD shields for INC, DEC, ESC and SEL.
 //
 // External Dependencies
 // ---------------------
-// - MD_UISwitch library for digital and analog switches at https://github.com/MajicDesigns/MD_UISwitch
-// - MD_REncoder library for rotary encoder input at https://github.com/MajicDesigns/MD_REncoder
-// - MD_Parola library for LED matrix display at https://github.com/MajicDesigns/MD_Parola
-// - MD_MAX72XX library to support Parola library at https://github.com/MajicDesigns/MD_MAX72XX
 // - LiquidCrystal libray for LCD module is a standard Arduino library
+// - MD_UISwitch library for digital and analog switches available at 
+//   https://github.com/MajicDesigns/MD_UISwitch.
 //
-#include "Menu_Test.h"
+#include <LiquidCrystal.h>
+#include <MD_UISwitch.h>
+#include <MD_Menu.h>
 
-// Global menu data and definitions
+// LCD Display -----------------------------
+// LCD display definitions
+#define  LCD_ROWS  2
+#define  LCD_COLS  16
+
+// LCD pin definitions - change to suit your shield
+#define  LCD_RS    8
+#define  LCD_ENA   9
+#define  LCD_D4    4
+#define  LCD_D5    LCD_D4+1
+#define  LCD_D6    LCD_D4+2
+#define  LCD_D7    LCD_D4+3
+
+static LiquidCrystal lcd(LCD_RS, LCD_ENA, LCD_D4, LCD_D5, LCD_D6, LCD_D7);
+
+// LCD Shield keypad -----------------------
+
+#define LCD_KEYS_PIN A0
+
+// These key values work for most LCD shields
+MD_UISwitch_Analog::uiAnalogKeys_t keyTable[] =
+{
+  {  10, 10, 'R' },  // Right
+  { 140, 15, 'U' },  // Up
+  { 315, 15, 'D' },  // Down
+  { 490, 15, 'L' },  // Left
+  { 725, 15, 'S' },  // Select
+};
+
+MD_UISwitch_Analog lcdKeys(LCD_KEYS_PIN, keyTable, ARRAY_SIZE(keyTable));
+
+// Menu Setup -----------------------------
+const bool AUTO_START = true; // auto start the menu, manual detect and start if false
+
+const uint32_t BAUD_RATE = 57600;   // Serial Monitor speed setting 
+const uint16_t MENU_TIMEOUT = 5000; // in milliseconds
+
+const uint8_t LED_PIN = 13;  // for myLEDCode function
+
+// function prototypes for user nav and display callback
+bool display(MD_Menu::userDisplayAction_t action, char *msg);
+MD_Menu::userNavAction_t navigation(uint16_t &incDelta);
+
+// Function prototypes for variable get/set functions
+void *mnuLValueRqst(MD_Menu::mnuId_t id, bool bGet);
+void *mnuBValueRqst(MD_Menu::mnuId_t id, bool bGet);
+void *mnuIValueRqst(MD_Menu::mnuId_t id, bool bGet);
+void *mnuFValueRqst(MD_Menu::mnuId_t id, bool bGet);
+void *mnuFFValueRqst(MD_Menu::mnuId_t id, bool bGet);
+void *mnuSerialValueRqst(MD_Menu::mnuId_t id, bool bGet);
+void *myCode(MD_Menu::mnuId_t id, bool bGet);
+void *myLEDCode(MD_Menu::mnuId_t id, bool bGet);
+
+// Global menu data and definitions -------
 uint8_t fruit = 2;
 bool bValue = true;
 int8_t  int8Value = 99;
@@ -38,7 +77,7 @@ int16_t int16Value = 999;
 int32_t int32Value = 9999;
 float floatValue = 999.99;
 
-// Menu Headers --------
+// Menu Headers ----------------------------
 const PROGMEM MD_Menu::mnuHeader_t mnuHdr[] =
 {
   { 10, "MD_Menu",      10, 14, 0 },
@@ -48,7 +87,7 @@ const PROGMEM MD_Menu::mnuHeader_t mnuHdr[] =
   { 14, "FF Menu",     50, 51, 0 },
 };
 
-// Menu Items ----------
+// Menu Items ------------------------------
 const PROGMEM MD_Menu::mnuItem_t mnuItm[] =
 {
   // Starting (Root) menu
@@ -79,7 +118,7 @@ const PROGMEM MD_Menu::mnuItem_t mnuItm[] =
   { 51, "Flop", MD_Menu::MNU_INPUT, 51 },
 };
 
-// Input Items ---------
+// Input Items -----------------------------
 const PROGMEM char listFruit[] = "Apple|Pear|Orange|Banana|Pineapple|Peach";
 const PROGMEM char listCOM[] = "COM1|COM2|COM3|COM4";
 const PROGMEM char listBaud[] = "9600|19200|57600|115200";
@@ -114,6 +153,63 @@ MD_Menu M(navigation, display,        // user navigation and display
           mnuHdr, ARRAY_SIZE(mnuHdr), // menu header data
           mnuItm, ARRAY_SIZE(mnuItm), // menu item data
           mnuInp, ARRAY_SIZE(mnuInp));// menu input data
+
+// End of setup information ----------------
+
+bool display(MD_Menu::userDisplayAction_t action, char *msg)
+// Output display to a one of 2 line LCD display. 
+// For a one line display, comment out the L0 handling code.
+// The output display line is cleared with spaces before the
+// requested message is shown.
+{
+  static char szLine[LCD_COLS + 1] = { '\0' };
+
+  switch (action)
+  {
+  case MD_Menu::DISP_CLEAR:
+    lcd.clear();
+    memset(szLine, ' ', LCD_COLS);
+    break;
+
+  case MD_Menu::DISP_L0:
+    lcd.setCursor(0, 0);
+    lcd.print(szLine);
+    lcd.setCursor(0, 0);
+    lcd.print(msg);
+    break;
+
+  case MD_Menu::DISP_L1:
+    lcd.setCursor(0, 1);
+    lcd.print(szLine);
+    lcd.setCursor(0, 1);
+    lcd.print(msg);
+    break;
+  }
+
+  return(true);
+}
+
+MD_Menu::userNavAction_t navigation(uint16_t &incDelta)
+// Using switches found on a LCD shield
+// up and down map to INC and DEC
+// Right and Left map to ESC
+// Select maps to SEL
+{
+  incDelta = 1;
+  if (lcdKeys.read() == MD_UISwitch::KEY_PRESS)
+  {
+    switch (lcdKeys.getKey())
+    {
+    case 'D': return(MD_Menu::NAV_DEC);
+    case 'U': return(MD_Menu::NAV_INC);
+    case 'S': return(MD_Menu::NAV_SEL);
+    case 'R':
+    case 'L': return(MD_Menu::NAV_ESC);
+    }
+  }
+
+  return(MD_Menu::NAV_NULL);
+}
 
 // Callback code for menu set/get input values
 void *mnuLValueRqst(MD_Menu::mnuId_t id, bool bGet)
@@ -329,12 +425,15 @@ void *myLEDCode(MD_Menu::mnuId_t id, bool bGet)
 void setup(void)
 {
   Serial.begin(BAUD_RATE);
-  Serial.print("\n[Menu_Test Debug]");
+  Serial.print("\n[Menu_LCD_Shield Output]");
 
   pinMode(LED_PIN, OUTPUT);
 
-  setupDisp();
-  setupNav();
+  lcd.begin(LCD_COLS, LCD_ROWS);
+  lcd.clear();
+  lcd.noCursor();
+
+  lcdKeys.begin();
 
   M.begin();
   M.setMenuWrap(true);
@@ -345,6 +444,8 @@ void setup(void)
 void loop(void)
 {
   static bool prevMenuRun = true;
+  static uint16_t count = 0;
+  static uint32_t timeCount = 0;
 
   // Detect if we need to initiate running normal user code
   if (prevMenuRun && !M.isInMenu())
@@ -361,5 +462,13 @@ void loop(void)
       M.runMenu(true);
   }
 
-  M.runMenu();   // just run the menu code
+  // if we are not running the menu, show a counter counting
+  if (!M.isInMenu() && (millis() - timeCount >= 1000))
+  {
+    lcd.setCursor(0, 0);
+    lcd.print(count++);
+    timeCount = millis();
+  }
+  else
+    M.runMenu();   // just run the menu code each loop
 }

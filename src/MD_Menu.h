@@ -1,33 +1,33 @@
 #pragma once
 /**
 \mainpage MD_Menu Library
-Yet Another Menu Manager for Small Displays
+Menu Manager for 1-2 Line Displays
 ------------------------------
 
 This is a menu management library created as a front end to set 
-parameters in embedded hardware control applications, laeving the 
+parameters in embedded hardware control applications, leaving the 
 back end under application control. It is suitable for text based 
-displays (eg, LCD modules) and with 1 or 2 lines available for display.
+displays (eg, LCD modules) with 1 or 2 lines available for display.
 
 The library allows user code to define
 - Static menu definitions to minimised RAM footprint. 
-- Callbacks for navigation and display control
-- Menu inactivity timeout
-- Auto start on key press or manual start by user code
+- Callbacks for navigation and display control.
+- Menu inactivity timeout.
+- Auto start on key press or manual start by user code.
 - Input methods available for
-  + Boolean (Y/N) values
-  + Pick List selection
-  + 8/16/32 bit signed integers
-  + Decimal floating point representation
+  + Boolean (Y/N) values.
+  + Pick List selection.
+  + 8/16/32 bit signed integers.
+  + Decimal floating point representation.
 
 Menu managers in embedded systems are generally not the main function 
 of the embedded application software, so this library minimises the 
 use of RAM and has a small memory footprint overall, leaving more space 
 for what really matters.
 
-- \subpage pageMenu
-- \subpage pageRevisionHistory
-- \subpage pageCopyright
++ \subpage pageMenu
++ \subpage pageRevisionHistory
++ \subpage pageCopyright
 
 Using the Library
 -----------------
@@ -165,6 +165,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 \page pageRevisionHistory Revision History
 Revision History
 ----------------
+Dec 2017 version 1.2.2
+- Added Menu_LCD-Shield example as a simpler example
+
 Nov 2017 version 1.2.1
 - Replaced MD_KeySwitch in examples with new MD_UISwitch library
 
