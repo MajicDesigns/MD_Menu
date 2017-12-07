@@ -16,4 +16,6 @@ The library allows user code to define:
   - 8/16/32 bit signed integers.
   - Decimal floating point.
 
+Support Arduino, ESP8266 and ESP32.
+
 [Library Documentation](https://majicdesigns.github.io/MD_Menu/)
