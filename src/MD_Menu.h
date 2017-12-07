@@ -386,9 +386,9 @@ public:
    * \param mnuInpCount number of elements in the input definitions table
    */
   MD_Menu(cbUserNav cbNav, cbUserDisplay cbDisp,
-    mnuHeader_t *mnuHdr, uint8_t mnuHdrCount,
-    mnuItem_t *mnuItm, uint8_t mnuItmCount,
-    mnuInput_t *mnuInp, uint8_t mnuInpCount);
+    const mnuHeader_t *mnuHdr, uint8_t mnuHdrCount,
+    const mnuItem_t *mnuItm, uint8_t mnuItmCount,
+    const mnuInput_t *mnuInp, uint8_t mnuInpCount);
 
   /**
    * Class Destructor.
@@ -519,11 +519,11 @@ private:
   cbUserNav _cbNav;       ///< User navigation function
   cbUserDisplay _cbDisp;  ///< User display function
 
-  mnuHeader_t *_mnuHdr;   ///< Menu header table
+  const mnuHeader_t *_mnuHdr;   ///< Menu header table
   uint8_t _mnuHdrCount;   ///< Number of items in the header table
-  mnuItem_t *_mnuItm;     ///< Menu item table
+  const mnuItem_t *_mnuItm;     ///< Menu item table
   uint8_t _mnuItmCount;   ///< Number of items in the item table
-  mnuInput_t *_mnuInp;    ///< Input item table
+  const mnuInput_t *_mnuInp;    ///< Input item table
   uint8_t _mnuInpCount;   ///< Number of items in the input table
 
   // Timeout related
@@ -548,8 +548,8 @@ private:
   void       loadMenu(mnuId_t id = -1);   ///< find the menu header with the specified ID
   mnuItem_t  *loadItem(mnuId_t id);       ///< find the menu item with the specified ID
   mnuInput_t *loadInput(mnuId_t id);      ///< find the input item with the specified ID
-  uint8_t    listCount(const PROGMEM char *p);  ///< count the items in a list selection string 
-  char       *listItem(const PROGMEM char *p, uint8_t idx, char *buf, uint8_t bufLen);  ///< extract the idx'th item from the list selection string
+  uint8_t    listCount(const char *p);  ///< count the items in a list selection string 
+  char       *listItem(const char *p, uint8_t idx, char *buf, uint8_t bufLen);  ///< extract the idx'th item from the list selection string
   void       strPreamble(char *psz, mnuInput_t *mInp);  ///< format a preamble to the a variable display
   void       strPostamble(char *psz, mnuInput_t *mInp); ///< attach a postamble to a variable display
   
