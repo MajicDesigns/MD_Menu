@@ -1,7 +1,7 @@
 #pragma once
 /**
 \mainpage MD_Menu Library
-Menu Manager for 1-2 Line Displays
+Menu Manager for 1 or 2 Line Displays
 ------------------------------
 
 This is a menu management library created as a front end to set 
@@ -165,6 +165,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 \page pageRevisionHistory Revision History
 Revision History
 ----------------
+Dec 2017 version 1.2.3
+- Changes by makelion to allow use with ESP8266 and ESP32
+
 Dec 2017 version 1.2.2
 - Added Menu_LCD-Shield example as a simpler example
 
