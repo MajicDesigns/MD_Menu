@@ -10,9 +10,9 @@
  * \brief Main code file for MD_Menu library
  */
 MD_Menu::MD_Menu(cbUserNav cbNav, cbUserDisplay cbDisp,
-                mnuHeader_t *mnuHdr, uint8_t mnuHdrCount,
-                mnuItem_t *mnuItm, uint8_t mnuItmCount,
-                mnuInput_t *mnuInp, uint8_t mnuInpCount) :
+                const mnuHeader_t *mnuHdr, uint8_t mnuHdrCount,
+                const mnuItem_t *mnuItm, uint8_t mnuItmCount,
+                const mnuInput_t *mnuInp, uint8_t mnuInpCount) :
                 _options(0), _timeout(0),
                 _mnuHdr(mnuHdr), _mnuHdrCount(mnuHdrCount),
                 _mnuItm(mnuItm), _mnuItmCount(mnuItmCount),
@@ -113,7 +113,7 @@ MD_Menu::mnuInput_t* MD_Menu::loadInput(mnuId_t id)
   return(nullptr);
 }
 
-uint8_t MD_Menu::listCount(const PROGMEM char *p)
+uint8_t MD_Menu::listCount(const char *p)
 // Return a count of the items in the list
 {
   uint8_t count = 0;
@@ -139,7 +139,7 @@ uint8_t MD_Menu::listCount(const PROGMEM char *p)
   return(count);
 }
 
-char *MD_Menu::listItem(const PROGMEM char *p, uint8_t idx, char *buf, uint8_t bufLen)
+char *MD_Menu::listItem(const char *p, uint8_t idx, char *buf, uint8_t bufLen)
 // Find the idx'th item in the list and return in fixed width, padded
 // with trailing spaces. 
 {
