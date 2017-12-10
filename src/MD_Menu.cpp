@@ -222,9 +222,9 @@ bool MD_Menu::processList(userNavAction_t nav, mnuInput_t *mInp)
       }
       else
       {
-        _iValue = *((uint8_t*)_pValue);
-        if (_iValue >= size - 1)   // index set incorrectly
-          _iValue = 0;
+        _V.value = _pValue->value;
+        if (_V.value >= size - 1)   // index set incorrectly
+          _V.value = 0;
         update = true;
       }
     }
@@ -234,14 +234,14 @@ bool MD_Menu::processList(userNavAction_t nav, mnuInput_t *mInp)
   case NAV_DEC:
     {
       uint8_t listSize = listCount(mInp->pList);
-      if (_iValue > 0)
+      if (_V.value > 0)
       {
-        _iValue--;
+        _V.value--;
         update = true;
       }
-      else if (_iValue == 0 && TEST_FLAG(F_MENUWRAP))
+      else if (_V.value == 0 && TEST_FLAG(F_MENUWRAP))
       {
-        _iValue = listSize - 1;
+        _V.value = listSize - 1;
         update = true;
       }
     }
@@ -251,21 +251,21 @@ bool MD_Menu::processList(userNavAction_t nav, mnuInput_t *mInp)
     {
       uint8_t listSize = listCount(mInp->pList);
 
-      if (_iValue < listSize - 1)
+      if (_V.value < listSize - 1)
       {
-        _iValue++;
+        _V.value++;
         update = true;
       }
-      else if (_iValue == listSize - 1 && TEST_FLAG(F_MENUWRAP))
+      else if (_V.value == listSize - 1 && TEST_FLAG(F_MENUWRAP))
       {
-        _iValue = 0;
+        _V.value = 0;
         update = true;
       }
     }
     break;
 
   case NAV_SEL:
-    *((uint8_t*)_pValue) = _iValue;
+    _pValue->value = _V.value;
     mInp->cbVR(mInp->id, false);
     endFlag = true;
     break;
@@ -277,7 +277,7 @@ bool MD_Menu::processList(userNavAction_t nav, mnuInput_t *mInp)
     char sz[INP_PRE_SIZE(mInp) + sizeof(szItem) + INP_POST_SIZE(mInp) + 1];
 
     strPreamble(sz, mInp);
-    strcat(sz, listItem(mInp->pList, _iValue, szItem, sizeof(szItem)));
+    strcat(sz, listItem(mInp->pList, _V.value, szItem, sizeof(szItem)));
     strPostamble(sz, mInp);
 
     _cbDisp(DISP_L1, sz);
@@ -306,7 +306,7 @@ bool MD_Menu::processBool(userNavAction_t nav, mnuInput_t *mInp)
       }
       else
       {
-        _bValue = *((bool *)_pValue);
+        _V.value = _pValue->value;
         update = true;
       }
     }
@@ -314,12 +314,12 @@ bool MD_Menu::processBool(userNavAction_t nav, mnuInput_t *mInp)
 
   case NAV_INC:
   case NAV_DEC:
-    _bValue = !_bValue;
+    _V.value = !_V.value;
     update = true;
     break;
 
   case NAV_SEL:
-    *((bool *)_pValue) = _bValue;
+    _pValue->value = _V.value;
     mInp->cbVR(mInp->id, false);
     endFlag = true;
     break;
@@ -330,7 +330,7 @@ bool MD_Menu::processBool(userNavAction_t nav, mnuInput_t *mInp)
     char sz[INP_PRE_SIZE(mInp) + strlen(INP_BOOL_T) + INP_POST_SIZE(mInp) + 1];
 
     strPreamble(sz, mInp);
-    strcat(sz, _bValue ? INP_BOOL_T : INP_BOOL_F);
+    strcat(sz, _V.value ? INP_BOOL_T : INP_BOOL_F);
     strPostamble(sz, mInp);
 
     _cbDisp(DISP_L1, sz);
@@ -397,40 +397,30 @@ bool MD_Menu::processInt(userNavAction_t nav, mnuInput_t *mInp, uint16_t incDelt
       }
       else
       {
-        switch (mInp->action)
-        {
-        case INP_INT8:  _iValue = *((int8_t*)_pValue);  break;
-        case INP_INT16: _iValue = *((int16_t*)_pValue); break;
-        case INP_INT32: _iValue = *((int32_t*)_pValue); break;
-        }
+        _V.value = _pValue->value;
         update = true;
       }
     }
     break;
 
   case NAV_INC:
-    if (_iValue + incDelta < mInp->range[1])
-      _iValue += incDelta;
+    if (_V.value + incDelta < mInp->range[1].value)
+      _V.value += incDelta;
     else
-      _iValue = mInp->range[1];
+      _V.value = mInp->range[1].value;
     update = true;
     break;
 
   case NAV_DEC:
-    if (_iValue - incDelta > mInp->range[0])
-      _iValue -= incDelta;
+    if (_V.value - incDelta > mInp->range[0].value)
+      _V.value -= incDelta;
     else
-      _iValue = mInp->range[0];
+      _V.value = mInp->range[0].value;
     update = true;
     break;
 
   case NAV_SEL:
-    switch (mInp->action)
-    {
-    case INP_INT8:  *((int8_t*)_pValue) = _iValue;  break;
-    case INP_INT16: *((int16_t*)_pValue) = _iValue; break;
-    case INP_INT32: *((int32_t*)_pValue) = _iValue; break;
-    }
+    _pValue->value = _V.value;
     mInp->cbVR(mInp->id, false);
     endFlag = true;
     break;
@@ -441,7 +431,7 @@ bool MD_Menu::processInt(userNavAction_t nav, mnuInput_t *mInp, uint16_t incDelt
     char sz[INP_PRE_SIZE(mInp) + mInp->fieldWidth + INP_POST_SIZE(mInp) + 1];
 
     strPreamble(sz, mInp);
-    ltostr(sz + strlen(sz), mInp->fieldWidth + 1, _iValue, mInp->base);
+    ltostr(sz + strlen(sz), mInp->fieldWidth + 1, _V.value, mInp->base);
     strPostamble(sz, mInp);
 
     _cbDisp(DISP_L1, sz);
@@ -474,30 +464,30 @@ bool MD_Menu::processFloat(userNavAction_t nav, mnuInput_t *mInp, uint16_t incDe
     }
     else
     {
-      _iValue = *((int32_t*)_pValue);
+      _V.value = _pValue->value;
       update = true;
     }
   }
   break;
 
   case NAV_INC:
-    if (_iValue + (incDelta * mInp->base) < mInp->range[1])
-      _iValue += (incDelta * mInp->base);
+    if (_V.value + (incDelta * mInp->base) < mInp->range[1].value)
+      _V.value += (incDelta * mInp->base);
     else
-      _iValue = mInp->range[1];
+      _V.value = mInp->range[1].value;
     update = true;
     break;
 
   case NAV_DEC:
-    if (_iValue - (incDelta * mInp->base) > mInp->range[0])
-      _iValue -= (incDelta * mInp->base);
+    if (_V.value - (incDelta * mInp->base) > mInp->range[0].value)
+      _V.value -= (incDelta * mInp->base);
     else
-      _iValue = mInp->range[0];
+      _V.value = mInp->range[0].value;
     update = true;
     break;
 
   case NAV_SEL:
-    *((int32_t*)_pValue) = _iValue;
+    _pValue->value = _V.value;
     mInp->cbVR(mInp->id, false);
     endFlag = true;
     break;
@@ -512,12 +502,132 @@ bool MD_Menu::processFloat(userNavAction_t nav, mnuInput_t *mInp, uint16_t incDe
       divisor *= 10;
 
     strPreamble(sz, mInp);
-    ltostr(sz + strlen(sz), mInp->fieldWidth - (FLOAT_DECIMALS + 1) + 1, _iValue / divisor, 10);
+    ltostr(sz + strlen(sz), mInp->fieldWidth - (FLOAT_DECIMALS + 1) + 1, _V.value / divisor, 10);
     sz[strlen(sz) + 1] = '\0';
     sz[strlen(sz)] = DECIMAL_POINT;
-    ltostr(sz + strlen(sz), (FLOAT_DECIMALS + 1), abs(_iValue % divisor), 10, true);
+    ltostr(sz + strlen(sz), (FLOAT_DECIMALS + 1), abs(_V.value % divisor), 10, true);
 
     strPostamble(sz, mInp);
+
+    _cbDisp(DISP_L1, sz);
+  }
+
+  return(endFlag);
+}
+
+bool MD_Menu::processEng(userNavAction_t nav, mnuInput_t *mInp, uint16_t incDelta)
+// Processing for Engineering Units number value input
+// The number is actually a uint32, where the last ENGU_DECIMALS digits are taken
+// to be fractional part of the floating numer. For all purposes, this number is a long
+// integer except when displayed. The base field is used as the increment for the decimal
+// part in single fractional units of the decimal part.
+// Return true when the edit cycle is completed
+{
+  bool endFlag = false;
+  bool update = false;
+
+  switch (nav)
+  {
+  case NAV_NULL:    // this is to initialise the CB_DISP
+  {
+    _pValue = mInp->cbVR(mInp->id, true);
+
+    if (_pValue == nullptr)
+    {
+      MD_PRINTS("\nEng cbVR(GET) == NULL!");
+      endFlag = true;
+    }
+    else
+    {
+      _V.value = _pValue->value;
+      _V.power = _pValue->power;
+      if (_V.power < (-ENGU_RANGE)) _V.power = -ENGU_RANGE;
+      if (_V.power > (ENGU_RANGE)) _V.power = ENGU_RANGE;
+      update = true;
+    }
+  }
+  break;
+
+  case NAV_INC:
+    if ((_V.value + (incDelta * mInp->base))/1000 < 1000)  // still within the same prefix range
+    {
+      if ((_V.power < mInp->range[1].power) ||
+         (_V.power == mInp->range[1].power && _V.value + (incDelta * mInp->base) < mInp->range[1].value))
+        _V.value += (incDelta * mInp->base);
+      else
+        _V.value = mInp->range[1].value;
+    }
+    else  // moved into the next range
+    {
+      _V.value += (incDelta * mInp->base);
+      _V.value /= 1000;
+      _V.power += 3;
+      if ((_V.power > mInp->range[1].power) ||
+         (_V.power == mInp->range[1].power && _V.value > mInp->range[1].value))
+      {
+        _V.value = mInp->range[1].value;
+        _V.power = mInp->range[1].power;
+      }
+    }
+    update = true;
+    break;
+
+  case NAV_DEC:
+    if ((_V.value - (incDelta * mInp->base)) / 1000 > 0)  // still within the same prefix range
+    {
+      if ((_V.power > mInp->range[0].power) ||
+         (_V.power == mInp->range[0].power && _V.value - (incDelta * mInp->base) > mInp->range[0].value))
+        _V.value -= (incDelta * mInp->base);
+      else
+        _V.value = mInp->range[0].value;
+    }
+    else  // moved into the previous range
+    {
+      _V.value -= (incDelta * mInp->base);
+      _V.value *= 1000;
+      _V.power -= 3;
+      if ((_V.power < mInp->range[0].power) ||
+         (_V.power == mInp->range[0].power && _V.value < mInp->range[0].value))
+      {
+        _V.value = mInp->range[0].value;
+        _V.power = mInp->range[0].power;
+      }
+    }
+    update = true;
+    break;
+
+  case NAV_SEL:
+    _pValue->value = _V.value;
+    _pValue->power = _V.power;
+    mInp->cbVR(mInp->id, false);
+    endFlag = true;
+    break;
+  }
+
+  if (update)
+  {
+    // The decimal units prefix are fitted to stay between 10^-ENGU_RANGE and 10^ENGU_RANGE 
+    // as a symmetrical range. prefixes are atto(10^-18), femto(-15), pico(-12), nano(-9),
+    // micro(-6), milli(-3), blank(0), kilo(3), Mega(6), Giga(9), Tera(12), Peta(15), Exa(18).
+    static char unitsPrefix[] = { "afpnum kMGTPE" };
+
+    uint16_t divisor = 1;
+    char sz[INP_PRE_SIZE(mInp) + mInp->fieldWidth + INP_POST_SIZE(mInp) + 1 + strlen_P(mInp->pList) + 1];
+
+    // work out the divisor we need
+    for (uint8_t i = 0; i < ENGU_DECIMALS; i++)
+      divisor *= 10;
+
+    strPreamble(sz, mInp);
+    ltostr(sz + strlen(sz), mInp->fieldWidth - (ENGU_DECIMALS + 1) + 1, _V.value / divisor, 10);
+    sz[strlen(sz) + 1] = '\0';
+    sz[strlen(sz)] = DECIMAL_POINT;
+    ltostr(sz + strlen(sz), (ENGU_DECIMALS + 1), abs(_V.value % divisor), 10, true);
+
+    strPostamble(sz, mInp);
+    sz[strlen(sz) + 1] = '\0';
+    sz[strlen(sz)] = unitsPrefix[(strlen(unitsPrefix) / 2) + (_V.power / 3)]; // milli, kilo, etc
+    strcat_P(sz, mInp->pList);
 
     _cbDisp(DISP_L1, sz);
   }
@@ -577,6 +687,7 @@ void MD_Menu::handleInput(bool bNew)
       case INP_INT16:
       case INP_INT32: ended = processInt(NAV_NULL, me, incDelta); break;
       case INP_FLOAT: ended = processFloat(NAV_NULL, me, incDelta); break;
+      case INP_ENGU: ended = processEng(NAV_NULL, me, incDelta); break;
       case INP_RUN: ended = processRun(NAV_NULL, me); break;
       }
     }
@@ -601,6 +712,7 @@ void MD_Menu::handleInput(bool bNew)
       case INP_INT16:
       case INP_INT32: ended = processInt(nav, me, incDelta); break;
       case INP_FLOAT: ended = processFloat(nav, me, incDelta); break;
+      case INP_ENGU: ended = processEng(nav, me, incDelta); break;
       case INP_RUN: ended = processRun(nav, me); break;
       }
     }

@@ -3,9 +3,10 @@ var class_m_d___menu =
     [ "mnuHeader_t", "struct_m_d___menu_1_1mnu_header__t.html", "struct_m_d___menu_1_1mnu_header__t" ],
     [ "mnuInput_t", "struct_m_d___menu_1_1mnu_input__t.html", "struct_m_d___menu_1_1mnu_input__t" ],
     [ "mnuItem_t", "struct_m_d___menu_1_1mnu_item__t.html", "struct_m_d___menu_1_1mnu_item__t" ],
+    [ "value_t", "struct_m_d___menu_1_1value__t.html", "struct_m_d___menu_1_1value__t" ],
     [ "cbUserDisplay", "class_m_d___menu.html#ab02e84a4c40fddbbc6d740b0d62df99c", null ],
     [ "cbUserNav", "class_m_d___menu.html#ab94b8993f16d451b87d60242a4c12cb7", null ],
-    [ "cbValueRequest", "class_m_d___menu.html#a271b89645928525058dabb41bdb0d30c", null ],
+    [ "cbValueRequest", "class_m_d___menu.html#ab39961380d7bd457ce110a13fdc91bbb", null ],
     [ "mnuId_t", "class_m_d___menu.html#ac55b69e28f81f0e1a98339c7c0cc4a15", null ],
     [ "inputAction_t", "class_m_d___menu.html#a93d409024bd78bcc2264249e3644b8f7", [
       [ "INP_LIST", "class_m_d___menu.html#a93d409024bd78bcc2264249e3644b8f7a3f88409f2f23bb50eb92b7737f4cc855", null ],
@@ -14,6 +15,7 @@ var class_m_d___menu =
       [ "INP_INT16", "class_m_d___menu.html#a93d409024bd78bcc2264249e3644b8f7a89302728c6c0a16f8ba99fd516a6ac86", null ],
       [ "INP_INT32", "class_m_d___menu.html#a93d409024bd78bcc2264249e3644b8f7abc69018b3ad4ee9a5f59392db7e9cb78", null ],
       [ "INP_FLOAT", "class_m_d___menu.html#a93d409024bd78bcc2264249e3644b8f7aff790c7396000af3be8a40a1651f8aa7", null ],
+      [ "INP_ENGU", "class_m_d___menu.html#a93d409024bd78bcc2264249e3644b8f7a7bb80d38b750b274eb4d1924ae7e1380", null ],
       [ "INP_RUN", "class_m_d___menu.html#a93d409024bd78bcc2264249e3644b8f7aa4662943a599650bb2a0bfb1d60616a8", null ]
     ] ],
     [ "mnuAction_t", "class_m_d___menu.html#a4f24623203fc728b52c4195b1fe3df8b", [

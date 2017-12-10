@@ -37,9 +37,9 @@ MD_Menu::userNavAction_t navigation(uint16_t &incDelta)
       Serial.print(swNav.getKey());
       switch (swNav.getKey())
       {
-      case 0: nav = MD_Menu::NAV_INC; break;
-      case 1: nav = MD_Menu::NAV_DEC; break;
-      case 2: nav = MD_Menu::NAV_SEL; break;
+      case INC_PIN: nav = MD_Menu::NAV_INC; break;
+      case DEC_PIN: nav = MD_Menu::NAV_DEC; break;
+      case CTL_PIN: nav = MD_Menu::NAV_SEL; break;
       }
     }
     break;

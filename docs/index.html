@@ -30,7 +30,7 @@
   <td id="projectlogo"><img alt="Logo" src="MajicDesigns_Logo.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">MD_Menu Library
-   &#160;<span id="projectnumber">1.2</span>
+   &#160;<span id="projectnumber">2.0</span>
    </div>
    <div id="projectbrief">Library for 1 or 2 line display menu management</div>
   </td>
@@ -98,6 +98,7 @@ $(document).ready(function(){initNavTree('index.html','');});
 <li>Pick List selection.</li>
 <li>8/16/32 bit signed integers.</li>
 <li>Decimal floating point representation.</li>
+<li>Engineering units.</li>
 </ul>
 </li>
 </ul>
@@ -141,6 +142,7 @@ Data Structure Map</div></div>
 <li><b>Boolean</b> for Input of boolean (Y/N) values. As the user makes changes, the value changes between displays of 'Y' and 'N' (defined as INP_BOOL_T and INP_BOOL_F). The get/set callback expects a pointer to bool type.</li>
 <li><b>Integer</b> values can be specified as 8, 16 or 32 bits in size, with the get/set callback expecting pointers to int8_t, int16_t and int32_t (note all signed values). The input specification also allows a lower and upper bound to be set, as well as the number's base (2 through 16) to be specified. Numeric values that overflow the specified field with are prefixed by the '#' character (defined as INP_NUMERIC_OVERFLOW) to indicate that this has occurred.</li>
 <li><b>Floating point</b> where the library uses a 32 bit long integer and assumes the last 2 digits (defined by FLOAT_DECIMALS) to be the fraction after the decimal point (character defined as DECIMAL_POINT). Specification allows lower and upper bound to be set. The base specification field is used to represent the minimum increment or decrement of the fractional component of value input (ie, with 2 decimals, 1 is .01, 5 is .05, 50 is 0.50, etc).</li>
+<li><b>Engineering Units</b> where the library uses a 32 bit long integer and assumes the last 3 digits (defined by ENGU_DECIMALS) to be the fraction after the decimal point (character defined as DECIMAL_POINT). Specification allows lower and upper bound for power of 10. Units are defined in the pList parameter. The base specification field is used to represent the minimum increment or decrement of the fractional component of value input (ie, with 3 decimals, 1 is .001, 5 is .005, 50 is 0.050, etc).</li>
 <li><b>Run Code</b> specifies input fields that are designed to execute a user function when selected. As there is no value to 'get' the get/set callback is only called when the input is confirmed. User code can then be executed as part of the 'set' invocation. </li>
 </ul>
 </div></div><!-- contents -->
@@ -148,7 +150,7 @@ Data Structure Map</div></div>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Sun Dec 10 2017 08:46:40 for MD_Menu Library by
+    <li class="footer">Generated on Sun Dec 10 2017 16:09:32 for MD_Menu Library by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

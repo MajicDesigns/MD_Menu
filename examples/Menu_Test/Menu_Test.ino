@@ -22,6 +22,7 @@
 //
 // External Dependencies
 // ---------------------
+// Depending on the input or display options selected, one or more of these may be required:
 // - MD_UISwitch library for digital and analog switches at https://github.com/MajicDesigns/MD_UISwitch
 // - MD_REncoder library for rotary encoder input at https://github.com/MajicDesigns/MD_REncoder
 // - MD_Parola library for LED matrix display at https://github.com/MajicDesigns/MD_Parola
@@ -37,6 +38,9 @@ int8_t  int8Value = 99;
 int16_t int16Value = 999;
 int32_t int32Value = 9999;
 float floatValue = 999.99;
+MD_Menu::value_t engValue = { 999900, 3 };
+
+MD_Menu::value_t vBuf;  // interface buffer for values
 
 // Menu Headers --------
 const PROGMEM MD_Menu::mnuHeader_t mnuHdr[] =
@@ -65,7 +69,8 @@ const PROGMEM MD_Menu::mnuItem_t mnuItm[] =
   { 24, "Integer 32", MD_Menu::MNU_INPUT, 14 },
   { 25, "Hex 16",     MD_Menu::MNU_INPUT, 15 },
   { 26, "Float",      MD_Menu::MNU_INPUT, 16 },
-  { 27, "Reset Menu", MD_Menu::MNU_INPUT, 17 },
+  { 27, "Eng Units",  MD_Menu::MNU_INPUT, 17 },
+  { 28, "Reset Menu", MD_Menu::MNU_INPUT, 18 },
   // Serial Setup
   { 30, "COM Port",  MD_Menu::MNU_INPUT, 30 },
   { 31, "Speed",     MD_Menu::MNU_INPUT, 31 },
@@ -85,28 +90,30 @@ const PROGMEM char listCOM[] = "COM1|COM2|COM3|COM4";
 const PROGMEM char listBaud[] = "9600|19200|57600|115200";
 const PROGMEM char listParity[] = "O|E|N";
 const PROGMEM char listStop[] = "0|1";
+const PROGMEM char engUnit[] = "Hz";
 
 const PROGMEM MD_Menu::mnuInput_t mnuInp[] =
 {
-  { 10, "List",    MD_Menu::INP_LIST,  mnuLValueRqst,  6,      0,      0,  0, listFruit }, // shorter and longer list labels
-  { 11, "Bool",    MD_Menu::INP_BOOL,  mnuBValueRqst,  1,      0,      0,  0, nullptr },
-  { 12, "Int8",    MD_Menu::INP_INT8,  mnuIValueRqst,  4,   -128,    127, 10, nullptr },
-  { 13, "Int16",   MD_Menu::INP_INT16, mnuIValueRqst,  4, -32768,  32767, 10, nullptr },  // test field too small
-  { 14, "Int32",   MD_Menu::INP_INT32, mnuIValueRqst,  6, -66636,  65535, 10, nullptr },
-  { 15, "Hex16",   MD_Menu::INP_INT16, mnuIValueRqst,  4, 0x0000, 0xffff, 16, nullptr },  // test hex display
-  { 16, "Float",   MD_Menu::INP_FLOAT, mnuFValueRqst,  7, -10000,  99950, 10, nullptr },  // test float number
-  { 17, "Confirm", MD_Menu::INP_RUN, myCode, 0, 0, 0, 10, nullptr },
+  { 10, "List",     MD_Menu::INP_LIST,  mnuLValueRqst, 6,       0, 0,      0, 0,  0, listFruit }, // shorter and longer list labels
+  { 11, "Bool",     MD_Menu::INP_BOOL,  mnuBValueRqst, 1,       0, 0,      0, 0,  0, nullptr },
+  { 12, "Int8",     MD_Menu::INP_INT8,  mnuIValueRqst, 4,    -128, 0,    127, 0, 10, nullptr },
+  { 13, "Int16",    MD_Menu::INP_INT16, mnuIValueRqst, 4,  -32768, 0,  32767, 0, 10, nullptr },  // test field too small
+  { 14, "Int32",    MD_Menu::INP_INT32, mnuIValueRqst, 6,  -66636, 0,  65535, 0, 10, nullptr },
+  { 15, "Hex16",    MD_Menu::INP_INT16, mnuIValueRqst, 4,  0x0000, 0, 0xffff, 0, 16, nullptr },  // test hex display
+  { 16, "Float",    MD_Menu::INP_FLOAT, mnuFValueRqst, 7,  -10000, 0,  99950, 0, 10, nullptr },  // test float number
+  { 17, "Eng Unit", MD_Menu::INP_ENGU,  mnuEValueRqst, 7,       0, 0, 999000, 3, 50, engUnit },  // test engineering units number
+  { 18, "Confirm",  MD_Menu::INP_RUN,   myCode,        0,       0, 0,      0, 0, 10, nullptr },
 
-  { 30, "Port",     MD_Menu::INP_LIST, mnuSerialValueRqst, 4, 0, 0, 0, listCOM },
-  { 31, "Bits/s",   MD_Menu::INP_LIST, mnuSerialValueRqst, 6, 0, 0, 0, listBaud },
-  { 32, "Parity",   MD_Menu::INP_LIST, mnuSerialValueRqst, 1, 0, 0, 0, listParity },
-  { 33, "No. Bits", MD_Menu::INP_LIST, mnuSerialValueRqst, 1, 0, 0, 0, listStop },
+  { 30, "Port",     MD_Menu::INP_LIST, mnuSerialValueRqst, 4, 0, 0, 0, 0, 0, listCOM },
+  { 31, "Bits/s",   MD_Menu::INP_LIST, mnuSerialValueRqst, 6, 0, 0, 0, 0, 0, listBaud },
+  { 32, "Parity",   MD_Menu::INP_LIST, mnuSerialValueRqst, 1, 0, 0, 0, 0, 0, listParity },
+  { 33, "No. Bits", MD_Menu::INP_LIST, mnuSerialValueRqst, 1, 0, 0, 0, 0, 0, listStop },
 
-  { 40, "Confirm", MD_Menu::INP_RUN, myLEDCode, 0, 0, 0, 0, nullptr },  // test using index in run code
-  { 41, "Confirm", MD_Menu::INP_RUN, myLEDCode, 0, 0, 0, 0, nullptr },
+  { 40, "Confirm", MD_Menu::INP_RUN, myLEDCode, 0, 0, 0, 0, 0, 0, nullptr },  // test using index in run code
+  { 41, "Confirm", MD_Menu::INP_RUN, myLEDCode, 0, 0, 0, 0, 0, 0, nullptr },
 
-  { 50, "Flip", MD_Menu::INP_INT8, mnuFFValueRqst, 4, -128, 127, 10, nullptr },
-  { 51, "Flop", MD_Menu::INP_INT8, mnuFFValueRqst, 4, -128, 127, 16, nullptr },
+  { 50, "Flip", MD_Menu::INP_INT8, mnuFFValueRqst, 4, -128, 0, 127, 0, 10, nullptr },
+  { 51, "Flop", MD_Menu::INP_INT8, mnuFFValueRqst, 4, -128, 0, 127, 0, 16, nullptr },
 };
 
 // bring it all together in the global menu object
@@ -116,46 +123,58 @@ MD_Menu M(navigation, display,        // user navigation and display
           mnuInp, ARRAY_SIZE(mnuInp));// menu input data
 
 // Callback code for menu set/get input values
-void *mnuLValueRqst(MD_Menu::mnuId_t id, bool bGet)
+MD_Menu::value_t *mnuLValueRqst(MD_Menu::mnuId_t id, bool bGet)
 // Value request callback for list selection variable
 {
   if (id == 10)
   {
     if (bGet)
-      return((void *)&fruit);
+    {
+      vBuf.value = fruit;
+      return(&vBuf);
+    }
     else
     {
+      fruit = vBuf.value;
       Serial.print(F("\nList index changed to "));
       Serial.print(fruit);
     }
   }
 }
 
-void *mnuBValueRqst(MD_Menu::mnuId_t id, bool bGet)
+MD_Menu::value_t *mnuBValueRqst(MD_Menu::mnuId_t id, bool bGet)
 // Value request callback for boolean variable
 {
   if (id == 11)
   {
     if (bGet)
-      return((void *)&bValue);
+    {
+      vBuf.value = bValue;
+      return(&vBuf);
+    }
     else
     {
+      bValue = vBuf.value;
       Serial.print(F("\nBoolean changed to "));
       Serial.print(bValue);
     }
   }
 }
 
-void *mnuIValueRqst(MD_Menu::mnuId_t id, bool bGet)
+MD_Menu::value_t *mnuIValueRqst(MD_Menu::mnuId_t id, bool bGet)
 // Value request callback for integers variables
 {
   switch (id)
   {
   case 12:
     if (bGet)
-      return((void *)&int8Value);
+    {
+      vBuf.value = int8Value;
+      return(&vBuf);
+    }
     else
     {
+      int8Value = vBuf.value;
       Serial.print(F("\nInt8 value changed to "));
       Serial.print(int8Value);
     }
@@ -164,9 +183,13 @@ void *mnuIValueRqst(MD_Menu::mnuId_t id, bool bGet)
   case 13:
   case 15:
     if (bGet)
-      return((void *)&int16Value);
+    {
+      vBuf.value = int16Value;
+      return(&vBuf);
+    }
     else
     {
+      int16Value = vBuf.value;
       Serial.print(F("\nInt16 value changed to "));
       Serial.print(int16Value);
     }
@@ -174,9 +197,13 @@ void *mnuIValueRqst(MD_Menu::mnuId_t id, bool bGet)
 
   case 14:
     if (bGet)
-      return((void *)&int32Value);
+    {
+      vBuf.value = int32Value;
+      return(&vBuf);
+    }
     else
     {
+      int32Value = vBuf.value;
       Serial.print(F("\nInt32 value changed to "));
       Serial.print(int32Value);
     }
@@ -186,7 +213,7 @@ void *mnuIValueRqst(MD_Menu::mnuId_t id, bool bGet)
   return(nullptr);
 }
 
-void *mnuSerialValueRqst(MD_Menu::mnuId_t id, bool bGet)
+MD_Menu::value_t *mnuSerialValueRqst(MD_Menu::mnuId_t id, bool bGet)
 // Value request callback for Serial parameters
 {
   static uint8_t port = 0, speed = 0, parity = 0, stop = 0;
@@ -195,9 +222,13 @@ void *mnuSerialValueRqst(MD_Menu::mnuId_t id, bool bGet)
   {
   case 30:
     if (bGet)
-      return((void *)&port);
+    {
+      vBuf.value = port;
+      return(&vBuf);
+    }
     else
     {
+      port - vBuf.value;
       Serial.print(F("\nPort index="));
       Serial.print(port);
     }
@@ -205,9 +236,13 @@ void *mnuSerialValueRqst(MD_Menu::mnuId_t id, bool bGet)
 
   case 31:
     if (bGet)
-      return((void *)&speed);
+    {
+      vBuf.value = speed;
+      return(&vBuf);
+    }
     else
     {
+      speed = vBuf.value;
       Serial.print(F("\nSpeed index="));
       Serial.print(speed);
     }
@@ -215,9 +250,13 @@ void *mnuSerialValueRqst(MD_Menu::mnuId_t id, bool bGet)
 
   case 32:
     if (bGet)
-      return((void *)&parity);
+    {
+      vBuf.value = parity;
+      return(&vBuf);
+    }
     else
     {
+      parity = vBuf.value;
       Serial.print(F("\nParity index="));
       Serial.print(parity);
     }
@@ -225,9 +264,13 @@ void *mnuSerialValueRqst(MD_Menu::mnuId_t id, bool bGet)
 
   case 33:
     if (bGet)
-      return((void *)&stop);
+    {
+      vBuf.value = stop;
+      return(&vBuf);
+    }
     else
     {
+      stop = vBuf.value;
       Serial.print(F("\nStop index="));
       Serial.print(stop);
     }
@@ -236,7 +279,7 @@ void *mnuSerialValueRqst(MD_Menu::mnuId_t id, bool bGet)
   return(nullptr);
 }
 
-void *mnuFValueRqst(MD_Menu::mnuId_t id, bool bGet)
+MD_Menu::value_t *mnuFValueRqst(MD_Menu::mnuId_t id, bool bGet)
 // Value request callback for floating value
 {
   static int32_t f;
@@ -245,19 +288,39 @@ void *mnuFValueRqst(MD_Menu::mnuId_t id, bool bGet)
   {
     if (bGet)
     {
-      f = (uint32_t)(floatValue * 100.0);
-      return((void *)&f);
+      vBuf.value = (uint32_t)(floatValue * 100.0);
+      return(&vBuf);
     }
     else
     {
-      floatValue = (f / 100.0);
+      floatValue = (vBuf.value / 100.0);
       Serial.print(F("\nFloat changed to "));
       Serial.print(floatValue);
     }
   }
 }
 
-void *mnuFFValueRqst(MD_Menu::mnuId_t id, bool bGet)
+MD_Menu::value_t *mnuEValueRqst(MD_Menu::mnuId_t id, bool bGet)
+// Value request callback for floating value
+{
+  if (id == 17)
+  {
+    if (bGet)
+    {
+      return(&engValue);
+    }
+    else
+    {
+      float f = (engValue.value / 1000.0);
+      Serial.print(F("\nEng Unit changed to "));
+      Serial.print(f);
+      Serial.print("x10^");
+      Serial.print(engValue.power);
+    }
+  }
+}
+
+MD_Menu::value_t *mnuFFValueRqst(MD_Menu::mnuId_t id, bool bGet)
 // Value edit allowed request depends on another value
 {
   static bool gateKeeper = false;
@@ -274,10 +337,14 @@ void *mnuFFValueRqst(MD_Menu::mnuId_t id, bool bGet)
         return(nullptr);
       }
       else
-        return((void *)&int8Value);
+      {
+        vBuf.value = int8Value;
+        return(&vBuf);
+      }
     }
     else
     {
+      int8Value = vBuf.value;
       Serial.print(F("\nFlipFlop value changed to "));
       Serial.print(int8Value);
       gateKeeper = !gateKeeper;
@@ -293,10 +360,14 @@ void *mnuFFValueRqst(MD_Menu::mnuId_t id, bool bGet)
         return(nullptr);
       }
       else
-        return((void *)&int8Value);
+      {
+        vBuf.value = int8Value;
+        return(&vBuf);
+      }
     }
     else
     {
+      int8Value = vBuf.value;
       Serial.print(F("\nFlipFlop value changed to "));
       Serial.print(int8Value);
       gateKeeper = !gateKeeper;
@@ -305,7 +376,7 @@ void *mnuFFValueRqst(MD_Menu::mnuId_t id, bool bGet)
   }
 }
 
-void *myCode(MD_Menu::mnuId_t id, bool bGet)
+MD_Menu::value_t *myCode(MD_Menu::mnuId_t id, bool bGet)
 // Value request callback for run code input
 {
   Serial.print(F("\nmyCode called id="));
@@ -314,15 +385,19 @@ void *myCode(MD_Menu::mnuId_t id, bool bGet)
   Serial.print(bGet ? F("GET") : F("SET - reset menu"));
 
   if (!bGet) M.reset();
+
+  return(nullptr);
 }
 
-void *myLEDCode(MD_Menu::mnuId_t id, bool bGet)
+MD_Menu::value_t *myLEDCode(MD_Menu::mnuId_t id, bool bGet)
 // Value request callback for run code input
 // Only use the index here
 {
   Serial.print(F("\nSwitching LED "));
   Serial.print(id == 40 ? F("off") : F("on"));
   digitalWrite(LED_PIN, id == 40 ? LOW : HIGH);
+
+  return(nullptr);
 }
 
 // Standard setup() and loop()

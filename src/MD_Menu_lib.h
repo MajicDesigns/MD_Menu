@@ -87,10 +87,11 @@ const char INP_NUMERIC_OFLOW = '#';  ///< Indicator for numeric overflow
 const char LIST_SEPARATOR = '|';     ///< Separator character for list items
 const char DECIMAL_POINT = '.';      ///< Decimal point character for floating point input
 const char FLOAT_DECIMALS = 2;       ///< Number of float decimals implied in uint32_t value
+const char ENGU_DECIMALS = 3;        ///< Number of engineering units decimals implied in uint32_t value
+const uint8_t ENGU_RANGE = 18;       ///< Syymentrical range of power prefixes from 10^-ENGU_RANGE to 10^+ENGU_RANGE
 
 #define INP_PRE_SIZE(mi)  (strlen(mi->label) + strlen(FLD_PROMPT) + strlen(FLD_DELIM_L))  ///< Size of text pre variable display
 #define INP_POST_SIZE(mi) (strlen(FLD_DELIM_R))  ///< Size of text after variable display
-
 
 // Global options and flags management
 #define SET_FLAG(f)   { _options |= (1<<f);  MD_PRINTX("\nSet Flag ",_options); }  ///< Set a flag

@@ -14,6 +14,8 @@ var _m_d___menu__lib_8h =
     [ "SET_FLAG", "_m_d___menu__lib_8h.html#a83b5b7cc41c6290c3c2ae4824ac66cb7", null ],
     [ "TEST_FLAG", "_m_d___menu__lib_8h.html#aa11f4e7b58e25e934fcde64083726b81", null ],
     [ "DECIMAL_POINT", "_m_d___menu__lib_8h.html#a1f9a8ccb3adc8bedea73edd8dd365dac", null ],
+    [ "ENGU_DECIMALS", "_m_d___menu__lib_8h.html#a2440bef9d7bd2523779ad5492c61b56c", null ],
+    [ "ENGU_RANGE", "_m_d___menu__lib_8h.html#af864cce27ec8507aea64a2755c77bff6", null ],
     [ "FLD_DELIM_L", "_m_d___menu__lib_8h.html#a4bc4cd1d83ddb399316b41391305afb5", null ],
     [ "FLD_DELIM_R", "_m_d___menu__lib_8h.html#a31c37de9875696c4a6b42c2285b864d1", null ],
     [ "FLD_PROMPT", "_m_d___menu__lib_8h.html#aee974fc100bbb9e0ffb69f1ff3e349f2", null ],

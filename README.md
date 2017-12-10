@@ -15,5 +15,6 @@ The library allows user code to define:
   - Pick List selection.
   - 8/16/32 bit signed integers.
   - Decimal floating point.
+  - Engineering units.
 
 [Library Documentation](https://majicdesigns.github.io/MD_Menu/)

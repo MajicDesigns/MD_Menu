@@ -19,6 +19,7 @@ The library allows user code to define
   + Pick List selection.
   + 8/16/32 bit signed integers.
   + Decimal floating point representation.
+  + Engineering units.
 
 Menu managers in embedded systems are generally not the main function 
 of the embedded application software, so this library minimises the 
@@ -138,6 +139,12 @@ point (character defined as DECIMAL_POINT). Specification allows lower and upper
 to be set. The base specification field is used to represent the minimum increment or 
 decrement of the fractional component of value input (ie, with 2 decimals, 1 is .01, 5 
 is .05, 50 is 0.50, etc).
+- **Engineering Units** where the library uses a 32 bit long integer and assumes 
+the last 3 digits (defined by ENGU_DECIMALS) to be the fraction after the decimal 
+point (character defined as DECIMAL_POINT). Specification allows lower and upper bound for 
+power of 10. Units are defined in the pList parameter. The base specification field is used 
+to represent the minimum increment or decrement of the fractional component of value 
+input (ie, with 3 decimals, 1 is .001, 5 is .005, 50 is 0.050, etc).
 - **Run Code** specifies input fields that are designed to execute a user function
 when selected. As there is no value to 'get' the get/set callback is only called when the
 input is confirmed. User code can then be executed as part of the 'set' invocation.
@@ -165,6 +172,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 \page pageRevisionHistory Revision History
 Revision History
 ----------------
+Jan 2017 version 2.0.0
+- Added INP_ENGU for inputting values in engineering (powers of 10^3) with correct unit prefixes
+- Changed to a universal value specifier of type value_t throughout. THIS WILL BREAK OLD CODE.
+
 Dec 2017 version 1.2.3
 - Changes by makelion to allow use with ESP8266 and ESP32
 
@@ -203,6 +214,7 @@ const uint8_t INPUT_LABEL_SIZE = 16;    ///< Displayed length of an input item l
 
 // Miscellaneous defines
 #define ARRAY_SIZE(x) (sizeof(x)/sizeof(x[0]))  ///< Generic macro for obtaining number of elements of an array
+#define UOM(s)        ((s[0] << 24) + (s[1] << 16) + (s[2] << 8) + s[3])  ///< Unit of measure macro converts an engineering UOM into a 32 bit value
 const uint8_t MNU_STACK_SIZE = 4;       ///< Maximum menu 'depth'. Starting (root) menu occupies first level.
 
 /**
@@ -291,7 +303,21 @@ public:
     INP_INT16,  ///< The item is for input of an 16 bit unsigned integer
     INP_INT32,  ///< The item is for input of an 32 bit unsigned integer
     INP_FLOAT,  ///< The item is for input of a real number representation with 2 decimal digits 
+    INP_ENGU,   ///< The item is for input of a number in engineering (powers of 10 which are multiples of 3) with 3 decimal digits.
     INP_RUN,    ///< The item will run a user function
+  };
+
+  /**
+  * Value specifier
+  *
+  * To cater for all input types, both the value and the powers of 10
+  * must be known (the latter for ENGU). This small structure contains
+  * both values, keeping them together whilst processing.
+  */
+  typedef struct value_t
+  {
+    int32_t value;   ///< the value of the number 999.999
+    int8_t  power;   ///< the power of 10 (multiple of 3 eg, -3 (milli) 0, 3 (kilo), 6 (Mega))
   };
 
   /**
@@ -303,7 +329,7 @@ public:
   * data identified by the ID. Return nullptr to stop the menu from
   * editing the value.
   */
-  typedef void*(*cbValueRequest)(mnuId_t id, bool bGet);
+  typedef value_t*(*cbValueRequest)(mnuId_t id, bool bGet);
 
   /**
   * Input field defintion
@@ -319,9 +345,9 @@ public:
     inputAction_t action;  ///< Type of action required for this value
     cbValueRequest cbVR;   ///< Callback function to get/set the value
     uint8_t fieldWidth;    ///< Width of the displayed field between delimiters
-    int32_t range[2];      ///< min/max values an integer
+    value_t range[2];      ///< definition for min/max for input range at [0]/[1]
     uint8_t base;          ///< number base for display (2 through 16) or floating increment in 1/100 units
-    const char *pList;     ///< pointer to list string
+    const char *pList;     ///< pointer to list string or engineering units string in PROGMEM
   };
 
   /**
@@ -536,10 +562,9 @@ private:
   // Status values and global flags
   uint8_t _options;       ///< bit field for options and flags
 
-  // Input editing buffers and tracking
-  void    *_pValue;  ///< Pointer to the user value being edited
-  bool    _bValue;   ///< Copy of boolean value being edited
-  int32_t _iValue;   ///< Copy of the integer/list index value being edited
+  // Input editing buffers
+  value_t *_pValue;  ///< Pointer to the user provided data buffer
+  value_t _V;        ///< Copy of the value being edited
 
   // static buffers for find functions, keep accessible copies of data in PROGMEM
   uint8_t     _currMenu;                ///< Index of current menu displayed in the stack
@@ -568,6 +593,7 @@ private:
   bool processBool(userNavAction_t nav, mnuInput_t *mInp);
   bool processInt(userNavAction_t nav, mnuInput_t *mInp, uint16_t incDelta);
   bool processFloat(userNavAction_t nav, mnuInput_t *mInp, uint16_t incDelta);
+  bool processEng(userNavAction_t nav, mnuInput_t *mInp, uint16_t incDelta);
   bool processRun(userNavAction_t nav, mnuInput_t *mInp);
 };
 
