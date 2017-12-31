@@ -113,7 +113,7 @@ MD_Menu::mnuInput_t* MD_Menu::loadInput(mnuId_t id)
   return(nullptr);
 }
 
-uint8_t MD_Menu::listCount(const char *p)
+uint8_t MD_Menu::getListCount(const char *p)
 // Return a count of the items in the list
 {
   uint8_t count = 0;
@@ -139,7 +139,7 @@ uint8_t MD_Menu::listCount(const char *p)
   return(count);
 }
 
-char *MD_Menu::listItem(const char *p, uint8_t idx, char *buf, uint8_t bufLen)
+char *MD_Menu::getListItem(const char *p, uint8_t idx, char *buf, uint8_t bufLen)
 // Find the idx'th item in the list and return in fixed width, padded
 // with trailing spaces. 
 {
@@ -204,7 +204,7 @@ bool MD_Menu::processList(userNavAction_t nav, mnuInput_t *mInp)
   {
   case NAV_NULL:    // this is to initialise the CB_DISP
   {
-    uint8_t size = listCount(mInp->pList);
+    uint8_t size = getListCount(mInp->pList);
 
     if (size == 0)
     {
@@ -233,7 +233,7 @@ bool MD_Menu::processList(userNavAction_t nav, mnuInput_t *mInp)
 
   case NAV_DEC:
     {
-      uint8_t listSize = listCount(mInp->pList);
+      uint8_t listSize = getListCount(mInp->pList);
       if (_V.value > 0)
       {
         _V.value--;
@@ -249,7 +249,7 @@ bool MD_Menu::processList(userNavAction_t nav, mnuInput_t *mInp)
 
   case NAV_INC:
     {
-      uint8_t listSize = listCount(mInp->pList);
+      uint8_t listSize = getListCount(mInp->pList);
 
       if (_V.value < listSize - 1)
       {
@@ -277,7 +277,7 @@ bool MD_Menu::processList(userNavAction_t nav, mnuInput_t *mInp)
     char sz[INP_PRE_SIZE(mInp) + sizeof(szItem) + INP_POST_SIZE(mInp) + 1];
 
     strPreamble(sz, mInp);
-    strcat(sz, listItem(mInp->pList, _V.value, szItem, sizeof(szItem)));
+    strcat(sz, getListItem(mInp->pList, _V.value, szItem, sizeof(szItem)));
     strPostamble(sz, mInp);
 
     _cbDisp(DISP_L1, sz);
@@ -683,9 +683,7 @@ void MD_Menu::handleInput(bool bNew)
       {
       case INP_LIST: ended = processList(NAV_NULL, me); break;
       case INP_BOOL: ended = processBool(NAV_NULL, me); break;
-      case INP_INT8:
-      case INP_INT16:
-      case INP_INT32: ended = processInt(NAV_NULL, me, incDelta); break;
+      case INP_INT:  ended = processInt(NAV_NULL, me, incDelta); break;
       case INP_FLOAT: ended = processFloat(NAV_NULL, me, incDelta); break;
       case INP_ENGU: ended = processEng(NAV_NULL, me, incDelta); break;
       case INP_RUN: ended = processRun(NAV_NULL, me); break;
@@ -708,9 +706,7 @@ void MD_Menu::handleInput(bool bNew)
       {
       case INP_LIST: ended = processList(nav, me); break;
       case INP_BOOL: ended = processBool(nav, me); break;
-      case INP_INT8:
-      case INP_INT16:
-      case INP_INT32: ended = processInt(nav, me, incDelta); break;
+      case INP_INT:  ended = processInt(nav, me, incDelta); break;
       case INP_FLOAT: ended = processFloat(nav, me, incDelta); break;
       case INP_ENGU: ended = processEng(nav, me, incDelta); break;
       case INP_RUN: ended = processRun(nav, me); break;
@@ -728,6 +724,7 @@ void MD_Menu::handleInput(bool bNew)
 void MD_Menu::handleMenu(bool bNew)
 {
   bool update = false;
+  mnuItem_t *mi;
 
   if (bNew)
   {
@@ -749,19 +746,24 @@ void MD_Menu::handleMenu(bool bNew)
     switch (nav)
     {
     case NAV_DEC:
-      if (_mnuStack[_currMenu].idItmCurr > _mnuStack[_currMenu].idItmStart)
+      do
       {
-        _mnuStack[_currMenu].idItmCurr--;
-        update = true;
-      }
-      else if (TEST_FLAG(F_MENUWRAP))
-      {
-        _mnuStack[_currMenu].idItmCurr = _mnuStack[_currMenu].idItmEnd;
-        update = true;
-      }
+        if (_mnuStack[_currMenu].idItmCurr > _mnuStack[_currMenu].idItmStart)
+        {
+          _mnuStack[_currMenu].idItmCurr--;
+          update = true;
+        }
+        else if (TEST_FLAG(F_MENUWRAP))
+        {
+          _mnuStack[_currMenu].idItmCurr = _mnuStack[_currMenu].idItmEnd;
+          update = true;
+        }
+      } while ((mi = loadItem(_mnuStack[_currMenu].idItmCurr)) == nullptr);
       break;
 
     case NAV_INC:
+    do
+    {
       if (_mnuStack[_currMenu].idItmCurr < _mnuStack[_currMenu].idItmEnd)
       {
         _mnuStack[_currMenu].idItmCurr++;
@@ -772,11 +774,12 @@ void MD_Menu::handleMenu(bool bNew)
         _mnuStack[_currMenu].idItmCurr = _mnuStack[_currMenu].idItmStart;
         update = true;
       }
-      break;
+    } while ((mi = loadItem(_mnuStack[_currMenu].idItmCurr)) == nullptr);
+    break;
 
     case NAV_SEL:
       {
-        mnuItem_t *mi = loadItem(_mnuStack[_currMenu].idItmCurr);
+        mi = loadItem(_mnuStack[_currMenu].idItmCurr);
 
         switch (mi->action)
         {

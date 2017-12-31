@@ -1,17 +1,21 @@
 // Example program for the MD_Menu library
 //
 // Test functionality of the library and demonstrate how a menu is structured.
-// The code runs the menu and display results on the Serial Monitor.
+// The code runs the menu and display debug information on the Serial Monitor.
 // 
 // Different combinations of output display and navigation interfaces can be 
-// selected from the Menu_Test.h header file. The example callback routines
-// cover what would be the most common user input and display hardware:
+// selected from the Menu_Test.h header file. Depending on the input and display
+// options selected, one or more of the libraries listed below these may be 
+// required.
+//
+// The example UI callback routines cover the most common user input and display 
+// hardware:
 //
 // User Navigation - Menu_Test_Nav.cpp
 // ---------------
 // There are examples for user navigation for:
-// - 3 switches for INC, DEC and ESC/SEL selections
-// - Rotary encoder for INC/DEC and switch for ESC/SEL
+// - 3 separate momentary on switches for INC, DEC and ESC/SEL selections
+// - Rotary encoder for INC/DEC (rotation) and momentary on switch for ESC/SEL
 // - Analog 'resistor ladder' switches common on LCD shields for INC, DEC, ESC and SEL
 //
 // User Display - Menu_Test_Disp.cpp
@@ -26,8 +30,8 @@
 // - MD_UISwitch library for digital and analog switches at https://github.com/MajicDesigns/MD_UISwitch
 // - MD_REncoder library for rotary encoder input at https://github.com/MajicDesigns/MD_REncoder
 // - MD_Parola library for LED matrix display at https://github.com/MajicDesigns/MD_Parola
-// - MD_MAX72XX library to support Parola library at https://github.com/MajicDesigns/MD_MAX72XX
-// - LiquidCrystal libray for LCD module is a standard Arduino library
+// - MD_MAX72XX library to support MD_Parola library at https://github.com/MajicDesigns/MD_MAX72XX
+// - LiquidCrystal library for LCD module is a standard Arduino library.
 //
 #include "Menu_Test.h"
 
@@ -96,10 +100,10 @@ const PROGMEM MD_Menu::mnuInput_t mnuInp[] =
 {
   { 10, "List",     MD_Menu::INP_LIST,  mnuLValueRqst, 6,       0, 0,      0, 0,  0, listFruit }, // shorter and longer list labels
   { 11, "Bool",     MD_Menu::INP_BOOL,  mnuBValueRqst, 1,       0, 0,      0, 0,  0, nullptr },
-  { 12, "Int8",     MD_Menu::INP_INT8,  mnuIValueRqst, 4,    -128, 0,    127, 0, 10, nullptr },
-  { 13, "Int16",    MD_Menu::INP_INT16, mnuIValueRqst, 4,  -32768, 0,  32767, 0, 10, nullptr },  // test field too small
-  { 14, "Int32",    MD_Menu::INP_INT32, mnuIValueRqst, 6,  -66636, 0,  65535, 0, 10, nullptr },
-  { 15, "Hex16",    MD_Menu::INP_INT16, mnuIValueRqst, 4,  0x0000, 0, 0xffff, 0, 16, nullptr },  // test hex display
+  { 12, "Int8",     MD_Menu::INP_INT,   mnuIValueRqst, 4,    -128, 0,    127, 0, 10, nullptr },
+  { 13, "Int16",    MD_Menu::INP_INT,   mnuIValueRqst, 4,  -32768, 0,  32767, 0, 10, nullptr },  // test field too small
+  { 14, "Int32",    MD_Menu::INP_INT,   mnuIValueRqst, 6,  -66636, 0,  65535, 0, 10, nullptr },
+  { 15, "Hex16",    MD_Menu::INP_INT,   mnuIValueRqst, 4,  0x0000, 0, 0xffff, 0, 16, nullptr },  // test hex display
   { 16, "Float",    MD_Menu::INP_FLOAT, mnuFValueRqst, 7,  -10000, 0,  99950, 0, 10, nullptr },  // test float number
   { 17, "Eng Unit", MD_Menu::INP_ENGU,  mnuEValueRqst, 7,       0, 0, 999000, 3, 50, engUnit },  // test engineering units number
   { 18, "Confirm",  MD_Menu::INP_RUN,   myCode,        0,       0, 0,      0, 0, 10, nullptr },
@@ -112,8 +116,8 @@ const PROGMEM MD_Menu::mnuInput_t mnuInp[] =
   { 40, "Confirm", MD_Menu::INP_RUN, myLEDCode, 0, 0, 0, 0, 0, 0, nullptr },  // test using index in run code
   { 41, "Confirm", MD_Menu::INP_RUN, myLEDCode, 0, 0, 0, 0, 0, 0, nullptr },
 
-  { 50, "Flip", MD_Menu::INP_INT8, mnuFFValueRqst, 4, -128, 0, 127, 0, 10, nullptr },
-  { 51, "Flop", MD_Menu::INP_INT8, mnuFFValueRqst, 4, -128, 0, 127, 0, 16, nullptr },
+  { 50, "Flip", MD_Menu::INP_INT, mnuFFValueRqst, 4, -128, 0, 127, 0, 10, nullptr },
+  { 51, "Flop", MD_Menu::INP_INT, mnuFFValueRqst, 4, -128, 0, 127, 0, 16, nullptr },
 };
 
 // bring it all together in the global menu object
@@ -145,13 +149,12 @@ MD_Menu::value_t *mnuLValueRqst(MD_Menu::mnuId_t id, bool bGet)
 MD_Menu::value_t *mnuBValueRqst(MD_Menu::mnuId_t id, bool bGet)
 // Value request callback for boolean variable
 {
+  MD_Menu::value_t *r = &vBuf;
+
   if (id == 11)
   {
     if (bGet)
-    {
       vBuf.value = bValue;
-      return(&vBuf);
-    }
     else
     {
       bValue = vBuf.value;
@@ -159,19 +162,22 @@ MD_Menu::value_t *mnuBValueRqst(MD_Menu::mnuId_t id, bool bGet)
       Serial.print(bValue);
     }
   }
+  else
+    r = nullptr;
+
+  return(r);
 }
 
 MD_Menu::value_t *mnuIValueRqst(MD_Menu::mnuId_t id, bool bGet)
 // Value request callback for integers variables
 {
+  MD_Menu::value_t *r = &vBuf;
+
   switch (id)
   {
   case 12:
     if (bGet)
-    {
       vBuf.value = int8Value;
-      return(&vBuf);
-    }
     else
     {
       int8Value = vBuf.value;
@@ -183,10 +189,7 @@ MD_Menu::value_t *mnuIValueRqst(MD_Menu::mnuId_t id, bool bGet)
   case 13:
   case 15:
     if (bGet)
-    {
       vBuf.value = int16Value;
-      return(&vBuf);
-    }
     else
     {
       int16Value = vBuf.value;
@@ -197,10 +200,7 @@ MD_Menu::value_t *mnuIValueRqst(MD_Menu::mnuId_t id, bool bGet)
 
   case 14:
     if (bGet)
-    {
       vBuf.value = int32Value;
-      return(&vBuf);
-    }
     else
     {
       int32Value = vBuf.value;
@@ -208,24 +208,26 @@ MD_Menu::value_t *mnuIValueRqst(MD_Menu::mnuId_t id, bool bGet)
       Serial.print(int32Value);
     }
     break;
+
+  default:
+    r = nullptr;
+    break;
   }
 
-  return(nullptr);
+  return(r);
 }
 
 MD_Menu::value_t *mnuSerialValueRqst(MD_Menu::mnuId_t id, bool bGet)
 // Value request callback for Serial parameters
 {
   static uint8_t port = 0, speed = 0, parity = 0, stop = 0;
+  MD_Menu::value_t *r = &vBuf;
 
   switch (id)
   {
   case 30:
     if (bGet)
-    {
       vBuf.value = port;
-      return(&vBuf);
-    }
     else
     {
       port - vBuf.value;
@@ -236,10 +238,7 @@ MD_Menu::value_t *mnuSerialValueRqst(MD_Menu::mnuId_t id, bool bGet)
 
   case 31:
     if (bGet)
-    {
       vBuf.value = speed;
-      return(&vBuf);
-    }
     else
     {
       speed = vBuf.value;
@@ -250,10 +249,7 @@ MD_Menu::value_t *mnuSerialValueRqst(MD_Menu::mnuId_t id, bool bGet)
 
   case 32:
     if (bGet)
-    {
       vBuf.value = parity;
-      return(&vBuf);
-    }
     else
     {
       parity = vBuf.value;
@@ -264,10 +260,7 @@ MD_Menu::value_t *mnuSerialValueRqst(MD_Menu::mnuId_t id, bool bGet)
 
   case 33:
     if (bGet)
-    {
       vBuf.value = stop;
-      return(&vBuf);
-    }
     else
     {
       stop = vBuf.value;
@@ -275,22 +268,25 @@ MD_Menu::value_t *mnuSerialValueRqst(MD_Menu::mnuId_t id, bool bGet)
       Serial.print(stop);
     }
     break;
+
+  default:
+    r = nullptr;
+    break;
   }
-  return(nullptr);
+
+  return(r);
 }
 
 MD_Menu::value_t *mnuFValueRqst(MD_Menu::mnuId_t id, bool bGet)
 // Value request callback for floating value
 {
   static int32_t f;
+  MD_Menu::value_t *r = &vBuf;
 
   if (id == 16)
   {
     if (bGet)
-    {
       vBuf.value = (uint32_t)(floatValue * 100.0);
-      return(&vBuf);
-    }
     else
     {
       floatValue = (vBuf.value / 100.0);
@@ -298,17 +294,19 @@ MD_Menu::value_t *mnuFValueRqst(MD_Menu::mnuId_t id, bool bGet)
       Serial.print(floatValue);
     }
   }
+  else
+    r = nullptr;
+
+  return(r);
 }
 
 MD_Menu::value_t *mnuEValueRqst(MD_Menu::mnuId_t id, bool bGet)
-// Value request callback for floating value
+// Value request callback for engineering value
 {
   if (id == 17)
   {
     if (bGet)
-    {
       return(&engValue);
-    }
     else
     {
       float f = (engValue.value / 1000.0);
@@ -318,6 +316,8 @@ MD_Menu::value_t *mnuEValueRqst(MD_Menu::mnuId_t id, bool bGet)
       Serial.print(engValue.power);
     }
   }
+
+  return(nullptr);
 }
 
 MD_Menu::value_t *mnuFFValueRqst(MD_Menu::mnuId_t id, bool bGet)
@@ -325,6 +325,7 @@ MD_Menu::value_t *mnuFFValueRqst(MD_Menu::mnuId_t id, bool bGet)
 {
   static bool gateKeeper = false;
   static bool b;
+  MD_Menu::value_t *r = &vBuf;
 
   switch (id)
   {
@@ -334,13 +335,10 @@ MD_Menu::value_t *mnuFFValueRqst(MD_Menu::mnuId_t id, bool bGet)
       if (gateKeeper)
       {
         Serial.print(F("\nFlipFlop value blocked"));
-        return(nullptr);
+        r = nullptr;
       }
       else
-      {
         vBuf.value = int8Value;
-        return(&vBuf);
-      }
     }
     else
     {
@@ -357,13 +355,10 @@ MD_Menu::value_t *mnuFFValueRqst(MD_Menu::mnuId_t id, bool bGet)
       if (!gateKeeper)    // reverse the logic of above
       {
         Serial.print(F("\nFlipFlop value blocked"));
-        return(nullptr);
+        r = nullptr;
       }
       else
-      {
         vBuf.value = int8Value;
-        return(&vBuf);
-      }
     }
     else
     {
@@ -373,7 +368,13 @@ MD_Menu::value_t *mnuFFValueRqst(MD_Menu::mnuId_t id, bool bGet)
       gateKeeper = !gateKeeper;
     }
     break;
+
+  default:
+    r = nullptr;
+    break;
   }
+
+  return(r);
 }
 
 MD_Menu::value_t *myCode(MD_Menu::mnuId_t id, bool bGet)
@@ -408,7 +409,7 @@ void setup(void)
 
   pinMode(LED_PIN, OUTPUT);
 
-  setupDisp();
+  display(MD_Menu::DISP_INIT);
   setupNav();
 
   M.begin();
