@@ -9,17 +9,16 @@
 #if DISPLAY_SERIAL
 // Display the output to the Serial Monitor
 // This is useful for debugging and troubleshooting the structure of the 
-// menu definitons without using the final output device.
-
-void setupDisp(void) 
-{
-  Serial.begin(BAUD_RATE);
-}
+// menu definitions without using the final output device.
 
 bool display(MD_Menu::userDisplayAction_t action, char *msg)
 {
   switch (action)
   {
+  case MD_Menu::DISP_INIT:
+    Serial.begin(BAUD_RATE);
+    break;
+    
   case MD_Menu::DISP_CLEAR:
     Serial.print("\n-> CLS");
     break;
@@ -39,7 +38,7 @@ bool display(MD_Menu::userDisplayAction_t action, char *msg)
 }
 #endif
 
-#if DISPLAY_LCD
+#if DISPLAY_LCDSHIELD
 // Output display to a one of 2 line LCD display. 
 // For a one line display, comment out the L0 handling code.
 // The output display line is cleared with spaces before the
@@ -60,22 +59,21 @@ bool display(MD_Menu::userDisplayAction_t action, char *msg)
 
 static LiquidCrystal lcd(LCD_RS, LCD_ENA, LCD_D4, LCD_D5, LCD_D6, LCD_D7);
 
-void setupDisp(void)
-{
-  lcd.begin(LCD_COLS, LCD_ROWS);
-  lcd.clear();
-  lcd.noCursor();
-}
-
 bool display(MD_Menu::userDisplayAction_t action, char *msg)
 {
   static char szLine[LCD_COLS + 1] = { '\0' };
 
   switch (action)
   {
+  case MD_Menu::DISP_INIT:
+    lcd.begin(LCD_COLS, LCD_ROWS);
+    lcd.clear();
+    lcd.noCursor();
+    memset(szLine, ' ', LCD_COLS);
+    break;
+  
   case MD_Menu::DISP_CLEAR:
     lcd.clear();
-    memset(szLine, ' ', LCD_COLS);
     break;
 
   case MD_Menu::DISP_L0:
@@ -118,15 +116,14 @@ MD_Parola P = MD_Parola(CS_PIN, MAX_DEVICES);
 // Arbitrary output pins
 // MD_Parola P = MD_Parola(DATA_PIN, CLK_PIN, CS_PIN, MAX_DEVICES);
 
-void setupDisp(void)
-{
-  P.begin();
-}
-
 bool display(MD_Menu::userDisplayAction_t action, char *msg)
 {
   switch (action)
   {
+  case MD_Menu::DISP_INIT:
+    P.begin();
+    break;
+
   case MD_Menu::DISP_CLEAR:
     P.displayClear();
     break;

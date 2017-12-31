@@ -1,14 +1,14 @@
 // Example program for the MD_Menu library
 //
 // Run the menu on a LCD 2 line dispay to demonstrate how a menu is structured.
-// The code runs the menu and display results of menu selections on the Serial Monitor.
+// The code runs the menu and display debugging information on the Serial Monitor.
 // 
 // The user input interface is the tact switches set up as analog and 'resistor
 // ladder' common on LCD shields for INC, DEC, ESC and SEL.
 //
 // External Dependencies
 // ---------------------
-// - LiquidCrystal libray for LCD module is a standard Arduino library
+// - LiquidCrystal library for LCD module is a standard Arduino library
 // - MD_UISwitch library for digital and analog switches available at 
 //   https://github.com/MajicDesigns/MD_UISwitch.
 //
@@ -56,7 +56,7 @@ const uint16_t MENU_TIMEOUT = 5000; // in milliseconds
 const uint8_t LED_PIN = LED_BUILTIN;  // for myLEDCode function
 
 // function prototypes for user nav and display callback
-bool display(MD_Menu::userDisplayAction_t action, char *msg);
+bool display(MD_Menu::userDisplayAction_t action, char *msg = nullptr);
 MD_Menu::userNavAction_t navigation(uint16_t &incDelta);
 
 // Function prototypes for variable get/set functions
@@ -116,10 +116,10 @@ const PROGMEM MD_Menu::mnuInput_t mnuInp[] =
 {
   { 10, "List", MD_Menu::INP_LIST, mnuLValueRqst, 6, 0, 0, 0, 0, 0, listFruit }, // shorter and longer list labels
   { 11, "Bool", MD_Menu::INP_BOOL, mnuBValueRqst, 1, 0, 0, 0, 0, 0, nullptr },
-  { 12, "Int8", MD_Menu::INP_INT8, mnuIValueRqst, 4, -128, 0, 127, 0, 10, nullptr },
-  { 13, "Int16", MD_Menu::INP_INT16, mnuIValueRqst, 4, -32768, 0, 32767, 0, 10, nullptr },  // test field too small
-  { 14, "Int32", MD_Menu::INP_INT32, mnuIValueRqst, 6, -66636, 0, 65535, 0, 10, nullptr },
-  { 15, "Hex16", MD_Menu::INP_INT16, mnuIValueRqst, 4, 0x0000, 0, 0xffff, 0, 16, nullptr },  // test hex display
+  { 12, "Int8", MD_Menu::INP_INT, mnuIValueRqst, 4, -128, 0, 127, 0, 10, nullptr },
+  { 13, "Int16", MD_Menu::INP_INT, mnuIValueRqst, 4, -32768, 0, 32767, 0, 10, nullptr },  // test field too small
+  { 14, "Int32", MD_Menu::INP_INT, mnuIValueRqst, 6, -66636, 0, 65535, 0, 10, nullptr },
+  { 15, "Hex16", MD_Menu::INP_INT, mnuIValueRqst, 4, 0x0000, 0, 0xffff, 0, 16, nullptr },  // test hex display
   { 16, "Float", MD_Menu::INP_FLOAT, mnuFValueRqst, 7, -10000, 0, 99950, 0, 10, nullptr },  // test float number
   { 17, "Eng", MD_Menu::INP_ENGU, mnuEValueRqst, 7, 0, 0, 999000, 3, 50, engUnit },  // test engineering units number
   { 18, "Confirm", MD_Menu::INP_RUN, myCode, 0, 0, 0, 0, 0, 10, nullptr },
@@ -138,13 +138,12 @@ MD_Menu M(navigation, display,        // user navigation and display
 MD_Menu::value_t *mnuLValueRqst(MD_Menu::mnuId_t id, bool bGet)
 // Value request callback for list selection variable
 {
+  MD_Menu::value_t *r = &vBuf;
+
   if (id == 10)
   {
     if (bGet)
-    {
       vBuf.value = fruit;
-      return(&vBuf);
-    }
     else
     {
       fruit = vBuf.value;
@@ -152,18 +151,21 @@ MD_Menu::value_t *mnuLValueRqst(MD_Menu::mnuId_t id, bool bGet)
       Serial.print(fruit);
     }
   }
+  else
+    r = nullptr;
+
+  return(r);
 }
 
 MD_Menu::value_t *mnuBValueRqst(MD_Menu::mnuId_t id, bool bGet)
 // Value request callback for boolean variable
 {
+  MD_Menu::value_t *r = &vBuf;
+    
   if (id == 11)
   {
     if (bGet)
-    {
       vBuf.value = bValue;
-      return(&vBuf);
-    }
     else
     {
       bValue = vBuf.value;
@@ -171,19 +173,22 @@ MD_Menu::value_t *mnuBValueRqst(MD_Menu::mnuId_t id, bool bGet)
       Serial.print(bValue);
     }
   }
+  else
+    r = nullptr;
+
+  return(r);
 }
 
 MD_Menu::value_t *mnuIValueRqst(MD_Menu::mnuId_t id, bool bGet)
 // Value request callback for integers variables
 {
+  MD_Menu::value_t *r = &vBuf;
+
   switch (id)
   {
   case 12:
     if (bGet)
-    {
       vBuf.value = int8Value;
-      return(&vBuf);
-    }
     else
     {
       int8Value = vBuf.value;
@@ -195,10 +200,7 @@ MD_Menu::value_t *mnuIValueRqst(MD_Menu::mnuId_t id, bool bGet)
   case 13:
   case 15:
     if (bGet)
-    {
       vBuf.value = int16Value;
-      return(&vBuf);
-    }
     else
     {
       int16Value = vBuf.value;
@@ -209,10 +211,7 @@ MD_Menu::value_t *mnuIValueRqst(MD_Menu::mnuId_t id, bool bGet)
 
   case 14:
     if (bGet)
-    {
       vBuf.value = int32Value;
-      return(&vBuf);
-    }
     else
     {
       int32Value = vBuf.value;
@@ -220,23 +219,25 @@ MD_Menu::value_t *mnuIValueRqst(MD_Menu::mnuId_t id, bool bGet)
       Serial.print(int32Value);
     }
     break;
+
+  default:
+    r = nullptr;
+    break;
   }
 
-  return(nullptr);
+  return(r);
 }
 
 MD_Menu::value_t *mnuFValueRqst(MD_Menu::mnuId_t id, bool bGet)
 // Value request callback for floating value
 {
   static int32_t f;
+  MD_Menu::value_t *r = &vBuf;
 
   if (id == 16)
   {
     if (bGet)
-    {
       vBuf.value = (uint32_t)(floatValue * 100.0);
-      return(&vBuf);
-    }
     else
     {
       floatValue = (vBuf.value / 100.0);
@@ -244,10 +245,14 @@ MD_Menu::value_t *mnuFValueRqst(MD_Menu::mnuId_t id, bool bGet)
       Serial.print(floatValue);
     }
   }
+  else
+    r = nullptr;
+
+  return(r);
 }
 
 MD_Menu::value_t *mnuEValueRqst(MD_Menu::mnuId_t id, bool bGet)
-// Value request callback for floating value
+// Value request callback for engineering value
 {
   if (id == 17)
   {
@@ -264,6 +269,8 @@ MD_Menu::value_t *mnuEValueRqst(MD_Menu::mnuId_t id, bool bGet)
       Serial.print(engValue.power);
     }
   }
+
+  return(nullptr);
 }
 
 MD_Menu::value_t *myCode(MD_Menu::mnuId_t id, bool bGet)
@@ -300,9 +307,15 @@ bool display(MD_Menu::userDisplayAction_t action, char *msg)
 
   switch (action)
   {
+  case MD_Menu::DISP_INIT:
+    lcd.begin(LCD_COLS, LCD_ROWS);
+    lcd.clear();
+    lcd.noCursor();
+    memset(szLine, ' ', LCD_COLS);
+    break;
+
   case MD_Menu::DISP_CLEAR:
     lcd.clear();
-    memset(szLine, ' ', LCD_COLS);
     break;
 
   case MD_Menu::DISP_L0:
@@ -353,9 +366,7 @@ void setup(void)
 
   pinMode(LED_PIN, OUTPUT);
 
-  lcd.begin(LCD_COLS, LCD_ROWS);
-  lcd.clear();
-  lcd.noCursor();
+  display(MD_Menu::DISP_INIT);
 
   lcdKeys.begin();
   lcdKeys.enableRepeat(false);
