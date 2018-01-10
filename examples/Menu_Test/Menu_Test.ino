@@ -49,22 +49,24 @@ MD_Menu::value_t vBuf;  // interface buffer for values
 // Menu Headers --------
 const PROGMEM MD_Menu::mnuHeader_t mnuHdr[] =
 {
-  { 10, "MD_Menu",      10, 14, 0 },
+  { 10, "MD_Menu",      10, 15, 0 },
   { 11, "Input Data",   20, 27, 0 },
   { 12, "Serial Setup", 30, 33, 0 },
   { 13, "LED Menu",     40, 41, 0 },
-  { 14, "FF Menu",     50, 51, 0 },
+  { 14, "FF Menu",      50, 51, 0 },
+  { 15, "Realtime FB",  60, 64, 0 },
 };
 
 // Menu Items ----------
 const PROGMEM MD_Menu::mnuItem_t mnuItm[] =
 {
   // Starting (Root) menu
-  { 10, "Input Test", MD_Menu::MNU_MENU, 11 },
-  { 11, "Serial",     MD_Menu::MNU_MENU, 12 },
-  { 12, "LED",        MD_Menu::MNU_MENU, 13 },
-  { 13, "More Menu",  MD_Menu::MNU_MENU, 10 },
-  { 14, "Flip-Flop",  MD_Menu::MNU_MENU, 14 },
+  { 10, "Input Test",  MD_Menu::MNU_MENU, 11 },
+  { 11, "Serial",      MD_Menu::MNU_MENU, 12 },
+  { 12, "LED",         MD_Menu::MNU_MENU, 13 },
+  { 13, "More Menu",   MD_Menu::MNU_MENU, 10 },
+  { 14, "Flip-Flop",   MD_Menu::MNU_MENU, 14 },
+  { 15, "Realtime FB", MD_Menu::MNU_MENU, 15 },
   // Input Data submenu
   { 20, "Fruit List", MD_Menu::MNU_INPUT, 10 },
   { 21, "Boolean",    MD_Menu::MNU_INPUT, 11 },
@@ -86,6 +88,12 @@ const PROGMEM MD_Menu::mnuItem_t mnuItm[] =
   // Flip-flop - boolean controls variable edit
   { 50, "Flip", MD_Menu::MNU_INPUT, 50 },
   { 51, "Flop", MD_Menu::MNU_INPUT, 51 },
+  // Realtime feedback variable edit
+  { 60, "Fruit List", MD_Menu::MNU_INPUT_FB, 10 },
+  { 61, "Boolean",    MD_Menu::MNU_INPUT_FB, 11 },
+  { 62, "Integer 8",  MD_Menu::MNU_INPUT_FB, 12 },
+  { 63, "Float",      MD_Menu::MNU_INPUT_FB, 16 },
+  { 64, "Eng Units",  MD_Menu::MNU_INPUT_FB, 17 },
 };
 
 // Input Items ---------
@@ -366,6 +374,46 @@ MD_Menu::value_t *mnuFFValueRqst(MD_Menu::mnuId_t id, bool bGet)
       Serial.print(F("\nFlipFlop value changed to "));
       Serial.print(int8Value);
       gateKeeper = !gateKeeper;
+    }
+    break;
+
+  default:
+    r = nullptr;
+    break;
+  }
+
+  return(r);
+}
+
+MD_Menu::value_t *mnuFBValueRqst(MD_Menu::mnuId_t id, bool bGet)
+// Value request callback using real time feedback selection variable
+{
+  MD_Menu::value_t *r = &vBuf;
+
+  switch (id)
+  {
+  case 60:
+    if (bGet)
+      vBuf.value = uint8Value;
+    else
+    {
+      uint8Value = vBuf.value;
+      Serial.print(F("\nUint8 value changed to "));
+      Serial.print(int8Value);
+    }
+    break;
+
+  case 61:
+    if (bGet)
+    {
+      vBuf.value = fruit;
+      return(&vBuf);
+    }
+    else
+    {
+      fruit = vBuf.value;
+      Serial.print(F("\nFruit index changed to "));
+      Serial.print(fruit);
     }
     break;
 

@@ -193,7 +193,7 @@ void MD_Menu::strPostamble(char *psz, mnuInput_t *mInp)
   strcat(psz, FLD_DELIM_R);
 }
 
-bool MD_Menu::processList(userNavAction_t nav, mnuInput_t *mInp)
+bool MD_Menu::processList(userNavAction_t nav, mnuInput_t *mInp, bool rtfb)
 // Processing for List based input
 // Return true when the edit cycle is completed
 {
@@ -281,12 +281,19 @@ bool MD_Menu::processList(userNavAction_t nav, mnuInput_t *mInp)
     strPostamble(sz, mInp);
 
     _cbDisp(DISP_L1, sz);
+
+    // real time feedback needed
+    if (rtfb)
+    {
+      _pValue->value = _V.value;
+      mInp->cbVR(mInp->id, false);
+    }
   }
 
   return(endFlag);
 }
 
-bool MD_Menu::processBool(userNavAction_t nav, mnuInput_t *mInp)
+bool MD_Menu::processBool(userNavAction_t nav, mnuInput_t *mInp, bool rtfb)
 // Processing for Boolean (true/false) value input
 // Return true when the edit cycle is completed
 {
@@ -334,6 +341,13 @@ bool MD_Menu::processBool(userNavAction_t nav, mnuInput_t *mInp)
     strPostamble(sz, mInp);
 
     _cbDisp(DISP_L1, sz);
+
+    // real time feedback needed
+    if (rtfb)
+    {
+      _pValue->value = _V.value;
+      mInp->cbVR(mInp->id, false);
+    }
   }
 
   return(endFlag);
@@ -377,7 +391,7 @@ char *ltostr(char *buf, uint8_t bufLen, int32_t v, uint8_t base, bool leadZero =
   return(buf);
 }
 
-bool MD_Menu::processInt(userNavAction_t nav, mnuInput_t *mInp, uint16_t incDelta)
+bool MD_Menu::processInt(userNavAction_t nav, mnuInput_t *mInp, bool rtfb, uint16_t incDelta)
 // Processing for Integer (all sizes) value input
 // Return true when the edit cycle is completed
 {
@@ -435,12 +449,19 @@ bool MD_Menu::processInt(userNavAction_t nav, mnuInput_t *mInp, uint16_t incDelt
     strPostamble(sz, mInp);
 
     _cbDisp(DISP_L1, sz);
+
+    // real time feedback needed
+    if (rtfb)
+    {
+      _pValue->value = _V.value;
+      mInp->cbVR(mInp->id, false);
+    }
   }
 
   return(endFlag);
 }
 
-bool MD_Menu::processFloat(userNavAction_t nav, mnuInput_t *mInp, uint16_t incDelta)
+bool MD_Menu::processFloat(userNavAction_t nav, mnuInput_t *mInp, bool rtfb, uint16_t incDelta)
 // Processing for Floating number representation value input
 // The number is actually a uint32, where the last FLOAT_DECIMALS digits are taken
 // to be fractional part of the floating numer. For all purposes, this number is a long
@@ -510,12 +531,19 @@ bool MD_Menu::processFloat(userNavAction_t nav, mnuInput_t *mInp, uint16_t incDe
     strPostamble(sz, mInp);
 
     _cbDisp(DISP_L1, sz);
+
+    // real time feedback needed
+    if (rtfb)
+    {
+      _pValue->value = _V.value;
+      mInp->cbVR(mInp->id, false);
+    }
   }
 
   return(endFlag);
 }
 
-bool MD_Menu::processEng(userNavAction_t nav, mnuInput_t *mInp, uint16_t incDelta)
+bool MD_Menu::processEng(userNavAction_t nav, mnuInput_t *mInp, bool rtfb, uint16_t incDelta)
 // Processing for Engineering Units number value input
 // The number is actually a uint32, where the last ENGU_DECIMALS digits are taken
 // to be fractional part of the floating numer. For all purposes, this number is a long
@@ -630,12 +658,19 @@ bool MD_Menu::processEng(userNavAction_t nav, mnuInput_t *mInp, uint16_t incDelt
     strcat_P(sz, mInp->pList);
 
     _cbDisp(DISP_L1, sz);
+
+    // real time feedback needed
+    if (rtfb)
+    {
+      _pValue->value = _V.value;
+      mInp->cbVR(mInp->id, false);
+    }
   }
 
   return(endFlag);
 }
 
-bool MD_Menu::processRun(userNavAction_t nav, mnuInput_t *mInp)
+bool MD_Menu::processRun(userNavAction_t nav, mnuInput_t *mInp, bool rtfb)
 // Processing for Run user code input field.
 // When the field is selected, run the user variable code. For all other
 // input do nothing. Return true when the element has run user code.
@@ -681,12 +716,12 @@ void MD_Menu::handleInput(bool bNew)
 
       switch (me->action)
       {
-      case INP_LIST: ended = processList(NAV_NULL, me); break;
-      case INP_BOOL: ended = processBool(NAV_NULL, me); break;
-      case INP_INT:  ended = processInt(NAV_NULL, me, incDelta); break;
-      case INP_FLOAT: ended = processFloat(NAV_NULL, me, incDelta); break;
-      case INP_ENGU: ended = processEng(NAV_NULL, me, incDelta); break;
-      case INP_RUN: ended = processRun(NAV_NULL, me); break;
+      case INP_LIST: ended = processList(NAV_NULL, me, mi->action == MNU_INPUT_FB); break;
+      case INP_BOOL: ended = processBool(NAV_NULL, me, mi->action == MNU_INPUT_FB); break;
+      case INP_INT:  ended = processInt(NAV_NULL, me, mi->action == MNU_INPUT_FB, incDelta); break;
+      case INP_FLOAT: ended = processFloat(NAV_NULL, me, mi->action == MNU_INPUT_FB, incDelta); break;
+      case INP_ENGU: ended = processEng(NAV_NULL, me, mi->action == MNU_INPUT_FB, incDelta); break;
+      case INP_RUN: ended = processRun(NAV_NULL, me, mi->action == MNU_INPUT_FB); break;
       }
     }
   }
@@ -704,12 +739,12 @@ void MD_Menu::handleInput(bool bNew)
 
       switch (me->action)
       {
-      case INP_LIST: ended = processList(nav, me); break;
-      case INP_BOOL: ended = processBool(nav, me); break;
-      case INP_INT:  ended = processInt(nav, me, incDelta); break;
-      case INP_FLOAT: ended = processFloat(nav, me, incDelta); break;
-      case INP_ENGU: ended = processEng(nav, me, incDelta); break;
-      case INP_RUN: ended = processRun(nav, me); break;
+      case INP_LIST: ended = processList(nav, me, mi->action == MNU_INPUT_FB); break;
+      case INP_BOOL: ended = processBool(nav, me, mi->action == MNU_INPUT_FB); break;
+      case INP_INT:  ended = processInt(nav, me, mi->action == MNU_INPUT_FB, incDelta); break;
+      case INP_FLOAT: ended = processFloat(nav, me, mi->action == MNU_INPUT_FB, incDelta); break;
+      case INP_ENGU: ended = processEng(nav, me, mi->action == MNU_INPUT_FB, incDelta); break;
+      case INP_RUN: ended = processRun(nav, me, mi->action == MNU_INPUT_FB); break;
       }
     }
   }
@@ -793,6 +828,7 @@ void MD_Menu::handleMenu(bool bNew)
           break;
 
         case MNU_INPUT:
+        case MNU_INPUT_FB:
           if (loadInput(mi->actionId) != nullptr)
             handleInput(true);
           else

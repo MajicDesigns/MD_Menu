@@ -34,6 +34,9 @@ for what really matters.
 \page pageRevisionHistory Revision History
 Revision History
 ----------------
+Jan 2017 version 2.0.1
+- Added code for input with real-time feedback (MNU_INPUT_FB).
+
 Jan 2017 version 2.0.0
 - Added INP_ENGU for inputting values in engineering (powers of 10^3) with correct unit prefixes
 - Changed to a universal value specifier of type value_t throughout. THIS WILL BREAK OLD CODE.
@@ -140,11 +143,12 @@ the range of menu items (of type *mnuItem_t*) that should be displayed for
 the menu. Menu item ids between the start and end id locations include 
 all the ids in locations in between, and should be in number sequence.
 
-A menu item may lead to another menu (if it is a node in the menu tree) or an
-input item (of type *mnuInput_t*) if it is a leaf of the menu system. The depth
-of the menu tree is restricted by the defined MENU_STACK_SIZE constant. When
-this limit is exceeded, the library will just ignore requests that cause
-additional menu depth but continues to run.
+A menu item may lead to another menu (MNU_MENU, if it is a node in the menu tree)
+an input item (of type *mnuInput_t*) if it is a leaf of the menu system (MNU_INPUT),
+or an input item with real-time feedback (MNU_INPUT_FB) that reports the value each 
+time with every change of value. The depth of the menu tree is restricted by the 
+defined MENU_STACK_SIZE constant. When this limit is exceeded, the library will 
+just ignore requests that cause additional menu depth but continues to run.
 
 Menu input items define the type of value that is to be edited by the user and
 parameters associated with managing the input for that value. Before the value
@@ -156,7 +160,8 @@ pointer to the structure passed back to the library. This copy of the user varia
 is used for editing and a second *cbValueRequest* (conceptually a 'set') is invoked 
 after the value is updated, enabling the user code to take action on the change. 
 If the variable edit is cancelled, the second *cbValueRequest* 'set' call does not 
-occur and no further action is required from the user code.
+occur and no further action is required from the user code. If the edit is specified 
+with real-time feedback, the value is 'set' for each change in value. 
 
 Variable data input may be of the following types:
  - **Pick List** specifies a PROGMEM character string with list items separated
@@ -364,8 +369,9 @@ public:
   */
   enum mnuAction_t
   {
-    MNU_MENU,   ///< The item is for selection of a new menu
-    MNU_INPUT,  ///< The item is for input of a value
+    MNU_MENU,     ///< The item is for selection of a new menu
+    MNU_INPUT,    ///< The item is for input of a value
+    MNU_INPUT_FB, ///< The item is for input with real time feeback of value changes
   };
 
   /**
@@ -618,16 +624,16 @@ private:
   void timerStart(void);    ///< Start (reset) the timout timer
   void timerCheck(void);    ///< Check if timout has expired and reset menu if it has
 
-  void handleMenu(bool bNew = false);  ///< handling display menu seitems and navigation
+  void handleMenu(bool bNew = false);  ///< handling display menu items and navigation
   void handleInput(bool bNew = false); ///< handling user input to edit values
 
   // Process the different types of input requests
   // All return true when edit changes are finished (SELECT or ESCAPE).
-  bool processList(userNavAction_t nav, mnuInput_t *mInp);
-  bool processBool(userNavAction_t nav, mnuInput_t *mInp);
-  bool processInt(userNavAction_t nav, mnuInput_t *mInp, uint16_t incDelta);
-  bool processFloat(userNavAction_t nav, mnuInput_t *mInp, uint16_t incDelta);
-  bool processEng(userNavAction_t nav, mnuInput_t *mInp, uint16_t incDelta);
-  bool processRun(userNavAction_t nav, mnuInput_t *mInp);
+  bool processList(userNavAction_t nav, mnuInput_t *mInp, bool rtfb);
+  bool processBool(userNavAction_t nav, mnuInput_t *mInp, bool rtfb);
+  bool processInt(userNavAction_t nav, mnuInput_t *mInp, bool rtfb, uint16_t incDelta);
+  bool processFloat(userNavAction_t nav, mnuInput_t *mInp, bool rtfb, uint16_t incDelta);
+  bool processEng(userNavAction_t nav, mnuInput_t *mInp, bool rtfb, uint16_t incDelta);
+  bool processRun(userNavAction_t nav, mnuInput_t *mInp, bool rtfb);
 };
 
