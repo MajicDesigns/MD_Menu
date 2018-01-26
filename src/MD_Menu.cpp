@@ -223,7 +223,7 @@ bool MD_Menu::processList(userNavAction_t nav, mnuInput_t *mInp, bool rtfb)
       else
       {
         _V.value = _pValue->value;
-        if (_V.value >= size - 1)   // index set incorrectly
+        if (_V.value >= size)   // index set incorrectly
           _V.value = 0;
         update = true;
       }

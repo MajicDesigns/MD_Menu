@@ -10,7 +10,7 @@ back end under application control. It is suitable for text based
 displays (eg, LCD modules) with 1 or 2 lines available for display.
 
 The library allows user code to define
-- Static menu definitions to minimised RAM footprint. 
+- Static menu definitions to minimized RAM footprint. 
 - Callbacks for navigation and display control.
 - Menu inactivity timeout.
 - Auto start on key press or manual start by user code.
@@ -34,6 +34,9 @@ for what really matters.
 \page pageRevisionHistory Revision History
 Revision History
 ----------------
+Jan 2017 version 2.0.2
+- Fixed bug with handling list index out of range check.
+
 Jan 2017 version 2.0.1
 - Added code for input with real-time feedback (MNU_INPUT_FB).
 
