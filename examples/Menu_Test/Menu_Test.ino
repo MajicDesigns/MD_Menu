@@ -2,13 +2,13 @@
 //
 // Test functionality of the library and demonstrate how a menu is structured.
 // The code runs the menu and display debug information on the Serial Monitor.
-// 
-// Different combinations of output display and navigation interfaces can be 
+//
+// Different combinations of output display and navigation interfaces can be
 // selected from the Menu_Test.h header file. Depending on the input and display
-// options selected, one or more of the libraries listed below these may be 
+// options selected, one or more of the libraries listed below these may be
 // required.
 //
-// The example UI callback routines cover the most common user input and display 
+// The example UI callback routines cover the most common user input and display
 // hardware:
 //
 // User Navigation - Menu_Test_Nav.cpp
@@ -43,18 +43,21 @@ int16_t int16Value = 999;
 int32_t int32Value = 9999;
 float floatValue = 999.99;
 MD_Menu::value_t engValue = { 999900, 3 };
+char _txt[] = "192.168.1.101";
 
 MD_Menu::value_t vBuf;  // interface buffer for values
 
 // Menu Headers --------
 const PROGMEM MD_Menu::mnuHeader_t mnuHdr[] =
 {
-  { 10, "MD_Menu",      10, 15, 0 },
+  { 10, "MD_Menu",      10, 16, 0 },
   { 11, "Input Data",   20, 27, 0 },
   { 12, "Serial Setup", 30, 33, 0 },
   { 13, "LED Menu",     40, 41, 0 },
   { 14, "FF Menu",      50, 51, 0 },
   { 15, "Realtime FB",  60, 64, 0 },
+  { 16, "Output TXT",   70, 70, 0 },
+
 };
 
 // Menu Items ----------
@@ -67,6 +70,8 @@ const PROGMEM MD_Menu::mnuItem_t mnuItm[] =
   { 13, "More Menu",   MD_Menu::MNU_MENU, 10 },
   { 14, "Flip-Flop",   MD_Menu::MNU_MENU, 14 },
   { 15, "Realtime FB", MD_Menu::MNU_MENU, 15 },
+  { 16, "Output TXT",  MD_Menu::MNU_MENU, 16 },
+
   // Input Data submenu
   { 20, "Fruit List", MD_Menu::MNU_INPUT, 10 },
   { 21, "Boolean",    MD_Menu::MNU_INPUT, 11 },
@@ -82,7 +87,7 @@ const PROGMEM MD_Menu::mnuItem_t mnuItm[] =
   { 31, "Speed",     MD_Menu::MNU_INPUT, 31 },
   { 32, "Parity",    MD_Menu::MNU_INPUT, 32 },
   { 33, "Stop Bits", MD_Menu::MNU_INPUT, 33 },
-  // LED  
+  // LED
   { 40, "Turn Off", MD_Menu::MNU_INPUT, 40 },
   { 41, "Turn On",  MD_Menu::MNU_INPUT, 41 },
   // Flip-flop - boolean controls variable edit
@@ -94,6 +99,9 @@ const PROGMEM MD_Menu::mnuItem_t mnuItm[] =
   { 62, "Integer 8",  MD_Menu::MNU_INPUT_FB, 12 },
   { 63, "Float",      MD_Menu::MNU_INPUT_FB, 16 },
   { 64, "Eng Units",  MD_Menu::MNU_INPUT_FB, 17 },
+
+  // Output Data submenu
+  { 70, "Output TXT", MD_Menu::MNU_INPUT, 60 },
 };
 
 // Input Items ---------
@@ -126,6 +134,8 @@ const PROGMEM MD_Menu::mnuInput_t mnuInp[] =
 
   { 50, "Flip", MD_Menu::INP_INT, mnuFFValueRqst, 4, -128, 0, 127, 0, 10, nullptr },
   { 51, "Flop", MD_Menu::INP_INT, mnuFFValueRqst, 4, -128, 0, 127, 0, 16, nullptr },
+
+  { 60, "TXT",  	MD_Menu::INP_RUN,   myCode,        0,       0, 0,      0, 0, 10, nullptr },  // test output TXT
 };
 
 // bring it all together in the global menu object
@@ -172,7 +182,7 @@ MD_Menu::value_t *mnuBValueRqst(MD_Menu::mnuId_t id, bool bGet)
   }
   else
     r = nullptr;
-
+  
   return(r);
 }
 
@@ -183,46 +193,46 @@ MD_Menu::value_t *mnuIValueRqst(MD_Menu::mnuId_t id, bool bGet)
 
   switch (id)
   {
-  case 12:
-    if (bGet)
-      vBuf.value = int8Value;
-    else
-    {
-      int8Value = vBuf.value;
-      Serial.print(F("\nInt8 value changed to "));
-      Serial.print(int8Value);
-    }
-    break;
+    case 12:
+      if (bGet)
+        vBuf.value = int8Value;
+      else
+      {
+        int8Value = vBuf.value;
+        Serial.print(F("\nInt8 value changed to "));
+        Serial.print(int8Value);
+      }
+      break;
 
-  case 13:
-  case 15:
-    if (bGet)
-      vBuf.value = int16Value;
-    else
-    {
-      int16Value = vBuf.value;
-      Serial.print(F("\nInt16 value changed to "));
-      Serial.print(int16Value);
-    }
-    break;
+    case 13:
+    case 15:
+      if (bGet)
+        vBuf.value = int16Value;
+      else
+      {
+        int16Value = vBuf.value;
+        Serial.print(F("\nInt16 value changed to "));
+        Serial.print(int16Value);
+      }
+      break;
 
-  case 14:
-    if (bGet)
-      vBuf.value = int32Value;
-    else
-    {
-      int32Value = vBuf.value;
-      Serial.print(F("\nInt32 value changed to "));
-      Serial.print(int32Value);
-    }
-    break;
+    case 14:
+      if (bGet)
+        vBuf.value = int32Value;
+      else
+      {
+        int32Value = vBuf.value;
+        Serial.print(F("\nInt32 value changed to "));
+        Serial.print(int32Value);
+      }
+      break;
 
-  default:
-    r = nullptr;
-    break;
+    default:
+      r = nullptr;
+      break;
   }
 
-  return(r);
+  return (r);
 }
 
 MD_Menu::value_t *mnuSerialValueRqst(MD_Menu::mnuId_t id, bool bGet)
@@ -233,56 +243,56 @@ MD_Menu::value_t *mnuSerialValueRqst(MD_Menu::mnuId_t id, bool bGet)
 
   switch (id)
   {
-  case 30:
-    if (bGet)
-      vBuf.value = port;
-    else
-    {
-      port - vBuf.value;
-      Serial.print(F("\nPort index="));
-      Serial.print(port);
-    }
-    break;
+    case 30:
+      if (bGet)
+        vBuf.value = port;
+      else
+      {
+        port - vBuf.value;
+        Serial.print(F("\nPort index="));
+        Serial.print(port);
+      }
+      break;
 
-  case 31:
-    if (bGet)
-      vBuf.value = speed;
-    else
-    {
-      speed = vBuf.value;
-      Serial.print(F("\nSpeed index="));
-      Serial.print(speed);
-    }
-    break;
+    case 31:
+      if (bGet)
+        vBuf.value = speed;
+      else
+      {
+        speed = vBuf.value;
+        Serial.print(F("\nSpeed index="));
+        Serial.print(speed);
+      }
+      break;
 
-  case 32:
-    if (bGet)
-      vBuf.value = parity;
-    else
-    {
-      parity = vBuf.value;
-      Serial.print(F("\nParity index="));
-      Serial.print(parity);
-    }
-    break;
+    case 32:
+      if (bGet)
+        vBuf.value = parity;
+      else
+      {
+        parity = vBuf.value;
+        Serial.print(F("\nParity index="));
+        Serial.print(parity);
+      }
+      break;
 
-  case 33:
-    if (bGet)
-      vBuf.value = stop;
-    else
-    {
-      stop = vBuf.value;
-      Serial.print(F("\nStop index="));
-      Serial.print(stop);
-    }
-    break;
+    case 33:
+      if (bGet)
+        vBuf.value = stop;
+      else
+      {
+        stop = vBuf.value;
+        Serial.print(F("\nStop index="));
+        Serial.print(stop);
+      }
+      break;
 
-  default:
-    r = nullptr;
-    break;
+    default:
+      r = nullptr;
+      break;
   }
 
-  return(r);
+  return (r);
 }
 
 MD_Menu::value_t *mnuFValueRqst(MD_Menu::mnuId_t id, bool bGet)
@@ -337,49 +347,49 @@ MD_Menu::value_t *mnuFFValueRqst(MD_Menu::mnuId_t id, bool bGet)
 
   switch (id)
   {
-  case 50:
-    if (bGet)
-    {
-      if (gateKeeper)
+    case 50:
+      if (bGet)
       {
-        Serial.print(F("\nFlipFlop value blocked"));
-        r = nullptr;
+        if (gateKeeper)
+        {
+          Serial.print(F("\nFlipFlop value blocked"));
+          r = nullptr;
+        }
+        else
+          vBuf.value = int8Value;
       }
       else
-        vBuf.value = int8Value;
-    }
-    else
-    {
-      int8Value = vBuf.value;
-      Serial.print(F("\nFlipFlop value changed to "));
-      Serial.print(int8Value);
-      gateKeeper = !gateKeeper;
-    }
-    break;
-
-  case 51:
-    if (bGet)
-    {
-      if (!gateKeeper)    // reverse the logic of above
       {
-        Serial.print(F("\nFlipFlop value blocked"));
-        r = nullptr;
+        int8Value = vBuf.value;
+        Serial.print(F("\nFlipFlop value changed to "));
+        Serial.print(int8Value);
+        gateKeeper = !gateKeeper;
+      }
+      break;
+
+    case 51:
+      if (bGet)
+      {
+        if (!gateKeeper)    // reverse the logic of above
+        {
+          Serial.print(F("\nFlipFlop value blocked"));
+          r = nullptr;
+        }
+        else
+          vBuf.value = int8Value;
       }
       else
-        vBuf.value = int8Value;
-    }
-    else
-    {
-      int8Value = vBuf.value;
-      Serial.print(F("\nFlipFlop value changed to "));
-      Serial.print(int8Value);
-      gateKeeper = !gateKeeper;
-    }
-    break;
+      {
+        int8Value = vBuf.value;
+        Serial.print(F("\nFlipFlop value changed to "));
+        Serial.print(int8Value);
+        gateKeeper = !gateKeeper;
+      }
+      break;
 
-  default:
-    r = nullptr;
-    break;
+    default:
+      r = nullptr;
+      break;
   }
 
   return(r);
@@ -428,14 +438,22 @@ MD_Menu::value_t *mnuFBValueRqst(MD_Menu::mnuId_t id, bool bGet)
 MD_Menu::value_t *myCode(MD_Menu::mnuId_t id, bool bGet)
 // Value request callback for run code input
 {
-  Serial.print(F("\nmyCode called id="));
-  Serial.print(id);
-  Serial.print(F(" to "));
-  Serial.print(bGet ? F("GET") : F("SET - reset menu"));
+  switch (id)
+  {
+    case 18:
+      Serial.print(F("\nmyCode called id="));
+      Serial.print(id);
+      Serial.print(F(" to "));
+      Serial.print(bGet ? F("GET") : F("SET - reset menu"));
 
-  if (!bGet) M.reset();
-
-  return(nullptr);
+      if (!bGet) M.reset();
+      break;
+  
+    case 60:
+      if (bGet) return ((MD_Menu::value_t *)&_txt);
+      break;
+  }
+  return (nullptr);
 }
 
 MD_Menu::value_t *myLEDCode(MD_Menu::mnuId_t id, bool bGet)
