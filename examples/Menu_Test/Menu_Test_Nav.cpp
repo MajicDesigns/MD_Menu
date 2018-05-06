@@ -152,3 +152,33 @@ MD_Menu::userNavAction_t navigation(uint16_t &incDelta)
   return(MD_Menu::NAV_NULL);
 }
 #endif
+
+#if INPUT_SERIAL
+// Using Serial as input
+// 'U' and 'D' map to INC and DEC
+// 'R' and 'L' map to ESC
+// 'S' maps to SEL
+
+void setupNav(void)
+{
+}
+
+MD_Menu::userNavAction_t navigation(uint16_t &incDelta)
+{
+  char c = 0;
+  if(Serial.available()>0)
+    c = Serial.read();
+
+  incDelta = 1;
+  switch (c)
+  {
+  case 'D':  return(MD_Menu::NAV_DEC);
+  case 'U':  return(MD_Menu::NAV_INC);
+  case 'S':  return(MD_Menu::NAV_SEL);
+  case 'R':
+  case 'L':  return(MD_Menu::NAV_ESC);
+  }
+
+  return(MD_Menu::NAV_NULL);
+}
+#endif
