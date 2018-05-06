@@ -716,12 +716,12 @@ void MD_Menu::handleInput(bool bNew)
 
       switch (me->action)
       {
-      case INP_LIST: ended = processList(NAV_NULL, me, mi->action == MNU_INPUT_FB); break;
-      case INP_BOOL: ended = processBool(NAV_NULL, me, mi->action == MNU_INPUT_FB); break;
-      case INP_INT:  ended = processInt(NAV_NULL, me, mi->action == MNU_INPUT_FB, incDelta); break;
+      case INP_LIST:  ended = processList(NAV_NULL, me, mi->action == MNU_INPUT_FB);            break;
+      case INP_BOOL:  ended = processBool(NAV_NULL, me, mi->action == MNU_INPUT_FB);            break;
+      case INP_INT:   ended = processInt(NAV_NULL, me, mi->action == MNU_INPUT_FB, incDelta);   break;
       case INP_FLOAT: ended = processFloat(NAV_NULL, me, mi->action == MNU_INPUT_FB, incDelta); break;
-      case INP_ENGU: ended = processEng(NAV_NULL, me, mi->action == MNU_INPUT_FB, incDelta); break;
-      case INP_RUN: ended = processRun(NAV_NULL, me, mi->action == MNU_INPUT_FB); break;
+      case INP_ENGU:  ended = processEng(NAV_NULL, me, mi->action == MNU_INPUT_FB, incDelta);   break;
+      case INP_RUN:   ended = processRun(NAV_NULL, me, mi->action == MNU_INPUT_FB);             break;
       }
     }
   }
@@ -739,12 +739,12 @@ void MD_Menu::handleInput(bool bNew)
 
       switch (me->action)
       {
-      case INP_LIST: ended = processList(nav, me, mi->action == MNU_INPUT_FB); break;
-      case INP_BOOL: ended = processBool(nav, me, mi->action == MNU_INPUT_FB); break;
-      case INP_INT:  ended = processInt(nav, me, mi->action == MNU_INPUT_FB, incDelta); break;
+      case INP_LIST:  ended = processList(nav, me, mi->action == MNU_INPUT_FB);            break;
+      case INP_BOOL:  ended = processBool(nav, me, mi->action == MNU_INPUT_FB);            break;
+      case INP_INT:   ended = processInt(nav, me, mi->action == MNU_INPUT_FB, incDelta);   break;
       case INP_FLOAT: ended = processFloat(nav, me, mi->action == MNU_INPUT_FB, incDelta); break;
-      case INP_ENGU: ended = processEng(nav, me, mi->action == MNU_INPUT_FB, incDelta); break;
-      case INP_RUN: ended = processRun(nav, me, mi->action == MNU_INPUT_FB); break;
+      case INP_ENGU:  ended = processEng(nav, me, mi->action == MNU_INPUT_FB, incDelta);   break;
+      case INP_RUN:   ended = processRun(nav, me, mi->action == MNU_INPUT_FB);             break;
       }
     }
   }

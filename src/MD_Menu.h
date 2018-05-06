@@ -34,13 +34,15 @@ for what really matters.
 \page pageRevisionHistory Revision History
 Revision History
 ----------------
-Jan 2017 version 2.0.2
+xxx 2018 version 2.1.0
+
+Jan 2018 version 2.0.2
 - Fixed bug with handling list index out of range check.
 
-Jan 2017 version 2.0.1
+Jan 2018 version 2.0.1
 - Added code for input with real-time feedback (MNU_INPUT_FB).
 
-Jan 2017 version 2.0.0
+Jan 2018 version 2.0.0
 - Added INP_ENGU for inputting values in engineering (powers of 10^3) with correct unit prefixes
 - Changed to a universal value specifier of type value_t throughout. THIS WILL BREAK OLD CODE.
 - Added DISP_INIT enumerated value.
@@ -256,8 +258,8 @@ public:
   * Return values for the user input handler
   *
   * The menu navigation keys are implemented by user code that must
-  * return one of these definesd types when it is invoked. The menu
-  * navigation in the libray and data input is fully controlled by
+  * return one of these defined types when it is invoked. The menu
+  * navigation in the library and data input is fully controlled by
   * this returned value.
   */
   typedef enum userNavAction_t
@@ -275,7 +277,7 @@ public:
   * The user input function must handle the physical user interface
   * (eg, switches, rotary encoder) and return one of the userNavAction_t
   * enumerated types to trigger the next menu action.
-  * The user funtion can also specify the incremental change quantity that 
+  * The user function can also specify the incremental change quantity that 
   * to be applied for INC and DEC actions when editing a numeric variable
   * (default is 1) by changing the incDelta variable.
   */
@@ -290,7 +292,7 @@ public:
   */
   enum userDisplayAction_t
   {
-    DISP_INIT,  ///< Initialise the display
+    DISP_INIT,  ///< Initialize the display
     DISP_CLEAR, ///< Clear the display. Message parameter is not defined
     DISP_L0,    ///< Display the data provided in line 0 (first line). For single line displays, this should be ignored.
     DISP_L1,    ///< Display the data provided in line 1 (second line). This must always be implemented.
@@ -330,7 +332,7 @@ public:
   */
   typedef struct value_t
   {
-    int32_t value;   ///< the value of the number 999.999
+    int32_t value;   ///< the value of the number (or represents 999.999 for INP_ENGU)
     int8_t  power;   ///< the power of 10 (multiple of 3 eg, -3 (milli) 0, 3 (kilo), 6 (Mega))
   };
 
@@ -346,7 +348,7 @@ public:
   typedef value_t*(*cbValueRequest)(mnuId_t id, bool bGet);
 
   /**
-  * Input field defintion
+  * Input field definition
   *
   * Defines the data value for input from the user. Each definition
   * contains enough data for the data collection to be managed by the
@@ -374,7 +376,7 @@ public:
   {
     MNU_MENU,     ///< The item is for selection of a new menu
     MNU_INPUT,    ///< The item is for input of a value
-    MNU_INPUT_FB, ///< The item is for input with real time feeback of value changes
+    MNU_INPUT_FB, ///< The item is for input with real time feedback of value changes
   };
 
   /**
@@ -389,7 +391,7 @@ public:
     mnuId_t id;            ///< Identifier for this item
     char    label[ITEM_LABEL_SIZE + 1]; ///< Label for this menu item
     mnuAction_t action;    ///< Selecting this item does this action
-    mnuId_t actionId;      ///< Next menu or input field Id
+    mnuId_t actionId;      ///< Associated menu or input field Id
   };
 
   /**
