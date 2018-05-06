@@ -43,7 +43,6 @@ int16_t int16Value = 999;
 int32_t int32Value = 9999;
 float floatValue = 999.99;
 MD_Menu::value_t engValue = { 999900, 3 };
-
 char _txt[] = "192.168.1.101";
 
 MD_Menu::value_t vBuf;  // interface buffer for values
@@ -58,6 +57,7 @@ const PROGMEM MD_Menu::mnuHeader_t mnuHdr[] =
   { 14, "FF Menu",      50, 51, 0 },
   { 15, "Realtime FB",  60, 64, 0 },
   { 16, "Output TXT",   70, 70, 0 },
+
 };
 
 // Menu Items ----------
@@ -71,6 +71,7 @@ const PROGMEM MD_Menu::mnuItem_t mnuItm[] =
   { 14, "Flip-Flop",   MD_Menu::MNU_MENU, 14 },
   { 15, "Realtime FB", MD_Menu::MNU_MENU, 15 },
   { 16, "Output TXT",  MD_Menu::MNU_MENU, 16 },
+
   // Input Data submenu
   { 20, "Fruit List", MD_Menu::MNU_INPUT, 10 },
   { 21, "Boolean",    MD_Menu::MNU_INPUT, 11 },
@@ -98,6 +99,7 @@ const PROGMEM MD_Menu::mnuItem_t mnuItm[] =
   { 62, "Integer 8",  MD_Menu::MNU_INPUT_FB, 12 },
   { 63, "Float",      MD_Menu::MNU_INPUT_FB, 16 },
   { 64, "Eng Units",  MD_Menu::MNU_INPUT_FB, 17 },
+
   // Output Data submenu
   { 70, "Output TXT", MD_Menu::MNU_INPUT, 60 },
 };
@@ -121,7 +123,6 @@ const PROGMEM MD_Menu::mnuInput_t mnuInp[] =
   { 16, "Float",    MD_Menu::INP_FLOAT, mnuFValueRqst, 7,  -10000, 0,  99950, 0, 10, nullptr },  // test float number
   { 17, "Eng Unit", MD_Menu::INP_ENGU,  mnuEValueRqst, 7,       0, 0, 999000, 3, 50, engUnit },  // test engineering units number
   { 18, "Confirm",  MD_Menu::INP_RUN,   myCode,        0,       0, 0,      0, 0, 10, nullptr },
-
 
   { 30, "Port",     MD_Menu::INP_LIST, mnuSerialValueRqst, 4, 0, 0, 0, 0, 0, listCOM },
   { 31, "Bits/s",   MD_Menu::INP_LIST, mnuSerialValueRqst, 6, 0, 0, 0, 0, 0, listBaud },
@@ -152,7 +153,7 @@ MD_Menu::value_t *mnuLValueRqst(MD_Menu::mnuId_t id, bool bGet)
     if (bGet)
     {
       vBuf.value = fruit;
-      return (&vBuf);
+      return(&vBuf);
     }
     else
     {
@@ -181,8 +182,8 @@ MD_Menu::value_t *mnuBValueRqst(MD_Menu::mnuId_t id, bool bGet)
   }
   else
     r = nullptr;
-
-  return (r);
+  
+  return(r);
 }
 
 MD_Menu::value_t *mnuIValueRqst(MD_Menu::mnuId_t id, bool bGet)
@@ -314,7 +315,7 @@ MD_Menu::value_t *mnuFValueRqst(MD_Menu::mnuId_t id, bool bGet)
   else
     r = nullptr;
 
-  return (r);
+  return(r);
 }
 
 MD_Menu::value_t *mnuEValueRqst(MD_Menu::mnuId_t id, bool bGet)
@@ -323,7 +324,7 @@ MD_Menu::value_t *mnuEValueRqst(MD_Menu::mnuId_t id, bool bGet)
   if (id == 17)
   {
     if (bGet)
-      return (&engValue);
+      return(&engValue);
     else
     {
       float f = (engValue.value / 1000.0);
@@ -334,7 +335,7 @@ MD_Menu::value_t *mnuEValueRqst(MD_Menu::mnuId_t id, bool bGet)
     }
   }
 
-  return (nullptr);
+  return(nullptr);
 }
 
 MD_Menu::value_t *mnuFFValueRqst(MD_Menu::mnuId_t id, bool bGet)
@@ -391,7 +392,7 @@ MD_Menu::value_t *mnuFFValueRqst(MD_Menu::mnuId_t id, bool bGet)
       break;
   }
 
-  return (r);
+  return(r);
 }
 
 MD_Menu::value_t *mnuFBValueRqst(MD_Menu::mnuId_t id, bool bGet)
@@ -401,59 +402,56 @@ MD_Menu::value_t *mnuFBValueRqst(MD_Menu::mnuId_t id, bool bGet)
 
   switch (id)
   {
-    case 60:
-      if (bGet)
-        vBuf.value = int8Value;
-      else
-      {
-        int8Value = vBuf.value;
-        Serial.print(F("\nUint8 value changed to "));
-        Serial.print(int8Value);
-      }
-      break;
+  case 60:
+    if (bGet)
+      vBuf.value = uint8Value;
+    else
+    {
+      uint8Value = vBuf.value;
+      Serial.print(F("\nUint8 value changed to "));
+      Serial.print(int8Value);
+    }
+    break;
 
-    case 61:
-      if (bGet)
-      {
-        vBuf.value = fruit;
-        return (&vBuf);
-      }
-      else
-      {
-        fruit = vBuf.value;
-        Serial.print(F("\nFruit index changed to "));
-        Serial.print(fruit);
-      }
-      break;
+  case 61:
+    if (bGet)
+    {
+      vBuf.value = fruit;
+      return(&vBuf);
+    }
+    else
+    {
+      fruit = vBuf.value;
+      Serial.print(F("\nFruit index changed to "));
+      Serial.print(fruit);
+    }
+    break;
 
-    default:
-      r = nullptr;
-      break;
+  default:
+    r = nullptr;
+    break;
   }
 
-  return (r);
+  return(r);
 }
 
 MD_Menu::value_t *myCode(MD_Menu::mnuId_t id, bool bGet)
 // Value request callback for run code input
 {
-  if (id == 18)
+  switch (id)
   {
-    Serial.print(F("\nmyCode called id="));
-    Serial.print(id);
-    Serial.print(F(" to "));
-    Serial.print(bGet ? F("GET") : F("SET - reset menu"));
+    case 18:
+      Serial.print(F("\nmyCode called id="));
+      Serial.print(id);
+      Serial.print(F(" to "));
+      Serial.print(bGet ? F("GET") : F("SET - reset menu"));
 
-    if (!bGet) M.reset();
-  }
-  if (id == 60)
-  {
-    if (bGet) {
-      return ((MD_Menu::value_t *)&_txt);
-    }
-    else {
-      // do nothing
-    }
+      if (!bGet) M.reset();
+      break;
+  
+    case 60:
+      if (bGet) return ((MD_Menu::value_t *)&_txt);
+      break;
   }
   return (nullptr);
 }
@@ -466,7 +464,7 @@ MD_Menu::value_t *myLEDCode(MD_Menu::mnuId_t id, bool bGet)
   Serial.print(id == 40 ? F("off") : F("on"));
   digitalWrite(LED_PIN, id == 40 ? LOW : HIGH);
 
-  return (nullptr);
+  return(nullptr);
 }
 
 // Standard setup() and loop()

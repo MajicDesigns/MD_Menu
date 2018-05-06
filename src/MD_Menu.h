@@ -1,7 +1,7 @@
 #pragma once
 /**
 \mainpage MD_Menu Library
-Menu Manager for 1-2 Line Displays
+Menu Manager for 1 or 2 Line Displays
 ------------------------------
 
 This is a menu management library created as a front end to set 
@@ -10,25 +10,69 @@ back end under application control. It is suitable for text based
 displays (eg, LCD modules) with 1 or 2 lines available for display.
 
 The library allows user code to define
-- Static menu definitions to minimised RAM footprint. 
+- Static menu definitions to minimized RAM footprint. 
 - Callbacks for navigation and display control.
 - Menu inactivity timeout.
 - Auto start on key press or manual start by user code.
 - Input methods available for
   + Boolean (Y/N) values.
   + Pick List selection.
-  + 8/16/32 bit signed integers.
+  + Signed integers.
   + Decimal floating point representation.
+  + Engineering units.
 
 Menu managers in embedded systems are generally not the main function 
-of the embedded application software, so this library minimises the 
+of the embedded application software, so this library minimizes the 
 use of RAM and has a small memory footprint overall, leaving more space 
 for what really matters.
 
++ \subpage pageUsingLibrary
 + \subpage pageMenu
 + \subpage pageRevisionHistory
 + \subpage pageCopyright
 
+\page pageRevisionHistory Revision History
+Revision History
+----------------
+Jan 2017 version 2.0.2
+- Fixed bug with handling list index out of range check.
+
+Jan 2017 version 2.0.1
+- Added code for input with real-time feedback (MNU_INPUT_FB).
+
+Jan 2017 version 2.0.0
+- Added INP_ENGU for inputting values in engineering (powers of 10^3) with correct unit prefixes
+- Changed to a universal value specifier of type value_t throughout. THIS WILL BREAK OLD CODE.
+- Added DISP_INIT enumerated value.
+- Fixed handling of missing index values within range specified.
+- Eliminated different sized INT as not required.
+- List utility methods made public.
+
+Dec 2017 version 1.2.3
+- Changes by makelion to allow use with ESP8266 and ESP32
+
+Dec 2017 version 1.2.2
+- Added Menu_LCD-Shield example as a simpler example
+
+Nov 2017 version 1.2.1
+- Replaced MD_KeySwitch in examples with new MD_UISwitch library
+
+Jun 2017 version 1.2.0
+- Returning nullptr from value request callback now stops value being edited.
+
+Jun 2017 version 1.1.0
+- Removed index field from menu item definition. Not useful in practice.
+- Added real number (float) input
+
+Jun 2017 version 1.0.1
+- Added setAutoStart() method and code
+- Internal flags now a bit field
+- Added setTimeout() method and code
+
+May 2017 version 1.0.0
+- First implementation
+
+\page pageUsingLibrary Using the Library
 Using the Library
 -----------------
 The MD_Menu library allows definition and navigation of a menu system by moving 
@@ -48,7 +92,7 @@ Menu navigation is carried out under the control of user code invoked as
 a callback routine. The code must comply with the *cbUserNav* function 
 prototype. This callback routine implementation is dependent on the type 
 of input hardware, but the return codes for the required actions must 
-be one of the standardised *userNavAction_t* enumerated type.
+be one of the standardized *userNavAction_t* enumerated type.
 
 Navigation is carried out with 4 keys:
 - **INCREMENT** (NAV_INC). Move down a menu, move to the next value 
@@ -102,46 +146,54 @@ the range of menu items (of type *mnuItem_t*) that should be displayed for
 the menu. Menu item ids between the start and end id locations include 
 all the ids in locations in between, and should be in number sequence.
 
-A menu item may lead to another menu (if it is a node in the menu tree) or an
-input item (of type *mnuInput_t*) if it is a leaf of the menu system. The depth
-of the menu tree is restricted by the defined MENU_STACK_SIZE constant. When
-this limit is exceeded, the library will just ignore requests that cause
-additinal menu depth but continues to run.
+A menu item may lead to another menu (MNU_MENU, if it is a node in the menu tree)
+an input item (of type *mnuInput_t*) if it is a leaf of the menu system (MNU_INPUT),
+or an input item with real-time feedback (MNU_INPUT_FB) that reports the value each 
+time with every change of value. The depth of the menu tree is restricted by the 
+defined MENU_STACK_SIZE constant. When this limit is exceeded, the library will 
+just ignore requests that cause additional menu depth but continues to run.
 
 Menu input items define the type of value that is to be edited by the user and
 parameters associated with managing the input for that value. Before the value
 is edited a callback following the *cbValueRequest* prototype is called to 'get'
 the pointer to the variable with the current value. The input item id is provided 
-to identify which value is being requested. A copy of the user variable is used 
-for editing and a second *cbValueRequest* (conceptually a 'set') is invoked 
+to identify which value is being requested. The data must be loaded into a *value_t* 
+data structure that remains in scope while the data is being edited, and the 
+pointer to the structure passed back to the library. This copy of the user variable 
+is used for editing and a second *cbValueRequest* (conceptually a 'set') is invoked 
 after the value is updated, enabling the user code to take action on the change. 
-If the variable edit is cancelled, the second *cbValueRequest* 'set' call does 
-not occur.
+If the variable edit is cancelled, the second *cbValueRequest* 'set' call does not 
+occur and no further action is required from the user code. If the edit is specified 
+with real-time feedback, the value is 'set' for each change in value. 
 
-Variables may be of the following types:
-- **Pick List** specifies a PROGMEM character string with list items separated
+Variable data input may be of the following types:
+ - **Pick List** specifies a PROGMEM character string with list items separated
 by the '|' character (defined as INPUT_SEPARATOR), for example "Apple|Orange|Pear".
 The list is specified as the pList parameter and the get/set value callback expects
-a pointer to a uint8_t value that is the index of the current selection (zero based).
+a value that is the index of the current selection (zero based).
 - **Boolean** for Input of boolean (Y/N) values. As the user makes changes, the
 value changes between displays of 'Y' and 'N' (defined as INP_BOOL_T and INP_BOOL_F).
-The get/set callback expects a pointer to bool type.
-- **Integer** values can be specified as 8, 16 or 32 bits in size, with the get/set
-callback expecting pointers to int8_t, int16_t and int32_t (note all signed values).
-The input specification also allows a lower and upper bound to be set, as well as the
-number's base (2 through 16) to be specified. Numeric values that overflow the
-specified field with are prefixed by the '#' character (defined as INP_NUMERIC_OVERFLOW)
-to indicate that this has occurred.
+The get/set callback expects a 0/1 value.
+- **Integer** values can 8, 16 or 32 bits in size, with the get/set callback expecting 
+int32_t (note all signed values). The input specification also allows a lower and upper 
+bound to be set, as well as the number's base (2 through 16) to be specified. Numeric 
+values that overflow the specified field with are prefixed by the '#' character (defined 
+as INP_NUMERIC_OVERFLOW) to indicate that this has occurred.
 - **Floating point** where the library uses a 32 bit long integer and assumes 
 the last 2 digits (defined by FLOAT_DECIMALS) to be the fraction after the decimal 
 point (character defined as DECIMAL_POINT). Specification allows lower and upper bound 
 to be set. The base specification field is used to represent the minimum increment or 
 decrement of the fractional component of value input (ie, with 2 decimals, 1 is .01, 5 
 is .05, 50 is 0.50, etc).
+- **Engineering Units** where the library uses a 32 bit long integer and assumes 
+the last 3 digits (defined by ENGU_DECIMALS) to be the fraction after the decimal 
+point (character defined as DECIMAL_POINT). Specification allows lower and upper bound for 
+power of 10. Units are defined in the pList parameter. The base specification field is used 
+to represent the minimum increment or decrement of the fractional component of value 
+input (ie, with 3 decimals, 1 is .001, 5 is .005, 50 is 0.050, etc).
 - **Run Code** specifies input fields that are designed to execute a user function
 when selected. As there is no value to 'get' the get/set callback is only called when the
 input is confirmed. User code can then be executed as part of the 'set' invocation.
-
 
 \page pageCopyright Copyright
 Copyright
@@ -161,30 +213,6 @@ Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
-
-\page pageRevisionHistory Revision History
-Revision History
-----------------
-Dec 2017 version 1.2.2
-- Added Menu_LCD-Shield example as a simpler example
-
-Nov 2017 version 1.2.1
-- Replaced MD_KeySwitch in examples with new MD_UISwitch library
-
-Jun 2017 version 1.2.0
-- Returning nullptr from value request callback now stops value being edited.
-
-Jun 2017 version 1.1.0
-- Removed index field from menu item definition. Not useful in practice.
-- Added real number (float) input
-
-Jun 2017 version 1.0.1
-- Added setAutoStart() method and code
-- Internal flags now a bit field
-- Added setTimeout() method and code
-
-May 2017 version 1.0.0
-- First implementation
 */
 #include <Arduino.h>
 
@@ -194,12 +222,14 @@ May 2017 version 1.0.0
  */
 
 // Label size definitions
+// These are sized for the most common LCD display (16 char x 2 lines) 
 const uint8_t HEADER_LABEL_SIZE = 16;   ///< Displayed length of a menu header label
-const uint8_t ITEM_LABEL_SIZE = 16;     ///< Displayed length of a menu item label
-const uint8_t INPUT_LABEL_SIZE = 16;    ///< Displayed length of an input item label
+const uint8_t ITEM_LABEL_SIZE = 14;     ///< Displayed length of a menu item label
+const uint8_t INPUT_LABEL_SIZE = 14;    ///< Displayed length of an input item label
 
 // Miscellaneous defines
 #define ARRAY_SIZE(x) (sizeof(x)/sizeof(x[0]))  ///< Generic macro for obtaining number of elements of an array
+#define UOM(s)        ((s[0] << 24) + (s[1] << 16) + (s[2] << 8) + s[3])  ///< Unit of measure macro converts an engineering UOM into a 32 bit value
 const uint8_t MNU_STACK_SIZE = 4;       ///< Maximum menu 'depth'. Starting (root) menu occupies first level.
 
 /**
@@ -230,7 +260,7 @@ public:
   * navigation in the libray and data input is fully controlled by
   * this returned value.
   */
-  enum userNavAction_t
+  typedef enum userNavAction_t
   {
     NAV_NULL,  ///< There was no current selection to process
     NAV_INC,   ///< INCREMENT. Move to the next menu item or increment a value.
@@ -260,6 +290,7 @@ public:
   */
   enum userDisplayAction_t
   {
+    DISP_INIT,  ///< Initialise the display
     DISP_CLEAR, ///< Clear the display. Message parameter is not defined
     DISP_L0,    ///< Display the data provided in line 0 (first line). For single line displays, this should be ignored.
     DISP_L1,    ///< Display the data provided in line 1 (second line). This must always be implemented.
@@ -284,11 +315,23 @@ public:
   {
     INP_LIST,   ///< The item is for selection from a defined list of values
     INP_BOOL,   ///< The item is for input of a boolean variable (Y/N)
-    INP_INT8,   ///< The item is for input of an 8 bit unsigned integer
-    INP_INT16,  ///< The item is for input of an 16 bit unsigned integer
-    INP_INT32,  ///< The item is for input of an 32 bit unsigned integer
+    INP_INT,    ///< The item is for input of an integer
     INP_FLOAT,  ///< The item is for input of a real number representation with 2 decimal digits 
+    INP_ENGU,   ///< The item is for input of a number in engineering (powers of 10 which are multiples of 3) with 3 decimal digits.
     INP_RUN,    ///< The item will run a user function
+  };
+
+  /**
+  * Value specifier
+  *
+  * To cater for all input types, both the value and the powers of 10
+  * must be known (the latter for ENGU). This small structure contains
+  * both values, keeping them together whilst processing.
+  */
+  typedef struct value_t
+  {
+    int32_t value;   ///< the value of the number 999.999
+    int8_t  power;   ///< the power of 10 (multiple of 3 eg, -3 (milli) 0, 3 (kilo), 6 (Mega))
   };
 
   /**
@@ -300,7 +343,7 @@ public:
   * data identified by the ID. Return nullptr to stop the menu from
   * editing the value.
   */
-  typedef void*(*cbValueRequest)(mnuId_t id, bool bGet);
+  typedef value_t*(*cbValueRequest)(mnuId_t id, bool bGet);
 
   /**
   * Input field defintion
@@ -316,9 +359,9 @@ public:
     inputAction_t action;  ///< Type of action required for this value
     cbValueRequest cbVR;   ///< Callback function to get/set the value
     uint8_t fieldWidth;    ///< Width of the displayed field between delimiters
-    int32_t range[2];      ///< min/max values an integer
+    value_t range[2];      ///< definition for min/max for input range at [0]/[1]
     uint8_t base;          ///< number base for display (2 through 16) or floating increment in 1/100 units
-    const char *pList;     ///< pointer to list string
+    const char *pList;     ///< pointer to list string or engineering units string in PROGMEM
   };
 
   /**
@@ -329,8 +372,9 @@ public:
   */
   enum mnuAction_t
   {
-    MNU_MENU,   ///< The item is for selection of a new menu
-    MNU_INPUT,  ///< The item is for input of a value
+    MNU_MENU,     ///< The item is for selection of a new menu
+    MNU_INPUT,    ///< The item is for input of a value
+    MNU_INPUT_FB, ///< The item is for input with real time feeback of value changes
   };
 
   /**
@@ -406,7 +450,7 @@ public:
   /**
   * Initialize the object.
   *
-  * Initialise the object data. This needs to be called during setup() to initialise new
+  * Initialize the object data. This needs to be called during setup() to initialize new
   * data for the class that cannot be done during the object creation.
   */
   void begin(void) {};
@@ -514,6 +558,36 @@ public:
   void setUserDisplayCallback(cbUserDisplay cbDisp);
 
   /** @} */
+  //--------------------------------------------------------------
+  /** \name List utility methods.
+  * @{
+  */
+  /**
+  * Count the items in a selection list.
+  *
+  * Return the count of items in the selection list specified.
+  *
+  * \param p Pointer to the selection list in PROGMEM.
+  * \return the item count.
+  */
+  uint8_t getListCount(const char *p);
+  
+  /**
+  * Extract an item from a selection list
+  *
+  * Return idx'th item from the list selection string. The first item is
+  * numbered 0.
+  *
+  * \param p      pointer to the selection list in PROGMEM.
+  * \param idx    the zero based index of the required element.
+  * \param buf    pointer to character buffer for the list item extracted.
+  * \param bufLen char size of the buffer at *buf.
+  * \return the buf pointer.
+  */
+  char *getListItem(const char *p, uint8_t idx, char *buf, uint8_t bufLen);
+
+  /** @} */
+
 private:
   // initialisation parameters and data tables
   cbUserNav _cbNav;       ///< User navigation function
@@ -533,10 +607,9 @@ private:
   // Status values and global flags
   uint8_t _options;       ///< bit field for options and flags
 
-  // Input editing buffers and tracking
-  void    *_pValue;  ///< Pointer to the user value being edited
-  bool    _bValue;   ///< Copy of boolean value being edited
-  int32_t _iValue;   ///< Copy of the integer/list index value being edited
+  // Input editing buffers
+  value_t *_pValue;  ///< Pointer to the user provided data buffer
+  value_t _V;        ///< Copy of the value being edited
 
   // static buffers for find functions, keep accessible copies of data in PROGMEM
   uint8_t     _currMenu;                ///< Index of current menu displayed in the stack
@@ -548,23 +621,22 @@ private:
   void       loadMenu(mnuId_t id = -1);   ///< find the menu header with the specified ID
   mnuItem_t  *loadItem(mnuId_t id);       ///< find the menu item with the specified ID
   mnuInput_t *loadInput(mnuId_t id);      ///< find the input item with the specified ID
-  uint8_t    listCount(const char *p);  ///< count the items in a list selection string 
-  char       *listItem(const char *p, uint8_t idx, char *buf, uint8_t bufLen);  ///< extract the idx'th item from the list selection string
   void       strPreamble(char *psz, mnuInput_t *mInp);  ///< format a preamble to the a variable display
   void       strPostamble(char *psz, mnuInput_t *mInp); ///< attach a postamble to a variable display
   
   void timerStart(void);    ///< Start (reset) the timout timer
   void timerCheck(void);    ///< Check if timout has expired and reset menu if it has
 
-  void handleMenu(bool bNew = false);  ///< handling display menu seitems and navigation
+  void handleMenu(bool bNew = false);  ///< handling display menu items and navigation
   void handleInput(bool bNew = false); ///< handling user input to edit values
 
   // Process the different types of input requests
   // All return true when edit changes are finished (SELECT or ESCAPE).
-  bool processList(userNavAction_t nav, mnuInput_t *mInp);
-  bool processBool(userNavAction_t nav, mnuInput_t *mInp);
-  bool processInt(userNavAction_t nav, mnuInput_t *mInp, uint16_t incDelta);
-  bool processFloat(userNavAction_t nav, mnuInput_t *mInp, uint16_t incDelta);
-  bool processRun(userNavAction_t nav, mnuInput_t *mInp);
+  bool processList(userNavAction_t nav, mnuInput_t *mInp, bool rtfb);
+  bool processBool(userNavAction_t nav, mnuInput_t *mInp, bool rtfb);
+  bool processInt(userNavAction_t nav, mnuInput_t *mInp, bool rtfb, uint16_t incDelta);
+  bool processFloat(userNavAction_t nav, mnuInput_t *mInp, bool rtfb, uint16_t incDelta);
+  bool processEng(userNavAction_t nav, mnuInput_t *mInp, bool rtfb, uint16_t incDelta);
+  bool processRun(userNavAction_t nav, mnuInput_t *mInp, bool rtfb);
 };
 
