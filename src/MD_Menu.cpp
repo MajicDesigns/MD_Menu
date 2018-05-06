@@ -532,13 +532,24 @@ bool MD_Menu::processRun(userNavAction_t nav, mnuInput_t *mInp)
 {
   if (nav == NAV_NULL)    // initialise the CB_DISP
   {
-    char sz[INP_PRE_SIZE(mInp) + INP_POST_SIZE(mInp) + 1];
+    _pValue = mInp->cbVR(mInp->id, true);
 
-    strcpy(sz, FLD_DELIM_L);
-    strcat(sz, mInp->label);
-    strcat(sz, FLD_DELIM_R);
-
-    _cbDisp(DISP_L1, sz);
+    if (_pValue == nullptr)
+    {
+      char sz[INP_PRE_SIZE(mInp) + INP_POST_SIZE(mInp) + 1];
+      strcpy(sz, FLD_DELIM_L);
+      strcat(sz, mInp->label);
+      strcat(sz, FLD_DELIM_R);
+      _cbDisp(DISP_L1, sz);
+    }
+    else
+    {
+      char sz[(strlen( ((char*)_pValue)) + strlen(FLD_PROMPT) + strlen(FLD_DELIM_L)) +  (strlen(FLD_DELIM_R)) + 1];
+      strcpy(sz, FLD_DELIM_L);
+      strcat(sz, ((char*)_pValue));
+      strcat(sz, FLD_DELIM_R);
+      _cbDisp(DISP_L1, sz);
+    }
   }
   else if (nav == NAV_SEL)
   {
