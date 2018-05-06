@@ -404,10 +404,10 @@ MD_Menu::value_t *mnuFBValueRqst(MD_Menu::mnuId_t id, bool bGet)
   {
   case 60:
     if (bGet)
-      vBuf.value = uint8Value;
+      vBuf.value = int8Value;
     else
     {
-      uint8Value = vBuf.value;
+      int8Value = vBuf.value;
       Serial.print(F("\nUint8 value changed to "));
       Serial.print(int8Value);
     }
