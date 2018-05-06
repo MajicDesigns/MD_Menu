@@ -34,7 +34,8 @@ for what really matters.
 \page pageRevisionHistory Revision History
 Revision History
 ----------------
-xxx 2018 version 2.1.0
+May 2018 version 2.0.3
+- Added contri by makelion to allow variable text to be added using run code option.
 
 Jan 2018 version 2.0.2
 - Fixed bug with handling list index out of range check.
