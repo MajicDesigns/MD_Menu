@@ -9,9 +9,11 @@ const bool AUTO_START = true; // auto start the menu, manual detect and start if
 #define DISPLAY_LCD     0  // Two line LCD using LiquidCrystal library
 #define DISPLAY_PAROLA  0  // One line LED matrix display using MD_Parola library
 
-#define INPUT_SWITCH    1  // Use discrete switches for input
+#define INPUT_SWITCH    0  // Use discrete switches for input
 #define INPUT_LCDSWITCH 0  // Use analog based switches on LCD shield
 #define INPUT_RENCODER  0  // Use rotary encoder with built in push switch
+#define INPUT_SERIAL    1  // Serial Monitor INPUT (useful for testing)
+
 
 const uint32_t BAUD_RATE = 57600;   // Serial Monitor speed setting 
 const uint16_t MENU_TIMEOUT = 5000; // in milliseconds
