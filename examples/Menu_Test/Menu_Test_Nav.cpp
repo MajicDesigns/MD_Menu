@@ -139,7 +139,7 @@ MD_Menu::userNavAction_t navigation(uint16_t &incDelta)
 
   if (re != DIR_NONE)
   {
-    incDelta = (M.isInEdit() ? (1 << abs(RE.speed() / 10)) : 1);
+    incDelta = (M.isInEdit() ? (1 << (abs(RE.speed() >> 2))) : 1);
     return(re == DIR_CCW ? MD_Menu::NAV_DEC : MD_Menu::NAV_INC);
   }
 
@@ -147,6 +147,7 @@ MD_Menu::userNavAction_t navigation(uint16_t &incDelta)
   {
   case MD_UISwitch::KEY_PRESS:     return(MD_Menu::NAV_SEL);
   case MD_UISwitch::KEY_LONGPRESS: return(MD_Menu::NAV_ESC);
+  default: return(MD_Menu::NAV_NULL);
   }
 
   return(MD_Menu::NAV_NULL);

@@ -135,7 +135,7 @@ const PROGMEM MD_Menu::mnuInput_t mnuInp[] =
   { 50, "Flip", MD_Menu::INP_INT, mnuFFValueRqst, 4, -128, 0, 127, 0, 10, nullptr },
   { 51, "Flop", MD_Menu::INP_INT, mnuFFValueRqst, 4, -128, 0, 127, 0, 16, nullptr },
 
-  { 60, "TXT",  	MD_Menu::INP_RUN,   myCode,        0,       0, 0,      0, 0, 10, nullptr },  // test output TXT
+  { 60, "TXT", MD_Menu::INP_RUN,  myCode,  0, 0, 0,  0, 0, 10, nullptr },  // test output TXT
 };
 
 // bring it all together in the global menu object
@@ -148,13 +148,12 @@ MD_Menu M(navigation, display,        // user navigation and display
 MD_Menu::value_t *mnuLValueRqst(MD_Menu::mnuId_t id, bool bGet)
 // Value request callback for list selection variable
 {
+  MD_Menu::value_t *r = &vBuf;
+
   if (id == 10)
   {
     if (bGet)
-    {
       vBuf.value = fruit;
-      return(&vBuf);
-    }
     else
     {
       fruit = vBuf.value;
@@ -162,6 +161,10 @@ MD_Menu::value_t *mnuLValueRqst(MD_Menu::mnuId_t id, bool bGet)
       Serial.print(fruit);
     }
   }
+  else
+    r = nullptr;
+
+  return(r);
 }
 
 MD_Menu::value_t *mnuBValueRqst(MD_Menu::mnuId_t id, bool bGet)
@@ -248,7 +251,7 @@ MD_Menu::value_t *mnuSerialValueRqst(MD_Menu::mnuId_t id, bool bGet)
         vBuf.value = port;
       else
       {
-        port - vBuf.value;
+        port = vBuf.value;
         Serial.print(F("\nPort index="));
         Serial.print(port);
       }
@@ -298,7 +301,6 @@ MD_Menu::value_t *mnuSerialValueRqst(MD_Menu::mnuId_t id, bool bGet)
 MD_Menu::value_t *mnuFValueRqst(MD_Menu::mnuId_t id, bool bGet)
 // Value request callback for floating value
 {
-  static int32_t f;
   MD_Menu::value_t *r = &vBuf;
 
   if (id == 16)
@@ -342,7 +344,6 @@ MD_Menu::value_t *mnuFFValueRqst(MD_Menu::mnuId_t id, bool bGet)
 // Value edit allowed request depends on another value
 {
   static bool gateKeeper = false;
-  static bool b;
   MD_Menu::value_t *r = &vBuf;
 
   switch (id)
@@ -458,13 +459,23 @@ MD_Menu::value_t *myCode(MD_Menu::mnuId_t id, bool bGet)
 
 MD_Menu::value_t *myLEDCode(MD_Menu::mnuId_t id, bool bGet)
 // Value request callback for run code input
-// Only use the index here
+// bGet is used to determine if a confirmation is required. Returning a nullptr 
+// requires confirm, anything else does not.
 {
-  Serial.print(F("\nSwitching LED "));
-  Serial.print(id == 40 ? F("off") : F("on"));
-  digitalWrite(LED_PIN, id == 40 ? LOW : HIGH);
+  MD_Menu::value_t* r = &vBuf;
 
-  return(nullptr);
+  if (bGet)
+  {
+    if (id == 40) r = nullptr;  // only apply confirm to turn off
+  }
+  else
+  {
+    Serial.print(F("\nSwitching LED "));
+    Serial.print(id == 40 ? F("off") : F("on"));
+    digitalWrite(LED_PIN, id == 40 ? LOW : HIGH);
+  }
+
+  return(r);
 }
 
 // Standard setup() and loop()

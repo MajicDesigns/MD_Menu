@@ -11,8 +11,8 @@ const bool AUTO_START = true; // auto start the menu, manual detect and start if
 
 #define INPUT_SWITCH    0  // Use discrete switches for input
 #define INPUT_LCDSWITCH 0  // Use analog based switches on LCD shield
-#define INPUT_RENCODER  0  // Use rotary encoder with built in push switch
-#define INPUT_SERIAL    1  // Serial Monitor INPUT (useful for testing)
+#define INPUT_RENCODER  1  // Use rotary encoder with built in push switch
+#define INPUT_SERIAL    0  // Serial Monitor INPUT (useful for testing)
 
 const uint32_t BAUD_RATE = 57600;   // Serial Monitor speed setting 
 const uint16_t MENU_TIMEOUT = 5000; // in milliseconds

@@ -30,10 +30,18 @@ for what really matters.
 + \subpage pageMenu
 + \subpage pageRevisionHistory
 + \subpage pageCopyright
++ \subpage pageDonation
+
+\page pageDonation Support the Library
+If you like and use this library please consider making a small donation using [PayPal](https://paypal.me/MajicDesigns/4USD)
 
 \page pageRevisionHistory Revision History
-Revision History
-----------------
+Dec 2020 version 2.1.0
+- Changed invocation of the INP_RUN to allow for unconfirmed running of user code.
+- Changed integer input to wrap around at ends of valid range.
+- Fixed comparison for extreme range of integer and float inputs to be <=/>=.
+- Removed newer IDE compiler warnings.
+
 May 2018 version 2.0.3
 - Added contri by makelion to allow variable text to be added using run code option.
 
@@ -76,8 +84,6 @@ May 2017 version 1.0.0
 - First implementation
 
 \page pageUsingLibrary Using the Library
-Using the Library
------------------
 The MD_Menu library allows definition and navigation of a menu system by moving 
 between the menu nodes. At a leaf node, MD_Menu can either manage editing values 
 or call user code.
@@ -110,8 +116,8 @@ cancel changes to an edited value.
 A variety of input hardware setups are demonstrated in the Test 
 example code provided.
 
-## Menu Display
-
+Menu Display
+------------
 Menu display is enabled by user code as a callback routine from the 
 library. The callback must comply with the *cbUserDisplay* function 
 prototype.
@@ -128,8 +134,8 @@ is discarded and only the second line displayed.
 A variety of display hardware setups are demonstrated in the Test 
 example code provided.
 
-## Memory Footprint
-
+Memory Footprint
+----------------
 The limited amount of RAM available in micro controllers is a challenge for
 menu systems, as they often contain large amounts of 'static' data as text 
 labels and other status information.
@@ -138,8 +144,8 @@ The MD_Menu library uses statically allocated data located in PROGMEM for
 the menu system and only copies the current menu record into RAM. All user 
 values reside in user code and are not duplicated in the library.
 
-## Menu Management
-
+Menu Management
+---------------
 ![Data Structure Map] (Data_Structures.jpg "Data Structure Map")
 
 As shown in the figure above, the library uses three types of objects, each
@@ -170,7 +176,7 @@ occur and no further action is required from the user code. If the edit is speci
 with real-time feedback, the value is 'set' for each change in value. 
 
 Variable data input may be of the following types:
- - **Pick List** specifies a PROGMEM character string with list items separated
+- **Pick List** specifies a PROGMEM character string with list items separated
 by the '|' character (defined as INPUT_SEPARATOR), for example "Apple|Orange|Pear".
 The list is specified as the pList parameter and the get/set value callback expects
 a value that is the index of the current selection (zero based).
@@ -195,12 +201,11 @@ power of 10. Units are defined in the pList parameter. The base specification fi
 to represent the minimum increment or decrement of the fractional component of value 
 input (ie, with 3 decimals, 1 is .001, 5 is .005, 50 is 0.050, etc).
 - **Run Code** specifies input fields that are designed to execute a user function
-when selected. As there is no value to 'get' the get/set callback is only called when the
-input is confirmed. User code can then be executed as part of the 'set' invocation.
+when selected. The 'get' in the callbask determines whether the operation requires confirmation.
+Returning a null pointer implies confirmation, anything else is a direct execution of the 
+user code. User code is only ever executed as part of the 'set' invocation.
 
 \page pageCopyright Copyright
-Copyright
----------
 Copyright (C) 2017 Marco Colli. All rights reserved.
 
 This library is free software; you can redistribute it and/or
@@ -231,7 +236,7 @@ const uint8_t ITEM_LABEL_SIZE = 14;     ///< Displayed length of a menu item lab
 const uint8_t INPUT_LABEL_SIZE = 14;    ///< Displayed length of an input item label
 
 // Miscellaneous defines
-#define ARRAY_SIZE(x) (sizeof(x)/sizeof(x[0]))  ///< Generic macro for obtaining number of elements of an array
+#define ARRAY_SIZE(a) (sizeof(a)/sizeof((a)[0]))  ///< Generic macro for obtaining number of elements of an array
 #define UOM(s)        ((s[0] << 24) + (s[1] << 16) + (s[2] << 8) + s[3])  ///< Unit of measure macro converts an engineering UOM into a 32 bit value
 const uint8_t MNU_STACK_SIZE = 4;       ///< Maximum menu 'depth'. Starting (root) menu occupies first level.
 
@@ -263,7 +268,7 @@ public:
   * navigation in the library and data input is fully controlled by
   * this returned value.
   */
-  typedef enum userNavAction_t
+  enum userNavAction_t
   {
     NAV_NULL,  ///< There was no current selection to process
     NAV_INC,   ///< INCREMENT. Move to the next menu item or increment a value.
@@ -331,7 +336,7 @@ public:
   * must be known (the latter for ENGU). This small structure contains
   * both values, keeping them together whilst processing.
   */
-  typedef struct value_t
+  struct value_t
   {
     int32_t value;   ///< the value of the number (or represents 999.999 for INP_ENGU)
     int8_t  power;   ///< the power of 10 (multiple of 3 eg, -3 (milli) 0, 3 (kilo), 6 (Mega))
@@ -355,7 +360,7 @@ public:
   * contains enough data for the data collection to be managed by the
   * library.
   */
-  typedef struct mnuInput_t
+  struct mnuInput_t
   {
     mnuId_t id;            ///< Identifier for this item
     char    label[INPUT_LABEL_SIZE + 1]; ///< Label for this menu item
@@ -387,7 +392,7 @@ public:
   * records of a menu header item, where a continuous range form part
   * of the menu.
   */
-  typedef struct mnuItem_t
+  struct mnuItem_t
   {
     mnuId_t id;            ///< Identifier for this item
     char    label[ITEM_LABEL_SIZE + 1]; ///< Label for this menu item
@@ -402,7 +407,7 @@ public:
   * This data structure encodes the contiguous range of menu item numbers 
   * that form part of the menu.
   */
-  typedef struct mnuHeader_t
+  struct mnuHeader_t
   {
     mnuId_t id;          ///< Identifier for this item
     char    label[HEADER_LABEL_SIZE + 1]; ///< Label for this menu item
@@ -509,7 +514,7 @@ public:
   * Set the menu wrap option.
   *
   * Set the menu wrap option on or off. When set on, reaching the end 
-  * of the menu will wrap around to the start of the menu. Simialrly, 
+  * of the menu will wrap around to the start of the menu. Similarly, 
   * reaching the end will restart from the beginning.
   * Default is set to no wrap.
   *
@@ -523,7 +528,7 @@ public:
   * Set the menu to start automatically in response to the SEL navigation selection.
   * When set on, pressing SEL when the menu is not running will start the menu display.
   * If the option is not set, the starting trigger needs to be monitored by the user 
-  * code and the menu started by caling runMenu().
+  * code and the menu started by calling runMenu().
   * Default is not to auto start.
   *
   * \param bSet true to set the option, false to un-set the option (default)
@@ -533,7 +538,7 @@ public:
   /**
   * Set the menu inactivity timeout.
   *
-  * Set the menu inactivity timeout to the specified value im milliseconds.
+  * Set the menu inactivity timeout to the specified value in milliseconds.
   * The menu will automatically reset is there is no key pressed in the specified
   * time. It is up to the user code to detect the menu is no longer running and 
   * transition to normal mode. A value of 0 disables the timeout (default).
@@ -596,12 +601,12 @@ private:
   cbUserNav _cbNav;       ///< User navigation function
   cbUserDisplay _cbDisp;  ///< User display function
 
-  const mnuHeader_t *_mnuHdr;   ///< Menu header table
-  uint8_t _mnuHdrCount;   ///< Number of items in the header table
-  const mnuItem_t *_mnuItm;     ///< Menu item table
-  uint8_t _mnuItmCount;   ///< Number of items in the item table
-  const mnuInput_t *_mnuInp;    ///< Input item table
-  uint8_t _mnuInpCount;   ///< Number of items in the input table
+  const mnuHeader_t *_mnuHdr; ///< Menu header table
+  uint8_t _mnuHdrCount;       ///< Number of items in the header table
+  const mnuItem_t *_mnuItm;   ///< Menu item table
+  uint8_t _mnuItmCount;       ///< Number of items in the item table
+  const mnuInput_t *_mnuInp;  ///< Input item table
+  uint8_t _mnuInpCount;       ///< Number of items in the input table
 
   // Timeout related
   uint32_t _timeLastKey;  ///< Time a menu key was last pressed
@@ -627,8 +632,8 @@ private:
   void       strPreamble(char *psz, mnuInput_t *mInp);  ///< format a preamble to the a variable display
   void       strPostamble(char *psz, mnuInput_t *mInp); ///< attach a postamble to a variable display
   
-  void timerStart(void);    ///< Start (reset) the timout timer
-  void timerCheck(void);    ///< Check if timout has expired and reset menu if it has
+  void timerStart(void);    ///< Start (reset) the timeout timer
+  void timerCheck(void);    ///< Check if timeout has expired and reset menu if it has
 
   void handleMenu(bool bNew = false);  ///< handling display menu items and navigation
   void handleInput(bool bNew = false); ///< handling user input to edit values

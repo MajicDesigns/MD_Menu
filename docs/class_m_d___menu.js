@@ -18,7 +18,8 @@ var class_m_d___menu =
     ] ],
     [ "mnuAction_t", "class_m_d___menu.html#a4f24623203fc728b52c4195b1fe3df8b", [
       [ "MNU_MENU", "class_m_d___menu.html#a4f24623203fc728b52c4195b1fe3df8ba39933fb03e9f7e59d91ad3522647d6c6", null ],
-      [ "MNU_INPUT", "class_m_d___menu.html#a4f24623203fc728b52c4195b1fe3df8ba929d892157dcdd050e24708ab926d359", null ]
+      [ "MNU_INPUT", "class_m_d___menu.html#a4f24623203fc728b52c4195b1fe3df8ba929d892157dcdd050e24708ab926d359", null ],
+      [ "MNU_INPUT_FB", "class_m_d___menu.html#a4f24623203fc728b52c4195b1fe3df8ba3af1aa39a3d6a842405812ee7df6fb5e", null ]
     ] ],
     [ "userDisplayAction_t", "class_m_d___menu.html#af9b6cc8903ef7a0aabdd812f3a9d354a", [
       [ "DISP_INIT", "class_m_d___menu.html#af9b6cc8903ef7a0aabdd812f3a9d354aa0bd8f3fb8a3b0da17a62e56f25aba8d4", null ],

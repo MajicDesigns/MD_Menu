@@ -140,7 +140,8 @@ Public Types</h2></td></tr>
  }</td></tr>
 <tr class="separator:a93d409024bd78bcc2264249e3644b8f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4f24623203fc728b52c4195b1fe3df8b"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_d___menu.html#a4f24623203fc728b52c4195b1fe3df8b">mnuAction_t</a> { <a class="el" href="class_m_d___menu.html#a4f24623203fc728b52c4195b1fe3df8ba39933fb03e9f7e59d91ad3522647d6c6">MNU_MENU</a>, 
-<a class="el" href="class_m_d___menu.html#a4f24623203fc728b52c4195b1fe3df8ba929d892157dcdd050e24708ab926d359">MNU_INPUT</a>
+<a class="el" href="class_m_d___menu.html#a4f24623203fc728b52c4195b1fe3df8ba929d892157dcdd050e24708ab926d359">MNU_INPUT</a>, 
+<a class="el" href="class_m_d___menu.html#a4f24623203fc728b52c4195b1fe3df8ba3af1aa39a3d6a842405812ee7df6fb5e">MNU_INPUT_FB</a>
  }</td></tr>
 <tr class="separator:a4f24623203fc728b52c4195b1fe3df8b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac55b69e28f81f0e1a98339c7c0cc4a15"><td class="memItemLeft" align="right" valign="top">typedef int8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_d___menu.html#ac55b69e28f81f0e1a98339c7c0cc4a15">mnuId_t</a></td></tr>
@@ -218,7 +219,7 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>User input function prototype</p>
-<p>The user input function must handle the physical user interface (eg, switches, rotary encoder) and return one of the userNavAction_t enumerated types to trigger the next menu action. The user funtion can also specify the incremental change quantity that to be applied for INC and DEC actions when editing a numeric variable (default is 1) by changing the incDelta variable. </p>
+<p>The user input function must handle the physical user interface (eg, switches, rotary encoder) and return one of the userNavAction_t enumerated types to trigger the next menu action. The user function can also specify the incremental change quantity that to be applied for INC and DEC actions when editing a numeric variable (default is 1) by changing the incDelta variable. </p>
 
 </div>
 </div>
@@ -303,6 +304,8 @@ Public Member Functions</h2></td></tr>
 </td></tr>
 <tr><td class="fieldname"><a id="a4f24623203fc728b52c4195b1fe3df8ba929d892157dcdd050e24708ab926d359"></a>MNU_INPUT&#160;</td><td class="fielddoc"><p>The item is for input of a value. </p>
 </td></tr>
+<tr><td class="fieldname"><a id="a4f24623203fc728b52c4195b1fe3df8ba3af1aa39a3d6a842405812ee7df6fb5e"></a>MNU_INPUT_FB&#160;</td><td class="fielddoc"><p>The item is for input with real time feedback of value changes. </p>
+</td></tr>
 </table>
 
 </div>
@@ -321,7 +324,7 @@ Public Member Functions</h2></td></tr>
 <p>Request values for user display handler</p>
 <p>The display handler will receive requests that tell it what needs to be done. The display must implement appropriate actions on the display device to carry out the request. </p>
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="af9b6cc8903ef7a0aabdd812f3a9d354aa0bd8f3fb8a3b0da17a62e56f25aba8d4"></a>DISP_INIT&#160;</td><td class="fielddoc"><p>Initialise the display. </p>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="af9b6cc8903ef7a0aabdd812f3a9d354aa0bd8f3fb8a3b0da17a62e56f25aba8d4"></a>DISP_INIT&#160;</td><td class="fielddoc"><p>Initialize the display. </p>
 </td></tr>
 <tr><td class="fieldname"><a id="af9b6cc8903ef7a0aabdd812f3a9d354aadc53b53f8f8470f6b2c17a58e158d053"></a>DISP_CLEAR&#160;</td><td class="fielddoc"><p>Clear the display. Message parameter is not defined. </p>
 </td></tr>
@@ -345,7 +348,7 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Return values for the user input handler</p>
-<p>The menu navigation keys are implemented by user code that must return one of these definesd types when it is invoked. The menu navigation in the libray and data input is fully controlled by this returned value. </p>
+<p>The menu navigation keys are implemented by user code that must return one of these defined types when it is invoked. The menu navigation in the library and data input is fully controlled by this returned value. </p>
 <table class="fieldtable">
 <tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a9d629fd365c2122e78de61663cc16ea1ab7390e69f8ce3cf511531c3d899d026a"></a>NAV_NULL&#160;</td><td class="fielddoc"><p>There was no current selection to process. </p>
 </td></tr>
@@ -790,7 +793,7 @@ Public Member Functions</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="class_m_d___menu.html">MD_Menu</a></li>
-    <li class="footer">Generated on Mon Jan 1 2018 09:47:54 for MD_Menu Library by
+    <li class="footer">Generated on Tue May 8 2018 07:32:34 for MD_Menu Library by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.14 </li>
   </ul>

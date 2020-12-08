@@ -13,10 +13,10 @@ MD_Menu::MD_Menu(cbUserNav cbNav, cbUserDisplay cbDisp,
                 const mnuHeader_t *mnuHdr, uint8_t mnuHdrCount,
                 const mnuItem_t *mnuItm, uint8_t mnuItmCount,
                 const mnuInput_t *mnuInp, uint8_t mnuInpCount) :
-                _options(0), _timeout(0),
                 _mnuHdr(mnuHdr), _mnuHdrCount(mnuHdrCount),
                 _mnuItm(mnuItm), _mnuItmCount(mnuItmCount),
-                _mnuInp(mnuInp), _mnuInpCount(mnuInpCount)
+                _mnuInp(mnuInp), _mnuInpCount(mnuInpCount),
+                _timeout(0), _options(0)
 {
   setUserNavCallback(cbNav);
   setUserDisplayCallback(cbDisp);
@@ -151,6 +151,7 @@ char *MD_Menu::getListItem(const char *p, uint8_t idx, char *buf, uint8_t bufLen
   {
     char *psz;
     char c;
+    uint8_t l;
 
     // skip items before the one we want
     while (idx > 0)
@@ -172,8 +173,12 @@ char *MD_Menu::getListItem(const char *p, uint8_t idx, char *buf, uint8_t bufLen
 
     // Pad out any short string with trailing spaces
     // The trailing buffer is already filled with '\0'
-    while (strlen(buf) < bufLen - 1)
+    l = strlen(buf);
+    while (l < bufLen - 1)
+    {
       *psz++ = ' ';
+      l++;
+    }
   }
 
   return(buf);
@@ -202,7 +207,7 @@ bool MD_Menu::processList(userNavAction_t nav, mnuInput_t *mInp, bool rtfb)
 
   switch (nav)
   {
-  case NAV_NULL:    // this is to initialise the CB_DISP
+  case NAV_NULL:    // this is to initialize the CB_DISP
   {
     uint8_t size = getListCount(mInp->pList);
 
@@ -269,6 +274,10 @@ bool MD_Menu::processList(userNavAction_t nav, mnuInput_t *mInp, bool rtfb)
     mInp->cbVR(mInp->id, false);
     endFlag = true;
     break;
+
+  case NAV_ESC:
+    // do nothing except stop compiler warnings
+    break;
   }
 
   if (update)
@@ -302,7 +311,7 @@ bool MD_Menu::processBool(userNavAction_t nav, mnuInput_t *mInp, bool rtfb)
 
   switch (nav)
   {
-  case NAV_NULL:    // this is to initialise the CB_DISP
+  case NAV_NULL:    // this is to initialize the CB_DISP
     {
       _pValue = mInp->cbVR(mInp->id, true);
 
@@ -329,6 +338,10 @@ bool MD_Menu::processBool(userNavAction_t nav, mnuInput_t *mInp, bool rtfb)
     _pValue->value = _V.value;
     mInp->cbVR(mInp->id, false);
     endFlag = true;
+    break;
+
+  case NAV_ESC:
+    // do nothing except stop compiler warnings
     break;
   }
 
@@ -400,7 +413,7 @@ bool MD_Menu::processInt(userNavAction_t nav, mnuInput_t *mInp, bool rtfb, uint1
 
   switch (nav)
   {
-  case NAV_NULL:    // this is to initialise the CB_DISP
+  case NAV_NULL:    // this is to initialize the CB_DISP
     {
       _pValue = mInp->cbVR(mInp->id, true);
 
@@ -418,18 +431,18 @@ bool MD_Menu::processInt(userNavAction_t nav, mnuInput_t *mInp, bool rtfb, uint1
     break;
 
   case NAV_INC:
-    if (_V.value + incDelta < mInp->range[1].value)
+    if (_V.value + incDelta <= mInp->range[1].value)
       _V.value += incDelta;
     else
-      _V.value = mInp->range[1].value;
+      _V.value = mInp->range[0].value;    // wrap around to min value
     update = true;
     break;
 
   case NAV_DEC:
-    if (_V.value - incDelta > mInp->range[0].value)
+    if (_V.value - incDelta >= mInp->range[0].value)
       _V.value -= incDelta;
     else
-      _V.value = mInp->range[0].value;
+      _V.value = mInp->range[1].value;    // wrap around to max value
     update = true;
     break;
 
@@ -437,6 +450,10 @@ bool MD_Menu::processInt(userNavAction_t nav, mnuInput_t *mInp, bool rtfb, uint1
     _pValue->value = _V.value;
     mInp->cbVR(mInp->id, false);
     endFlag = true;
+    break;
+
+  case NAV_ESC:
+    // do nothing except stop compiler warnings
     break;
   }
 
@@ -464,7 +481,7 @@ bool MD_Menu::processInt(userNavAction_t nav, mnuInput_t *mInp, bool rtfb, uint1
 bool MD_Menu::processFloat(userNavAction_t nav, mnuInput_t *mInp, bool rtfb, uint16_t incDelta)
 // Processing for Floating number representation value input
 // The number is actually a uint32, where the last FLOAT_DECIMALS digits are taken
-// to be fractional part of the floating numer. For all purposes, this number is a long
+// to be fractional part of the floating number. For all purposes, this number is a long
 // integer except when displayed. The base field is used as the increment for the decimal
 // part in single fractional units of the decimal part.
 // Return true when the edit cycle is completed
@@ -474,7 +491,7 @@ bool MD_Menu::processFloat(userNavAction_t nav, mnuInput_t *mInp, bool rtfb, uin
 
   switch (nav)
   {
-  case NAV_NULL:    // this is to initialise the CB_DISP
+  case NAV_NULL:    // this is to initialize the CB_DISP
   {
     _pValue = mInp->cbVR(mInp->id, true);
 
@@ -492,7 +509,7 @@ bool MD_Menu::processFloat(userNavAction_t nav, mnuInput_t *mInp, bool rtfb, uin
   break;
 
   case NAV_INC:
-    if (_V.value + (incDelta * mInp->base) < mInp->range[1].value)
+    if (_V.value + (incDelta * mInp->base) <= mInp->range[1].value)
       _V.value += (incDelta * mInp->base);
     else
       _V.value = mInp->range[1].value;
@@ -500,7 +517,7 @@ bool MD_Menu::processFloat(userNavAction_t nav, mnuInput_t *mInp, bool rtfb, uin
     break;
 
   case NAV_DEC:
-    if (_V.value - (incDelta * mInp->base) > mInp->range[0].value)
+    if (_V.value - (incDelta * mInp->base) >= mInp->range[0].value)
       _V.value -= (incDelta * mInp->base);
     else
       _V.value = mInp->range[0].value;
@@ -511,6 +528,10 @@ bool MD_Menu::processFloat(userNavAction_t nav, mnuInput_t *mInp, bool rtfb, uin
     _pValue->value = _V.value;
     mInp->cbVR(mInp->id, false);
     endFlag = true;
+    break;
+
+  case NAV_ESC:
+    // do nothing except stop compiler warnings
     break;
   }
 
@@ -546,7 +567,7 @@ bool MD_Menu::processFloat(userNavAction_t nav, mnuInput_t *mInp, bool rtfb, uin
 bool MD_Menu::processEng(userNavAction_t nav, mnuInput_t *mInp, bool rtfb, uint16_t incDelta)
 // Processing for Engineering Units number value input
 // The number is actually a uint32, where the last ENGU_DECIMALS digits are taken
-// to be fractional part of the floating numer. For all purposes, this number is a long
+// to be fractional part of the floating number. For all purposes, this number is a long
 // integer except when displayed. The base field is used as the increment for the decimal
 // part in single fractional units of the decimal part.
 // Return true when the edit cycle is completed
@@ -556,7 +577,7 @@ bool MD_Menu::processEng(userNavAction_t nav, mnuInput_t *mInp, bool rtfb, uint1
 
   switch (nav)
   {
-  case NAV_NULL:    // this is to initialise the CB_DISP
+  case NAV_NULL:    // this is to initialize the CB_DISP
   {
     _pValue = mInp->cbVR(mInp->id, true);
 
@@ -580,7 +601,7 @@ bool MD_Menu::processEng(userNavAction_t nav, mnuInput_t *mInp, bool rtfb, uint1
     if ((_V.value + (incDelta * mInp->base))/1000 < 1000)  // still within the same prefix range
     {
       if ((_V.power < mInp->range[1].power) ||
-         (_V.power == mInp->range[1].power && _V.value + (incDelta * mInp->base) < mInp->range[1].value))
+         (_V.power == mInp->range[1].power && _V.value + (incDelta * mInp->base) <= mInp->range[1].value))
         _V.value += (incDelta * mInp->base);
       else
         _V.value = mInp->range[1].value;
@@ -591,7 +612,7 @@ bool MD_Menu::processEng(userNavAction_t nav, mnuInput_t *mInp, bool rtfb, uint1
       _V.value /= 1000;
       _V.power += 3;
       if ((_V.power > mInp->range[1].power) ||
-         (_V.power == mInp->range[1].power && _V.value > mInp->range[1].value))
+         (_V.power == mInp->range[1].power && _V.value >= mInp->range[1].value))
       {
         _V.value = mInp->range[1].value;
         _V.power = mInp->range[1].power;
@@ -604,7 +625,7 @@ bool MD_Menu::processEng(userNavAction_t nav, mnuInput_t *mInp, bool rtfb, uint1
     if ((_V.value - (incDelta * mInp->base)) / 1000 > 0)  // still within the same prefix range
     {
       if ((_V.power > mInp->range[0].power) ||
-         (_V.power == mInp->range[0].power && _V.value - (incDelta * mInp->base) > mInp->range[0].value))
+         (_V.power == mInp->range[0].power && _V.value - (incDelta * mInp->base) >= mInp->range[0].value))
         _V.value -= (incDelta * mInp->base);
       else
         _V.value = mInp->range[0].value;
@@ -615,7 +636,7 @@ bool MD_Menu::processEng(userNavAction_t nav, mnuInput_t *mInp, bool rtfb, uint1
       _V.value *= 1000;
       _V.power -= 3;
       if ((_V.power < mInp->range[0].power) ||
-         (_V.power == mInp->range[0].power && _V.value < mInp->range[0].value))
+         (_V.power == mInp->range[0].power && _V.value <= mInp->range[0].value))
       {
         _V.value = mInp->range[0].value;
         _V.power = mInp->range[0].power;
@@ -629,6 +650,10 @@ bool MD_Menu::processEng(userNavAction_t nav, mnuInput_t *mInp, bool rtfb, uint1
     _pValue->power = _V.power;
     mInp->cbVR(mInp->id, false);
     endFlag = true;
+    break;
+
+  case NAV_ESC:
+    // do nothing except stop compiler warnings
     break;
   }
 
@@ -675,11 +700,16 @@ bool MD_Menu::processRun(userNavAction_t nav, mnuInput_t *mInp, bool rtfb)
 // When the field is selected, run the user variable code. For all other
 // input do nothing. Return true when the element has run user code.
 {
-  if (nav == NAV_NULL)    // initialise the CB_DISP
+  if (nav == NAV_NULL)    // initialize the CB_DISP
   {
     _pValue = mInp->cbVR(mInp->id, true);
 
-    if (_pValue == nullptr)
+    if (_pValue == nullptr) // no confirmation required, just run user code
+    {
+      mInp->cbVR(mInp->id, false);
+      return(true);
+    }
+    else   // confirmation required
     {
       char sz[INP_PRE_SIZE(mInp) + INP_POST_SIZE(mInp) + 1];
       strcpy(sz, FLD_DELIM_L);
@@ -687,16 +717,8 @@ bool MD_Menu::processRun(userNavAction_t nav, mnuInput_t *mInp, bool rtfb)
       strcat(sz, FLD_DELIM_R);
       _cbDisp(DISP_L1, sz);
     }
-    else
-    {
-      char sz[(strlen( ((char*)_pValue)) + strlen(FLD_PROMPT) + strlen(FLD_DELIM_L)) +  (strlen(FLD_DELIM_R)) + 1];
-      strcpy(sz, FLD_DELIM_L);
-      strcat(sz, ((char*)_pValue));
-      strcat(sz, FLD_DELIM_R);
-      _cbDisp(DISP_L1, sz);
-    }
   }
-  else if (nav == NAV_SEL)
+  else if (nav == NAV_SEL)  // confirmation received
   {
     mInp->cbVR(mInp->id, false);
     return(true);
@@ -859,6 +881,10 @@ void MD_Menu::handleMenu(bool bNew)
         _currMenu--;
         handleMenu(true);  // just one level of recursion;
       }
+      break;
+
+    case NAV_NULL:
+      // do nothing except stop compiler warnings
       break;
     }
   }
