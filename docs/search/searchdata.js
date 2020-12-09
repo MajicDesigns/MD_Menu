@@ -9,7 +9,7 @@ var indexSectionsWithContent =
   6: "imu",
   7: "dimn",
   8: "acfimstu",
-  9: "cmru"
+  9: "cmrsu"
 };
 
 var indexSectionNames =

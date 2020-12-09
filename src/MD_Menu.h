@@ -41,6 +41,7 @@ Dec 2020 version 2.1.0
 - Changed integer input to wrap around at ends of valid range.
 - Fixed comparison for extreme range of integer and float inputs to be <=/>=.
 - Removed newer IDE compiler warnings.
+- Added INP_EXT for input devices handled by user code (eg, pots, keypads, sensors, etc).
 
 May 2018 version 2.0.3
 - Added contri by makelion to allow variable text to be added using run code option.
@@ -204,9 +205,12 @@ input (ie, with 3 decimals, 1 is .001, 5 is .005, 50 is 0.050, etc).
 when selected. The 'get' in the callbask determines whether the operation requires confirmation.
 Returning a null pointer implies confirmation, anything else is a direct execution of the 
 user code. User code is only ever executed as part of the 'set' invocation.
+- **External Input** specifies that the input value is provided by external user code. 
+The value callback 'get' function is invoked until the value is confirmed using the normal
+method for the menu. All values are 32 bit signed integers.
 
 \page pageCopyright Copyright
-Copyright (C) 2017 Marco Colli. All rights reserved.
+Copyright (C) 2017, 2020 Marco Colli. All rights reserved.
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -327,6 +331,7 @@ public:
     INP_FLOAT,  ///< The item is for input of a real number representation with 2 decimal digits 
     INP_ENGU,   ///< The item is for input of a number in engineering (powers of 10 which are multiples of 3) with 3 decimal digits.
     INP_RUN,    ///< The item will run a user function
+    INP_EXT,    ///< The item will display numeric input provided by a user function
   };
 
   /**
@@ -646,5 +651,6 @@ private:
   bool processFloat(userNavAction_t nav, mnuInput_t *mInp, bool rtfb, uint16_t incDelta);
   bool processEng(userNavAction_t nav, mnuInput_t *mInp, bool rtfb, uint16_t incDelta);
   bool processRun(userNavAction_t nav, mnuInput_t *mInp, bool rtfb);
+  bool processExt(userNavAction_t nav, mnuInput_t* mInp, bool init, bool rtfb);
 };
 

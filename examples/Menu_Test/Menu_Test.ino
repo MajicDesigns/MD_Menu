@@ -43,7 +43,9 @@ int16_t int16Value = 999;
 int32_t int32Value = 9999;
 float floatValue = 999.99;
 MD_Menu::value_t engValue = { 999900, 3 };
-char _txt[] = "192.168.1.101";
+char myText[] = "192.168.1.101";
+
+const uint8_t EXT_PIN = A0;     // reads the value from here for INP_EXT testing
 
 MD_Menu::value_t vBuf;  // interface buffer for values
 
@@ -51,13 +53,12 @@ MD_Menu::value_t vBuf;  // interface buffer for values
 const PROGMEM MD_Menu::mnuHeader_t mnuHdr[] =
 {
   { 10, "MD_Menu",      10, 16, 0 },
-  { 11, "Input Data",   20, 27, 0 },
+  { 11, "Input Data",   20, 29, 0 },
   { 12, "Serial Setup", 30, 33, 0 },
   { 13, "LED Menu",     40, 41, 0 },
   { 14, "FF Menu",      50, 51, 0 },
   { 15, "Realtime FB",  60, 64, 0 },
-  { 16, "Output TXT",   70, 70, 0 },
-
+  { 16, "User Text",    70, 70, 0 },
 };
 
 // Menu Items ----------
@@ -70,7 +71,7 @@ const PROGMEM MD_Menu::mnuItem_t mnuItm[] =
   { 13, "More Menu",   MD_Menu::MNU_MENU, 10 },
   { 14, "Flip-Flop",   MD_Menu::MNU_MENU, 14 },
   { 15, "Realtime FB", MD_Menu::MNU_MENU, 15 },
-  { 16, "Output TXT",  MD_Menu::MNU_MENU, 16 },
+  { 16, "User Text",   MD_Menu::MNU_MENU, 16 },
 
   // Input Data submenu
   { 20, "Fruit List", MD_Menu::MNU_INPUT, 10 },
@@ -81,18 +82,23 @@ const PROGMEM MD_Menu::mnuItem_t mnuItm[] =
   { 25, "Hex 16",     MD_Menu::MNU_INPUT, 15 },
   { 26, "Float",      MD_Menu::MNU_INPUT, 16 },
   { 27, "Eng Units",  MD_Menu::MNU_INPUT, 17 },
-  { 28, "Reset Menu", MD_Menu::MNU_INPUT, 18 },
+  { 28, "External",   MD_Menu::MNU_INPUT, 18 },
+  { 29, "Reset Menu", MD_Menu::MNU_INPUT, 19 },
+
   // Serial Setup
   { 30, "COM Port",  MD_Menu::MNU_INPUT, 30 },
   { 31, "Speed",     MD_Menu::MNU_INPUT, 31 },
   { 32, "Parity",    MD_Menu::MNU_INPUT, 32 },
   { 33, "Stop Bits", MD_Menu::MNU_INPUT, 33 },
+
   // LED
   { 40, "Turn Off", MD_Menu::MNU_INPUT, 40 },
   { 41, "Turn On",  MD_Menu::MNU_INPUT, 41 },
+
   // Flip-flop - boolean controls variable edit
   { 50, "Flip", MD_Menu::MNU_INPUT, 50 },
   { 51, "Flop", MD_Menu::MNU_INPUT, 51 },
+
   // Realtime feedback variable edit
   { 60, "Fruit List", MD_Menu::MNU_INPUT_FB, 10 },
   { 61, "Boolean",    MD_Menu::MNU_INPUT_FB, 11 },
@@ -101,7 +107,7 @@ const PROGMEM MD_Menu::mnuItem_t mnuItm[] =
   { 64, "Eng Units",  MD_Menu::MNU_INPUT_FB, 17 },
 
   // Output Data submenu
-  { 70, "Output TXT", MD_Menu::MNU_INPUT, 60 },
+  { 70, "User Text",  MD_Menu::MNU_INPUT, 60 },
 };
 
 // Input Items ---------
@@ -114,15 +120,16 @@ const PROGMEM char engUnit[] = "Hz";
 
 const PROGMEM MD_Menu::mnuInput_t mnuInp[] =
 {
-  { 10, "List",     MD_Menu::INP_LIST,  mnuLValueRqst, 6,       0, 0,      0, 0,  0, listFruit }, // shorter and longer list labels
-  { 11, "Bool",     MD_Menu::INP_BOOL,  mnuBValueRqst, 1,       0, 0,      0, 0,  0, nullptr },
-  { 12, "Int8",     MD_Menu::INP_INT,   mnuIValueRqst, 4,    -128, 0,    127, 0, 10, nullptr },
-  { 13, "Int16",    MD_Menu::INP_INT,   mnuIValueRqst, 4,  -32768, 0,  32767, 0, 10, nullptr },  // test field too small
-  { 14, "Int32",    MD_Menu::INP_INT,   mnuIValueRqst, 6,  -66636, 0,  65535, 0, 10, nullptr },
-  { 15, "Hex16",    MD_Menu::INP_INT,   mnuIValueRqst, 4,  0x0000, 0, 0xffff, 0, 16, nullptr },  // test hex display
-  { 16, "Float",    MD_Menu::INP_FLOAT, mnuFValueRqst, 7,  -10000, 0,  99950, 0, 10, nullptr },  // test float number
-  { 17, "Eng Unit", MD_Menu::INP_ENGU,  mnuEValueRqst, 7,       0, 0, 999000, 3, 50, engUnit },  // test engineering units number
-  { 18, "Confirm",  MD_Menu::INP_RUN,   myCode,        0,       0, 0,      0, 0, 10, nullptr },
+  { 10, "List",     MD_Menu::INP_LIST,  mnuListValueRqst, 6,       0, 0,      0, 0,  0, listFruit }, // shorter and longer list labels
+  { 11, "Bool",     MD_Menu::INP_BOOL,  mnuBoolValueRqst, 1,       0, 0,      0, 0,  0, nullptr },
+  { 12, "Int8",     MD_Menu::INP_INT,   mnuIntValueRqst,  4,    -128, 0,    127, 0, 10, nullptr },
+  { 13, "Int16",    MD_Menu::INP_INT,   mnuIntValueRqst,  4,  -32768, 0,  32767, 0, 10, nullptr },  // test field too small
+  { 14, "Int32",    MD_Menu::INP_INT,   mnuIntValueRqst,  6,  -65536, 0,  65535, 0, 10, nullptr },
+  { 15, "Hex16",    MD_Menu::INP_INT,   mnuIntValueRqst,  4,  0x0000, 0, 0xffff, 0, 16, nullptr },  // test hex display
+  { 16, "Float",    MD_Menu::INP_FLOAT, mnuFloatValueRqst,7,  -10000, 0,  99950, 0, 10, nullptr },  // test float number
+  { 17, "Eng Unit", MD_Menu::INP_ENGU,  mnuEngValueRqst,  7,       0, 0, 999000, 3, 50, engUnit },  // test engineering units number
+  { 18, "Extern",   MD_Menu::INP_EXT,   mnuExtValueRqst,  6,  -65536, 0,  65535, 0, 10, nullptr },  // test externally provided data
+  { 19, "Confirm",  MD_Menu::INP_RUN,   myCode,           0,       0, 0,      0, 0, 10, nullptr },
 
   { 30, "Port",     MD_Menu::INP_LIST, mnuSerialValueRqst, 4, 0, 0, 0, 0, 0, listCOM },
   { 31, "Bits/s",   MD_Menu::INP_LIST, mnuSerialValueRqst, 6, 0, 0, 0, 0, 0, listBaud },
@@ -132,10 +139,10 @@ const PROGMEM MD_Menu::mnuInput_t mnuInp[] =
   { 40, "Confirm", MD_Menu::INP_RUN, myLEDCode, 0, 0, 0, 0, 0, 0, nullptr },  // test using index in run code
   { 41, "Confirm", MD_Menu::INP_RUN, myLEDCode, 0, 0, 0, 0, 0, 0, nullptr },
 
-  { 50, "Flip", MD_Menu::INP_INT, mnuFFValueRqst, 4, -128, 0, 127, 0, 10, nullptr },
-  { 51, "Flop", MD_Menu::INP_INT, mnuFFValueRqst, 4, -128, 0, 127, 0, 16, nullptr },
+  { 50, "Flip",    MD_Menu::INP_INT, mnuFFValueRqst, 4, -128, 0, 127, 0, 10, nullptr },
+  { 51, "Flop",    MD_Menu::INP_INT, mnuFFValueRqst, 4, -128, 0, 127, 0, 16, nullptr },
 
-  { 60, "TXT", MD_Menu::INP_RUN,  myCode,  0, 0, 0,  0, 0, 10, nullptr },  // test output TXT
+  { 60, "Text",    MD_Menu::INP_RUN,  myCode,  0, 0, 0, 0, 0, 10, nullptr },  // test output TXT
 };
 
 // bring it all together in the global menu object
@@ -145,7 +152,7 @@ MD_Menu M(navigation, display,        // user navigation and display
           mnuInp, ARRAY_SIZE(mnuInp));// menu input data
 
 // Callback code for menu set/get input values
-MD_Menu::value_t *mnuLValueRqst(MD_Menu::mnuId_t id, bool bGet)
+MD_Menu::value_t *mnuListValueRqst(MD_Menu::mnuId_t id, bool bGet)
 // Value request callback for list selection variable
 {
   MD_Menu::value_t *r = &vBuf;
@@ -167,7 +174,7 @@ MD_Menu::value_t *mnuLValueRqst(MD_Menu::mnuId_t id, bool bGet)
   return(r);
 }
 
-MD_Menu::value_t *mnuBValueRqst(MD_Menu::mnuId_t id, bool bGet)
+MD_Menu::value_t *mnuBoolValueRqst(MD_Menu::mnuId_t id, bool bGet)
 // Value request callback for boolean variable
 {
   MD_Menu::value_t *r = &vBuf;
@@ -189,7 +196,7 @@ MD_Menu::value_t *mnuBValueRqst(MD_Menu::mnuId_t id, bool bGet)
   return(r);
 }
 
-MD_Menu::value_t *mnuIValueRqst(MD_Menu::mnuId_t id, bool bGet)
+MD_Menu::value_t *mnuIntValueRqst(MD_Menu::mnuId_t id, bool bGet)
 // Value request callback for integers variables
 {
   MD_Menu::value_t *r = &vBuf;
@@ -233,6 +240,36 @@ MD_Menu::value_t *mnuIValueRqst(MD_Menu::mnuId_t id, bool bGet)
     default:
       r = nullptr;
       break;
+  }
+
+  return (r);
+}
+
+MD_Menu::value_t* mnuExtValueRqst(MD_Menu::mnuId_t id, bool bGet)
+// Value request callback for external 32 bit integers
+{
+  MD_Menu::value_t* r = &vBuf;
+
+  switch (id)
+  {
+  case 18:
+    if (bGet)
+    {
+      vBuf.value = analogRead(EXT_PIN);
+      //Serial.print(F("\nProviding ext value "));
+      //Serial.print(vBuf.value);
+    }
+    else
+    {
+      int32Value = vBuf.value;
+      Serial.print(F("\nExt value set to "));
+      Serial.print(int32Value);
+    }
+    break;
+
+  default:
+    r = nullptr;
+    break;
   }
 
   return (r);
@@ -298,7 +335,7 @@ MD_Menu::value_t *mnuSerialValueRqst(MD_Menu::mnuId_t id, bool bGet)
   return (r);
 }
 
-MD_Menu::value_t *mnuFValueRqst(MD_Menu::mnuId_t id, bool bGet)
+MD_Menu::value_t *mnuFloatValueRqst(MD_Menu::mnuId_t id, bool bGet)
 // Value request callback for floating value
 {
   MD_Menu::value_t *r = &vBuf;
@@ -320,7 +357,7 @@ MD_Menu::value_t *mnuFValueRqst(MD_Menu::mnuId_t id, bool bGet)
   return(r);
 }
 
-MD_Menu::value_t *mnuEValueRqst(MD_Menu::mnuId_t id, bool bGet)
+MD_Menu::value_t *mnuEngValueRqst(MD_Menu::mnuId_t id, bool bGet)
 // Value request callback for engineering value
 {
   if (id == 17)
@@ -441,7 +478,7 @@ MD_Menu::value_t *myCode(MD_Menu::mnuId_t id, bool bGet)
 {
   switch (id)
   {
-    case 18:
+    case 19:
       Serial.print(F("\nmyCode called id="));
       Serial.print(id);
       Serial.print(F(" to "));
@@ -451,7 +488,7 @@ MD_Menu::value_t *myCode(MD_Menu::mnuId_t id, bool bGet)
       break;
   
     case 60:
-      if (bGet) return ((MD_Menu::value_t *)&_txt);
+      if (bGet) return ((MD_Menu::value_t *)&myText);
       break;
   }
   return (nullptr);

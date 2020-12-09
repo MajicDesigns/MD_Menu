@@ -727,6 +727,68 @@ bool MD_Menu::processRun(userNavAction_t nav, mnuInput_t *mInp, bool rtfb)
   return(false);
 }
 
+bool MD_Menu::processExt(userNavAction_t nav, mnuInput_t* mInp, bool init, bool rtfb)
+// Processing for Externally supplied values input
+// Return true when the edit cycle is completed
+{
+  bool endFlag = false;
+  bool update = false;
+
+  switch (nav)
+  {
+  case NAV_NULL:    // this is to get the value from the user code
+  {
+    _pValue = mInp->cbVR(mInp->id, true);
+
+    if (_pValue == nullptr)
+    {
+      MD_PRINTS("\nExt cbVR(GET) == NULL!");
+      endFlag = true;
+    }
+    else
+    {
+      update = _V.value != _pValue->value;
+      if (update)
+      {
+        _V.value = _pValue->value;
+        timerStart();     // this is where we know user has changed input...
+      }
+    }
+  }
+  break;
+
+  case NAV_SEL:
+    _pValue->value = _V.value;
+    mInp->cbVR(mInp->id, false);
+    endFlag = true;
+    break;
+
+  default:
+    // do nothing except stop compiler warnings
+    break;
+  }
+
+  if (update || init)
+  {
+    char sz[INP_PRE_SIZE(mInp) + mInp->fieldWidth + INP_POST_SIZE(mInp) + 1];
+
+    strPreamble(sz, mInp);
+    ltostr(sz + strlen(sz), mInp->fieldWidth + 1, _V.value, mInp->base);
+    strPostamble(sz, mInp);
+
+    _cbDisp(DISP_L1, sz);
+
+    // real time feedback needed
+    if (rtfb)
+    {
+      _pValue->value = _V.value;
+      mInp->cbVR(mInp->id, false);
+    }
+  }
+
+  return(endFlag);
+}
+
 void MD_Menu::handleInput(bool bNew)
 {
   bool ended = false;
@@ -755,20 +817,22 @@ void MD_Menu::handleInput(bool bNew)
       case INP_FLOAT: ended = processFloat(NAV_NULL, me, mi->action == MNU_INPUT_FB, incDelta); break;
       case INP_ENGU:  ended = processEng(NAV_NULL, me, mi->action == MNU_INPUT_FB, incDelta);   break;
       case INP_RUN:   ended = processRun(NAV_NULL, me, mi->action == MNU_INPUT_FB);             break;
+      case INP_EXT:   ended = processExt(NAV_NULL, me, true, mi->action == MNU_INPUT_FB);       break;
       }
     }
   }
   else
   {
     userNavAction_t nav = _cbNav(incDelta);
+    mi = loadItem(_mnuStack[_currMenu].idItmCurr);
+    me = loadInput(mi->actionId);
 
     if (nav == NAV_ESC)
       ended = true;
-    else if (nav != NAV_NULL)
+    else if (nav != NAV_NULL || me->action == INP_EXT)    /// INP_EXT does not use main nav input!
     {
-      timerStart();
-      mi = loadItem(_mnuStack[_currMenu].idItmCurr);
-      me = loadInput(mi->actionId);
+      if (nav != NAV_NULL)  // for INP_EXT we need to set this in processExt()
+        timerStart();
 
       switch (me->action)
       {
@@ -778,6 +842,7 @@ void MD_Menu::handleInput(bool bNew)
       case INP_FLOAT: ended = processFloat(nav, me, mi->action == MNU_INPUT_FB, incDelta); break;
       case INP_ENGU:  ended = processEng(nav, me, mi->action == MNU_INPUT_FB, incDelta);   break;
       case INP_RUN:   ended = processRun(nav, me, mi->action == MNU_INPUT_FB);             break;
+      case INP_EXT:   ended = processExt(nav, me, false, mi->action == MNU_INPUT_FB);      break;
       }
     }
   }
@@ -883,7 +948,7 @@ void MD_Menu::handleMenu(bool bNew)
       }
       break;
 
-    case NAV_NULL:
+    default:
       // do nothing except stop compiler warnings
       break;
     }

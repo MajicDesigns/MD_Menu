@@ -26,11 +26,12 @@ MD_Menu::userNavAction_t navigation(uint16_t &incDelta);
 
 // Function prototypes for variable get/set functions
 // These are split for demonstration purposes. They could all be in one function.
-MD_Menu::value_t *mnuLValueRqst(MD_Menu::mnuId_t id, bool bGet);
-MD_Menu::value_t *mnuBValueRqst(MD_Menu::mnuId_t id, bool bGet);
-MD_Menu::value_t *mnuIValueRqst(MD_Menu::mnuId_t id, bool bGet);
-MD_Menu::value_t *mnuFValueRqst(MD_Menu::mnuId_t id, bool bGet);
-MD_Menu::value_t *mnuEValueRqst(MD_Menu::mnuId_t id, bool bGet);
+MD_Menu::value_t *mnuListValueRqst(MD_Menu::mnuId_t id, bool bGet);
+MD_Menu::value_t *mnuBoolValueRqst(MD_Menu::mnuId_t id, bool bGet);
+MD_Menu::value_t *mnuIntValueRqst(MD_Menu::mnuId_t id, bool bGet);
+MD_Menu::value_t* mnuExtValueRqst(MD_Menu::mnuId_t id, bool bGet);
+MD_Menu::value_t *mnuFloatValueRqst(MD_Menu::mnuId_t id, bool bGet);
+MD_Menu::value_t *mnuEngValueRqst(MD_Menu::mnuId_t id, bool bGet);
 MD_Menu::value_t *mnuFFValueRqst(MD_Menu::mnuId_t id, bool bGet);
 MD_Menu::value_t *mnuFBValueRqst(MD_Menu::mnuId_t id, bool bGet);
 MD_Menu::value_t *mnuSerialValueRqst(MD_Menu::mnuId_t id, bool bGet);
