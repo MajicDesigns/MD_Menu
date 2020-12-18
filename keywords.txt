@@ -15,6 +15,7 @@ mnuAction_t	KEYWORD1
 mnuItem_t	KEYWORD1
 mnuHeader_t	KEYWORD1
 value_t	KEYWORD1
+mnuId_t	KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)
@@ -31,7 +32,7 @@ setMenuWrap	KEYWORD2
 setAutoStart	KEYWORD2
 setTimeout	KEYWORD2
 getListCount	KEYWORD2
-getLIstItem	KEYWORD2
+getListItem	KEYWORD2
 
 ######################################
 # Constants (LITERAL1)
@@ -52,6 +53,7 @@ INP_INT	LITERAL1
 INP_FLOAT	LITERAL1
 INP_ENGU	LITERAL1
 INP_RUN	LITERAL1
+INP_EXT	LITERAL1
 MNU_MENU	LITERAL1
 MNU_INPUT	LITERAL1
 MNU_INPUT_FB	LITERAL1

@@ -72,7 +72,7 @@ void MD_Menu::loadMenu(mnuId_t id)
 
   if (id != -1)   // look for a menu with that id and load it up
   {
-    for (uint8_t i = 0; i < _mnuHdrCount; i++)
+    for (mnuId_t i = 0; i < _mnuHdrCount; i++)
     {
       memcpy_P(&mh, &_mnuHdr[i], sizeof(mnuHeader_t));
       if (mh.id == id)
@@ -90,7 +90,7 @@ void MD_Menu::loadMenu(mnuId_t id)
 MD_Menu::mnuItem_t* MD_Menu::loadItem(mnuId_t id)
 // Find a copy the input item to the class private buffer
 {
-  for (uint8_t i = 0; i < _mnuItmCount; i++)
+  for (mnuId_t i = 0; i < _mnuItmCount; i++)
   {
     memcpy_P(&_mnuBufItem, &_mnuItm[i], sizeof(mnuItem_t));
     if (_mnuBufItem.id == id)
@@ -103,7 +103,7 @@ MD_Menu::mnuItem_t* MD_Menu::loadItem(mnuId_t id)
 MD_Menu::mnuInput_t* MD_Menu::loadInput(mnuId_t id)
 // Find a copy the input item to the class private buffer
 {
-  for (uint8_t i = 0; i < _mnuItmCount; i++)
+  for (mnuId_t i = 0; i < _mnuInpCount; i++)
   {
     memcpy_P(&_mnuBufInput, &_mnuInp[i], sizeof(mnuInput_t));
     if (_mnuBufInput.id == id)

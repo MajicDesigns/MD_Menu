@@ -36,6 +36,9 @@ for what really matters.
 If you like and use this library please consider making a small donation using [PayPal](https://paypal.me/MajicDesigns/4USD)
 
 \page pageRevisionHistory Revision History
+Dec 2020 version 2.1.1
+- More consistency with using MmnuId_t as sizing for related variables.
+
 Dec 2020 version 2.1.0
 - Changed invocation of the INP_RUN to allow for unconfirmed running of user code.
 - Changed integer input to wrap around at ends of valid range.
@@ -607,11 +610,11 @@ private:
   cbUserDisplay _cbDisp;  ///< User display function
 
   const mnuHeader_t *_mnuHdr; ///< Menu header table
-  uint8_t _mnuHdrCount;       ///< Number of items in the header table
+  mnuId_t _mnuHdrCount;       ///< Number of items in the header table
   const mnuItem_t *_mnuItm;   ///< Menu item table
-  uint8_t _mnuItmCount;       ///< Number of items in the item table
+  mnuId_t _mnuItmCount;       ///< Number of items in the item table
   const mnuInput_t *_mnuInp;  ///< Input item table
-  uint8_t _mnuInpCount;       ///< Number of items in the input table
+  mnuId_t _mnuInpCount;       ///< Number of items in the input table
 
   // Timeout related
   uint32_t _timeLastKey;  ///< Time a menu key was last pressed
