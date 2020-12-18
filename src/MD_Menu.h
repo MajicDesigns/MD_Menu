@@ -36,6 +36,9 @@ for what really matters.
 If you like and use this library please consider making a small donation using [PayPal](https://paypal.me/MajicDesigns/4USD)
 
 \page pageRevisionHistory Revision History
+Dec 2020 version 2.1.2
+- Picked up additional changes to mnuId changes to class constructor.
+
 Dec 2020 version 2.1.1
 - More consistency with using MmnuId_t as sizing for related variables.
 
@@ -628,7 +631,7 @@ private:
   value_t _V;        ///< Copy of the value being edited
 
   // static buffers for find functions, keep accessible copies of data in PROGMEM
-  uint8_t     _currMenu;                ///< Index of current menu displayed in the stack
+  mnuId_t     _currMenu;                ///< Index of current menu displayed in the stack
   mnuHeader_t _mnuStack[MNU_STACK_SIZE];///< Stacked trail of menus being executed
   mnuInput_t  _mnuBufInput;             ///< menu input buffer for load function
   mnuItem_t   _mnuBufItem;              ///< menu item buffer for load function
