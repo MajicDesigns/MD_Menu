@@ -36,6 +36,9 @@ for what really matters.
 If you like and use this library please consider making a small donation using [PayPal](https://paypal.me/MajicDesigns/4USD)
 
 \page pageRevisionHistory Revision History
+Dec 2020 version 2.1.2
+- Picked up changes to mnuId changes to class constructor.
+
 Dec 2020 version 2.1.1
 - More consistency with using MmnuId_t as sizing for related variables.
 
