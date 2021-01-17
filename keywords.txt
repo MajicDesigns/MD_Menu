@@ -16,6 +16,7 @@ mnuItem_t	KEYWORD1
 mnuHeader_t	KEYWORD1
 value_t	KEYWORD1
 mnuId_t	KEYWORD1
+listId_t	KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)

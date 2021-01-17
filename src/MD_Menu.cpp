@@ -113,10 +113,10 @@ MD_Menu::mnuInput_t* MD_Menu::loadInput(mnuId_t id)
   return(nullptr);
 }
 
-uint8_t MD_Menu::getListCount(const char *p)
+MD_Menu::listId_t MD_Menu::getListCount(const char *p)
 // Return a count of the items in the list
 {
-  uint8_t count = 0;
+  listId_t count = 0;
   char c;
 
   if (p != nullptr)
@@ -139,7 +139,7 @@ uint8_t MD_Menu::getListCount(const char *p)
   return(count);
 }
 
-char *MD_Menu::getListItem(const char *p, uint8_t idx, char *buf, uint8_t bufLen)
+char *MD_Menu::getListItem(const char *p, MD_Menu::listId_t idx, char *buf, uint8_t bufLen)
 // Find the idx'th item in the list and return in fixed width, padded
 // with trailing spaces. 
 {
@@ -209,7 +209,7 @@ bool MD_Menu::processList(userNavAction_t nav, mnuInput_t *mInp, bool rtfb)
   {
   case NAV_NULL:    // this is to initialize the CB_DISP
   {
-    uint8_t size = getListCount(mInp->pList);
+    listId_t size = getListCount(mInp->pList);
 
     if (size == 0)
     {
@@ -238,7 +238,8 @@ bool MD_Menu::processList(userNavAction_t nav, mnuInput_t *mInp, bool rtfb)
 
   case NAV_DEC:
     {
-      uint8_t listSize = getListCount(mInp->pList);
+      listId_t size = getListCount(mInp->pList);
+
       if (_V.value > 0)
       {
         _V.value--;
@@ -246,7 +247,7 @@ bool MD_Menu::processList(userNavAction_t nav, mnuInput_t *mInp, bool rtfb)
       }
       else if (_V.value == 0 && TEST_FLAG(F_MENUWRAP))
       {
-        _V.value = listSize - 1;
+        _V.value = size - 1;
         update = true;
       }
     }
@@ -254,14 +255,14 @@ bool MD_Menu::processList(userNavAction_t nav, mnuInput_t *mInp, bool rtfb)
 
   case NAV_INC:
     {
-      uint8_t listSize = getListCount(mInp->pList);
+      listId_t size = getListCount(mInp->pList);
 
-      if (_V.value < listSize - 1)
+      if (_V.value < size - 1)
       {
         _V.value++;
         update = true;
       }
-      else if (_V.value == listSize - 1 && TEST_FLAG(F_MENUWRAP))
+      else if (_V.value == size - 1 && TEST_FLAG(F_MENUWRAP))
       {
         _V.value = 0;
         update = true;
@@ -366,12 +367,11 @@ bool MD_Menu::processBool(userNavAction_t nav, mnuInput_t *mInp, bool rtfb)
   return(endFlag);
 }
 
-char *ltostr(char *buf, uint8_t bufLen, int32_t v, uint8_t base, bool leadZero = false)
+char *MD_Menu::ltostr(char *buf, uint8_t bufLen, int32_t v, uint8_t base, bool sign, bool leadZero)
 // Convert a long to a string right justified with leading spaces
 // in the base specified (up to 16).
 {
   char *ptr = buf + bufLen - 1; // the last element of the buffer
-  bool sign = (v < 0);
   uint32_t t = 0, res = 0;
   uint32_t value = (sign ? -v : v);
 
@@ -462,7 +462,7 @@ bool MD_Menu::processInt(userNavAction_t nav, mnuInput_t *mInp, bool rtfb, uint1
     char sz[INP_PRE_SIZE(mInp) + mInp->fieldWidth + INP_POST_SIZE(mInp) + 1];
 
     strPreamble(sz, mInp);
-    ltostr(sz + strlen(sz), mInp->fieldWidth + 1, _V.value, mInp->base);
+    ltostr(sz + strlen(sz), mInp->fieldWidth + 1, _V.value, mInp->base, (_V.value < 0));
     strPostamble(sz, mInp);
 
     _cbDisp(DISP_L1, sz);
@@ -544,10 +544,10 @@ bool MD_Menu::processFloat(userNavAction_t nav, mnuInput_t *mInp, bool rtfb, uin
       divisor *= 10;
 
     strPreamble(sz, mInp);
-    ltostr(sz + strlen(sz), mInp->fieldWidth - (FLOAT_DECIMALS + 1) + 1, _V.value / divisor, 10);
+    ltostr(sz + strlen(sz), mInp->fieldWidth - (FLOAT_DECIMALS + 1) + 1, _V.value / divisor, 10, (_V.value < 0));
     sz[strlen(sz) + 1] = '\0';
     sz[strlen(sz)] = DECIMAL_POINT;
-    ltostr(sz + strlen(sz), (FLOAT_DECIMALS + 1), abs(_V.value % divisor), 10, true);
+    ltostr(sz + strlen(sz), (FLOAT_DECIMALS + 1), abs(_V.value % divisor), 10, false, true);
 
     strPostamble(sz, mInp);
 
@@ -600,6 +600,7 @@ bool MD_Menu::processEng(userNavAction_t nav, mnuInput_t *mInp, bool rtfb, uint1
   case NAV_INC:
     if ((_V.value + (incDelta * mInp->base))/1000 < 1000)  // still within the same prefix range
     {
+      Serial.print("\n+Same range ");
       if ((_V.power < mInp->range[1].power) ||
          (_V.power == mInp->range[1].power && _V.value + (incDelta * mInp->base) <= mInp->range[1].value))
         _V.value += (incDelta * mInp->base);
@@ -608,6 +609,7 @@ bool MD_Menu::processEng(userNavAction_t nav, mnuInput_t *mInp, bool rtfb, uint1
     }
     else  // moved into the next range
     {
+      Serial.print("\n+New range ");
       _V.value += (incDelta * mInp->base);
       _V.value /= 1000;
       _V.power += 3;
@@ -624,6 +626,7 @@ bool MD_Menu::processEng(userNavAction_t nav, mnuInput_t *mInp, bool rtfb, uint1
   case NAV_DEC:
     if ((_V.value - (incDelta * mInp->base)) / 1000 > 0)  // still within the same prefix range
     {
+      Serial.print("\n-Same range ");
       if ((_V.power > mInp->range[0].power) ||
          (_V.power == mInp->range[0].power && _V.value - (incDelta * mInp->base) >= mInp->range[0].value))
         _V.value -= (incDelta * mInp->base);
@@ -632,6 +635,7 @@ bool MD_Menu::processEng(userNavAction_t nav, mnuInput_t *mInp, bool rtfb, uint1
     }
     else  // moved into the previous range
     {
+      Serial.print("\n-New range ");
       _V.value -= (incDelta * mInp->base);
       _V.value *= 1000;
       _V.power -= 3;
@@ -671,11 +675,12 @@ bool MD_Menu::processEng(userNavAction_t nav, mnuInput_t *mInp, bool rtfb, uint1
     for (uint8_t i = 0; i < ENGU_DECIMALS; i++)
       divisor *= 10;
 
+    Serial.print("\n"); Serial.print(_V.value); Serial.print(": "); Serial.print(_V.value / divisor);
     strPreamble(sz, mInp);
-    ltostr(sz + strlen(sz), mInp->fieldWidth - (ENGU_DECIMALS + 1) + 1, _V.value / divisor, 10);
+    ltostr(sz + strlen(sz), mInp->fieldWidth - (ENGU_DECIMALS + 1) + 1, _V.value / divisor, 10, (_V.value < 0));
     sz[strlen(sz) + 1] = '\0';
     sz[strlen(sz)] = DECIMAL_POINT;
-    ltostr(sz + strlen(sz), (ENGU_DECIMALS + 1), abs(_V.value % divisor), 10, true);
+    ltostr(sz + strlen(sz), (ENGU_DECIMALS + 1), abs(_V.value % divisor), 10, false, true);
 
     strPostamble(sz, mInp);
     sz[strlen(sz) + 1] = '\0';
@@ -773,7 +778,7 @@ bool MD_Menu::processExt(userNavAction_t nav, mnuInput_t* mInp, bool init, bool 
     char sz[INP_PRE_SIZE(mInp) + mInp->fieldWidth + INP_POST_SIZE(mInp) + 1];
 
     strPreamble(sz, mInp);
-    ltostr(sz + strlen(sz), mInp->fieldWidth + 1, _V.value, mInp->base);
+    ltostr(sz + strlen(sz), mInp->fieldWidth + 1, _V.value, mInp->base, (_V.value < 0));
     strPostamble(sz, mInp);
 
     _cbDisp(DISP_L1, sz);

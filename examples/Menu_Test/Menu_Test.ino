@@ -41,8 +41,8 @@ bool bValue = true;
 int8_t  int8Value = 99;
 int16_t int16Value = 999;
 int32_t int32Value = 9999;
-float floatValue = 999.99;
-MD_Menu::value_t engValue = { 999900, 3 };
+float floatValue = 1.50;
+MD_Menu::value_t engValue = { 1500, 0 };
 char myText[] = "192.168.1.101";
 
 const uint8_t EXT_PIN = A0;     // reads the value from here for INP_EXT testing
@@ -81,7 +81,7 @@ const PROGMEM MD_Menu::mnuItem_t mnuItm[] =
   { 24, "Integer 32", MD_Menu::MNU_INPUT, 14 },
   { 25, "Hex 16",     MD_Menu::MNU_INPUT, 15 },
   { 26, "Float",      MD_Menu::MNU_INPUT, 16 },
-  { 27, "Eng Units",  MD_Menu::MNU_INPUT, 17 },
+  { 27, "Eng Unit",   MD_Menu::MNU_INPUT, 17 },
   { 28, "External",   MD_Menu::MNU_INPUT, 18 },
   { 29, "Reset Menu", MD_Menu::MNU_INPUT, 19 },
 
@@ -104,7 +104,7 @@ const PROGMEM MD_Menu::mnuItem_t mnuItm[] =
   { 61, "Boolean",    MD_Menu::MNU_INPUT_FB, 11 },
   { 62, "Integer 8",  MD_Menu::MNU_INPUT_FB, 12 },
   { 63, "Float",      MD_Menu::MNU_INPUT_FB, 16 },
-  { 64, "Eng Units",  MD_Menu::MNU_INPUT_FB, 17 },
+  { 64, "Eng Unit",   MD_Menu::MNU_INPUT_FB, 17 },
 
   // Output Data submenu
   { 70, "User Text",  MD_Menu::MNU_INPUT, 60 },
@@ -127,7 +127,7 @@ const PROGMEM MD_Menu::mnuInput_t mnuInp[] =
   { 14, "Int32",    MD_Menu::INP_INT,   mnuIntValueRqst,  6,  -65536, 0,  65535, 0, 10, nullptr },
   { 15, "Hex16",    MD_Menu::INP_INT,   mnuIntValueRqst,  4,  0x0000, 0, 0xffff, 0, 16, nullptr },  // test hex display
   { 16, "Float",    MD_Menu::INP_FLOAT, mnuFloatValueRqst,7,  -10000, 0,  99950, 0, 10, nullptr },  // test float number
-  { 17, "Eng Unit", MD_Menu::INP_ENGU,  mnuEngValueRqst,  7,       0, 0, 999000, 3, 50, engUnit },  // test engineering units number
+  { 17, "EU",       MD_Menu::INP_ENGU,  mnuEngValueRqst,  7,   -1100, 0, 999000, 0, 50, engUnit },  // test engineering units number
   { 18, "Extern",   MD_Menu::INP_EXT,   mnuExtValueRqst,  6,  -65536, 0,  65535, 0, 10, nullptr },  // test externally provided data
   { 19, "Confirm",  MD_Menu::INP_RUN,   myCode,           0,       0, 0,      0, 0, 10, nullptr },
 

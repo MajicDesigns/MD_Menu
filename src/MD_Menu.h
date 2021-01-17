@@ -36,6 +36,10 @@ for what really matters.
 If you like and use this library please consider making a small donation using [PayPal](https://paypal.me/MajicDesigns/4USD)
 
 \page pageRevisionHistory Revision History
+Feb 2021 version 2.1.3
+- Introduced listId_t typedef for list index related counting.
+- Implemented suggested solution for fixing negative floats between 0 and -1 (Issue #15).
+
 Dec 2020 version 2.1.2
 - Picked up additional changes to mnuId changes to class constructor.
 
@@ -178,7 +182,7 @@ data structure that remains in scope while the data is being edited, and the
 pointer to the structure passed back to the library. This copy of the user variable 
 is used for editing and a second *cbValueRequest* (conceptually a 'set') is invoked 
 after the value is updated, enabling the user code to take action on the change. 
-If the variable edit is cancelled, the second *cbValueRequest* 'set' call does not 
+If the variable edit is canceled, the second *cbValueRequest* 'set' call does not 
 occur and no further action is required from the user code. If the edit is specified 
 with real-time feedback, the value is 'set' for each change in value. 
 
@@ -208,7 +212,7 @@ power of 10. Units are defined in the pList parameter. The base specification fi
 to represent the minimum increment or decrement of the fractional component of value 
 input (ie, with 3 decimals, 1 is .001, 5 is .005, 50 is 0.050, etc).
 - **Run Code** specifies input fields that are designed to execute a user function
-when selected. The 'get' in the callbask determines whether the operation requires confirmation.
+when selected. The 'get' in the callback determines whether the operation requires confirmation.
 Returning a null pointer implies confirmation, anything else is a direct execution of the 
 user code. User code is only ever executed as part of the 'set' invocation.
 - **External Input** specifies that the input value is provided by external user code. 
@@ -263,12 +267,22 @@ public:
   /** 
   * Common Action Id type
   * 
-  * Record id numbers link the different parts of the menu together.
-  * typedef this to make it easier to change to a different type in
+  * Record id numbers link the different parts of the menu together, counts
+  * menu items, related loop variables, etc.
+  * typedef this to make it easier to change to a different integer type in
   * future if required. Note that id -1 is used to indicate error or no
   * id, so value must be signed.
   */
   typedef int8_t mnuId_t;
+
+  /**
+  * Common List Id type
+  *
+  * Common type for list counts and index values.
+  * typedef this to make it easier to change to a different integer type in
+  * future if required.
+  */
+  typedef uint8_t listId_t;
 
   /**
   * Return values for the user input handler
@@ -589,7 +603,7 @@ public:
   * \param p Pointer to the selection list in PROGMEM.
   * \return the item count.
   */
-  uint8_t getListCount(const char *p);
+  listId_t getListCount(const char *p);
   
   /**
   * Extract an item from a selection list
@@ -603,7 +617,7 @@ public:
   * \param bufLen char size of the buffer at *buf.
   * \return the buf pointer.
   */
-  char *getListItem(const char *p, uint8_t idx, char *buf, uint8_t bufLen);
+  char *getListItem(const char *p, listId_t idx, char *buf, uint8_t bufLen);
 
   /** @} */
 
@@ -642,6 +656,7 @@ private:
   mnuInput_t *loadInput(mnuId_t id);      ///< find the input item with the specified ID
   void       strPreamble(char *psz, mnuInput_t *mInp);  ///< format a preamble to the a variable display
   void       strPostamble(char *psz, mnuInput_t *mInp); ///< attach a postamble to a variable display
+  char       *ltostr(char* buf, uint8_t bufLen, int32_t v, uint8_t base, bool sign, bool leadZero = false); ///< convert long to string
   
   void timerStart(void);    ///< Start (reset) the timeout timer
   void timerCheck(void);    ///< Check if timeout has expired and reset menu if it has

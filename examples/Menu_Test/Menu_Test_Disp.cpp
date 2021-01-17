@@ -38,8 +38,8 @@ bool display(MD_Menu::userDisplayAction_t action, char *msg)
 }
 #endif
 
-#if DISPLAY_LCDSHIELD
-// Output display to a one of 2 line LCD display. 
+#if DISPLAY_LCD_SHIELD
+// Output display to a 2 line LCD display. 
 // For a one line display, comment out the L0 handling code.
 // The output display line is cleared with spaces before the
 // requested message is shown.
@@ -92,6 +92,62 @@ bool display(MD_Menu::userDisplayAction_t action, char *msg)
   }
 
   return(true);
+}
+#endif
+
+#if DISPLAY_LCD_I2C
+// Output display to a of 2 line LCD display using I2C connections. 
+// For a one line display, comment out the L0 handling code.
+// The output display line is cleared with spaces before the
+// requested message is shown.
+//
+// HD44780 librarty is available from the IDE Library Manager
+
+#include <Wire.h>
+#include <hd44780.h>
+#include <hd44780ioClass/hd44780_I2Cexp.h>
+
+// LCD display definitions
+#define  LCD_ROWS  2
+#define  LCD_COLS  16
+
+// LCD pin definitions
+static hd44780_I2Cexp lcd;
+
+bool display(MD_Menu::userDisplayAction_t action, char* msg)
+{
+  bool b = true;
+  static char szLine[LCD_COLS + 1] = { '\0' };
+
+  switch (action)
+  {
+  case MD_Menu::DISP_INIT:
+    b = (lcd.begin(LCD_COLS, LCD_ROWS) == hd44780::RV_ENOERR);
+    lcd.clear();
+    lcd.noCursor();
+    memset(szLine, ' ', LCD_COLS);
+    break;
+
+  case MD_Menu::DISP_CLEAR:
+    lcd.clear();
+    break;
+
+  case MD_Menu::DISP_L0:
+    lcd.setCursor(0, 0);
+    lcd.print(szLine);
+    lcd.setCursor(0, 0);
+    lcd.print(msg);
+    break;
+
+  case MD_Menu::DISP_L1:
+    lcd.setCursor(0, 1);
+    lcd.print(szLine);
+    lcd.setCursor(0, 1);
+    lcd.print(msg);
+    break;
+  }
+
+  return(b);
 }
 #endif
 

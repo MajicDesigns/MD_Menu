@@ -5,8 +5,9 @@
 const bool AUTO_START = true; // auto start the menu, manual detect and start if false
 
 // Select the User Input/Output hardware components that will be used
-#define DISPLAY_SERIAL  1   // Serial Monitor display (useful for testing)
-#define DISPLAY_LCDSHIELD 0 // Two line LCD using LiquidCrystal library
+#define DISPLAY_SERIAL  0   // Serial Monitor display (useful for testing)
+#define DISPLAY_LCD_SHIELD 0 // Two line LCD using standard LiquidCrystal library
+#define DISPLAY_LCD_I2C 1   // Two line LCD using I2C and HD44780 library
 #define DISPLAY_PAROLA  0   // One line LED matrix display using MD_Parola library
 
 #define INPUT_SWITCH    0  // Use discrete switches for input
