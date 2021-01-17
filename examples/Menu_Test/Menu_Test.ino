@@ -539,6 +539,8 @@ void loop(void)
   // Detect if we need to initiate running normal user code
   if (prevMenuRun && !M.isInMenu())
     Serial.print("\n\nSWITCHING TO USER'S NORMAL OPERATION\n");
+  if (!prevMenuRun && M.isInMenu())
+    Serial.print("\n\nSWITCHING TO RUNNING MENU\n");
   prevMenuRun = M.isInMenu();
 
   // If we are not running and not autostart
