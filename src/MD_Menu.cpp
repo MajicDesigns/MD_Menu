@@ -600,7 +600,6 @@ bool MD_Menu::processEng(userNavAction_t nav, mnuInput_t *mInp, bool rtfb, uint1
   case NAV_INC:
     if ((_V.value + (incDelta * mInp->base))/1000 < 1000)  // still within the same prefix range
     {
-      Serial.print("\n+Same range ");
       if ((_V.power < mInp->range[1].power) ||
          (_V.power == mInp->range[1].power && _V.value + (incDelta * mInp->base) <= mInp->range[1].value))
         _V.value += (incDelta * mInp->base);
@@ -609,7 +608,6 @@ bool MD_Menu::processEng(userNavAction_t nav, mnuInput_t *mInp, bool rtfb, uint1
     }
     else  // moved into the next range
     {
-      Serial.print("\n+New range ");
       _V.value += (incDelta * mInp->base);
       _V.value /= 1000;
       _V.power += 3;
@@ -626,21 +624,22 @@ bool MD_Menu::processEng(userNavAction_t nav, mnuInput_t *mInp, bool rtfb, uint1
   case NAV_DEC:
     if ((_V.value - (incDelta * mInp->base)) / 1000 > 0)  // still within the same prefix range
     {
-      Serial.print("\n-Same range ");
       if ((_V.power > mInp->range[0].power) ||
          (_V.power == mInp->range[0].power && _V.value - (incDelta * mInp->base) >= mInp->range[0].value))
         _V.value -= (incDelta * mInp->base);
       else
         _V.value = mInp->range[0].value;
     }
-    else  // moved into the previous range
+    else  // moved into the previous range, if there is one
     {
-      Serial.print("\n-New range ");
-      _V.value -= (incDelta * mInp->base);
-      _V.value *= 1000;
-      _V.power -= 3;
-      if ((_V.power < mInp->range[0].power) ||
-         (_V.power == mInp->range[0].power && _V.value <= mInp->range[0].value))
+      if (_V.power > mInp->range[0].power)    // not yet in lowest power range, adjust the range
+      {
+        _V.value *= 1000;
+        _V.power -= 3;
+      }
+      _V.value -= (incDelta * mInp->base);    // adjust the value
+
+      if (_V.power == mInp->range[0].power && _V.value <= mInp->range[0].value)
       {
         _V.value = mInp->range[0].value;
         _V.power = mInp->range[0].power;
@@ -675,7 +674,6 @@ bool MD_Menu::processEng(userNavAction_t nav, mnuInput_t *mInp, bool rtfb, uint1
     for (uint8_t i = 0; i < ENGU_DECIMALS; i++)
       divisor *= 10;
 
-    Serial.print("\n"); Serial.print(_V.value); Serial.print(": "); Serial.print(_V.value / divisor);
     strPreamble(sz, mInp);
     ltostr(sz + strlen(sz), mInp->fieldWidth - (ENGU_DECIMALS + 1) + 1, _V.value / divisor, 10, (_V.value < 0));
     sz[strlen(sz) + 1] = '\0';

@@ -40,6 +40,7 @@ Feb 2021 version 2.1.3
 - Introduced listId_t typedef for list index related counting.
 - Implemented suggested solution for fixing negative floats between 0 and -1 (Issue #15).
 - Added I2C LCD module and OLED display output to Menu_Test example.
+- Fixed Eng Units entry passing through zero.
 
 Dec 2020 version 2.1.2
 - Picked up additional changes to mnuId changes to class constructor.

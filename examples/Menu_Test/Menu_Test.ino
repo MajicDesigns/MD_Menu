@@ -127,7 +127,7 @@ const PROGMEM MD_Menu::mnuInput_t mnuInp[] =
   { 14, "Int32",    MD_Menu::INP_INT,   mnuIntValueRqst,  6,  -65536, 0,  65535, 0, 10, nullptr },
   { 15, "Hex16",    MD_Menu::INP_INT,   mnuIntValueRqst,  4,  0x0000, 0, 0xffff, 0, 16, nullptr },  // test hex display
   { 16, "Float",    MD_Menu::INP_FLOAT, mnuFloatValueRqst,7,  -10000, 0,  99950, 0, 10, nullptr },  // test float number
-  { 17, "EU",       MD_Menu::INP_ENGU,  mnuEngValueRqst,  7,   -1100, 0, 999000, 0, 50, engUnit },  // test engineering units number
+  { 17, "EU",       MD_Menu::INP_ENGU,  mnuEngValueRqst,  7,   -1100, 0,   1500, 0, 50, engUnit },  // test engineering units number
   { 18, "Extern",   MD_Menu::INP_EXT,   mnuExtValueRqst,  6,  -65536, 0,  65535, 0, 10, nullptr },  // test externally provided data
   { 19, "Confirm",  MD_Menu::INP_RUN,   myCode,           0,       0, 0,      0, 0, 10, nullptr },
 
